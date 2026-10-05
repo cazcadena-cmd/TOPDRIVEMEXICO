@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- En el repo este archivo debe subirse como app.html. No reemplaces el index.html de login. -->
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -1729,7 +1730,7 @@
         ultimoErrorPush = (e && e.message) || 'Error RPC';
       }
       try {
-        const ins = await db.from('push_suscripciones').upsert({
+        let ins = await db.from('push_suscripciones').upsert({
           usuario_id: fila.usuario_id,
           rol: fila.rol,
           servicio: fila.servicio,
@@ -1740,6 +1741,18 @@
           user_agent: fila.user_agent,
           activo: true
         }, { onConflict: 'endpoint' });
+        if (ins.error && /activo/i.test(ins.error.message || '')) {
+          ins = await db.from('push_suscripciones').upsert({
+            usuario_id: fila.usuario_id,
+            rol: fila.rol,
+            servicio: fila.servicio,
+            endpoint: fila.endpoint,
+            p256dh: fila.p256dh,
+            auth: fila.auth,
+            url_app: fila.url_app,
+            user_agent: fila.user_agent
+          }, { onConflict: 'endpoint' });
+        }
         if (!ins.error) return true;
         console.warn('Push tabla:', ins.error.message);
         ultimoErrorPush = ins.error.message;
