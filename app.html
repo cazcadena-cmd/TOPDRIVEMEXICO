@@ -626,6 +626,49 @@
     .aviso-push.alerta .aviso-push-icono{background:linear-gradient(135deg,#ef4444,#a32626);animation:none}
     .aviso-push .btn-mini{flex-shrink:0}
     .aviso-push .btn-mini:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+    /* ================= MODO CLARO: contenedores amarillos, textos blancos ================= */
+    /* (Solo aplica cuando NO está activo el modo oscuro; el modo oscuro no cambia) */
+    body:not(.dark-mode){
+      --primary-color:#ffffff; --primary-hover:#ffffff; --deep-blue:#121212;
+      --muted-text:#ffffff; --text-color:#121212;
+      --glass-bg:#FED700; --glass-bg-strong:#FED700;
+      --glass-border:rgba(0,0,0,.12); --glass-highlight:rgba(255,255,255,.35);
+      --field-bg:rgba(0,0,0,.07); --field-border:rgba(0,0,0,.14);
+      --shadow:0 24px 60px rgba(0,0,0,.22);
+    }
+    /* Elementos que usaban el amarillo como FONDO: ahora negros para que se vean sobre el amarillo */
+    body:not(.dark-mode) .btn-main{background:#121212;box-shadow:0 10px 26px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.12)}
+    body:not(.dark-mode) .btn-main:hover{box-shadow:0 14px 32px rgba(0,0,0,.35)}
+    body:not(.dark-mode) .servicios-ruta .punto.origen,
+    body:not(.dark-mode) .viaje-punto-dot.origen,
+    body:not(.dark-mode) .servicio-card.seleccionado::before,
+    body:not(.dark-mode) #toast .toast-icon{background:#121212;color:#fff}
+    body:not(.dark-mode) .servicio-icono,
+    body:not(.dark-mode) .menu-perfil-item .mi-ico,
+    body:not(.dark-mode) .vp-score{background:#121212;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+    body:not(.dark-mode) .tarjeta-viaje::before,
+    body:not(.dark-mode) .historial-card::before{background:#121212;box-shadow:none}
+    body:not(.dark-mode) .historial-tab.activo{background:#121212;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+    body:not(.dark-mode) .servicio-card.seleccionado{border-color:#121212;background:rgba(0,0,0,.10);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+    body:not(.dark-mode) .servicio-card:hover,
+    body:not(.dark-mode) .tarjeta-viaje:hover,
+    body:not(.dark-mode) .historial-card:hover{border-color:#121212;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+
+    /* Campo «¿A dónde vas?»: texto e icono en negro */
+    body:not(.dark-mode) #input-destino{color:#000;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E")}
+    body:not(.dark-mode) #input-destino::placeholder{color:#000;opacity:1}
+    body:not(.dark-mode) .input-group>input:focus{border-color:#121212;box-shadow:0 0 0 3px rgba(0,0,0,.15)}
+
+    /* Alerta «Activa los avisos»: fondo rojo con texto blanco */
+    body:not(.dark-mode) .aviso-push,
+    body:not(.dark-mode) .aviso-push.alerta{background:linear-gradient(135deg,#ef4444,#c62828);border-color:#b71c1c;box-shadow:0 10px 24px rgba(198,40,40,.32)}
+    body:not(.dark-mode) .aviso-push .aviso-push-tit,
+    body:not(.dark-mode) .aviso-push .aviso-push-sub{color:#ffffff}
+    body:not(.dark-mode) .aviso-push .aviso-push-icono{background:rgba(255,255,255,.18);color:#fff;box-shadow:none;animation:none}
+    body:not(.dark-mode) .aviso-push .btn-mini{color:#fff;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.75)}
+    body:not(.dark-mode) .aviso-push .btn-mini:hover{background:rgba(255,255,255,.28)}
   </style>
   <script>
     (function(){
