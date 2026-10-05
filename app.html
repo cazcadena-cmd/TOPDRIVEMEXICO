@@ -12,11 +12,11 @@
   <meta name="apple-mobile-web-app-title" content="TOPDRIVE">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <title>TOPDRIVE · Viajes</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://maps.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     /* ============================================================
        TOPDRIVE · Mapa, viajes y tiempo real (Google Maps + Supabase)
@@ -24,7 +24,7 @@
        ============================================================ */
     :root{
       --bg-color:#f8f9fa; --card-bg:#ffffff; --text-color:#1a232c; --primary-color:#FED700;
-      --primary-hover:#FED700; --border-color:#ccc; --deep-blue:#FED700; --muted-text:#64748b;
+      --primary-hover:#FED700; --border-color:#ccc; --deep-blue:#FED700; --muted-text:#FED700;
       --glass-bg:rgba(255,255,255,.78); --glass-bg-strong:rgba(255,255,255,.92);
       --glass-border:rgba(254,215,0,.14); --glass-highlight:rgba(255,255,255,.95);
       --field-bg:rgba(255,255,255,.85); --field-border:rgba(254,215,0,.16);
@@ -930,17 +930,16 @@
     /* ============================ CONFIG ============================ */
     const GOOGLE_MAPS_API_KEY = "AIzaSyAjIECrPNcpw4rEJhsPqqa1zxv-qYGOgRM";
     const SUPABASE_URL = "https://qwxegdvvcsmwemyrzvis.supabase.co";
-    const SUPABASE_REST_URL = "https://qwxegdvvcsmwemyrzvis.supabase.co/rest/v1/";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3eGVnZHZ2Y3Ntd2VteXJ6dmlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwMDQ4ODQsImV4cCI6MjEwNjU4MDg4NH0.Xc--jnccpdXJtFPzI28QGv8t29P030ghRrWK0QU5NT0";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdWIiLCJyZWYiOiJxd3hlZ2R2dmNzbXdlbXlyenZpcyIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzkxMDA0ODg0LCJleHAiOjIxMDY1ODA4ODR9.Xc--jnccpdXJtFPzI28QGv8t29P030ghRrWK0QU5NT0";
     const db = (window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null);
 
-    const URL_AYUDA = "https://whitecarappcelphone-sys.github.io/AYUDA-TOPDRIVE/";
+    const URL_AYUDA = "https://whitecarappcelphone-sys.github.io/AYUDA-BIKAR/";
 
     /* ---- Notificaciones push (Web Push) ----
        1) Genera las llaves con:  npx web-push generate-vapid-keys
        2) Pega aquí SOLO la llave PÚBLICA (la privada va en los secretos de Supabase) */
     const URL_SW = "sw.js";
-    const VAPID_PUBLIC_KEY = "BJr14xMvK4KAmPifUS1Z3Mmy1ZyDnELwfdhE1YzGZxM85gjbHGDNrs0xy12tBWxAfXJUSwRyjSwMEPI5GsyP-24";
+    const VAPID_PUBLIC_KEY = "BI2fmyQSPd3TPSs5jO-EFGNlXIeG5NnqjFRvAic7kc4nGNOgG2OHCjVDK5VOLHX35wmSuoRlDgUU2dro4K6GviQ";
 
     const K_SESION = "bikar_usuario";
     const K_DOC = "bikar_documentacion_vehiculo";
@@ -950,15 +949,15 @@
     const PASAJERO_ID_PRUEBA = "5";
     const CONDUCTOR_ID_PRUEBA = "10";
     const MAX_FILAS = 500;
-    const VENTANA_ACTIVO_MS = 10 * 60 * 1000;
+    const VENTANA_ACTIVO_MS = 10 * 60 * 1000; // Un conductor cuenta como activo si reportó conexión en los últimos 10 min (o si tiene notificaciones push activas)
     const LATIDO_CONDUCTOR_MS = 20000;
 
-    /* ============================ TARIFAS REALES MÉXICO (PESOS MXN) ============================
-       Tarifas base en pesos mexicanos:
-       - Moto Taxi:     Base $15.00 + $5.50/km (Mínimo $25.00)
-       - Moto Delivery: Base $18.00 + $6.50/km (Mínimo $30.00)
-       - Taxi Auto:     Base $25.00 + $8.50/km (Mínimo $40.00)
-       - Taxi Carga:    Base $90.00 + $18.00/km (Mínimo $120.00)
+    /* ============================ TARIFAS EN PESOS MEXICANOS (MXN) ============================
+       Convertidas de las tarifas originales de Perú al tipo de referencia 1 PEN = 5.26854 MXN:
+       - Moto Taxi:     Base MXN $13.17 + $4.74/km (Mínimo $18.44)
+       - Moto Delivery: Base MXN $16.86 + $5.80/km (Mínimo $23.71)
+       - Taxi Auto:     Base MXN $23.71 + $7.38/km (Mínimo $34.25)
+       - Taxi Carga:    Base MXN $84.30 + $14.75/km (Mínimo $105.37)
     ======================================================================================== */
     const ICONOS = {
       taxi_auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/><path d="M9 7V4h6v3"/></svg>',
@@ -969,10 +968,10 @@
     };
 
     const CATALOGO = [
-      { clave:'moto_taxi',     etiqueta:'Moto Taxi',     desc:'Económico y ágil · 1 pasajero',           base:15.00, porKm:5.50, minTarifa:25.00,  espera:'2 min' },
-      { clave:'moto_delivery', etiqueta:'Moto Delivery', desc:'Envíos de paquetes, comida y documentos',  base:18.00, porKm:6.50, minTarifa:30.00,  espera:'3 min' },
-      { clave:'taxi_auto',     etiqueta:'Taxi Auto',     desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:25.00, porKm:8.50, minTarifa:40.00,  espera:'4 min' },
-      { clave:'taxi_carga',    etiqueta:'Taxi Carga',    desc:'Mudanzas, carga pesada y encomiendas',     base:90.00, porKm:18.00, minTarifa:120.00, espera:'8 min' }
+      { clave:'moto_taxi',     etiqueta:'Moto Taxi',     desc:'Económico y ágil · 1 pasajero',           base:13.17, porKm:4.74, minTarifa:18.44, espera:'2 min' },
+      { clave:'moto_delivery', etiqueta:'Moto Delivery', desc:'Envíos de paquetes, comida y documentos',  base:16.86, porKm:5.80, minTarifa:23.71, espera:'3 min' },
+      { clave:'taxi_auto',     etiqueta:'Taxi Auto',     desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:23.71, porKm:7.38, minTarifa:34.25, espera:'4 min' },
+      { clave:'taxi_carga',    etiqueta:'Taxi Carga',    desc:'Mudanzas, carga pesada y encomiendas',     base:84.30, porKm:14.75,minTarifa:105.37,espera:'8 min' }
     ];
 
     /* Normaliza cualquier etiqueta a la clave canónica del catálogo */
@@ -1000,8 +999,8 @@
 
     function formatoMoneda(v) {
       let n = Number(v || 0);
-      if (n > 500) n = n / 1000;
-      return 'MX$ ' + n.toFixed(2);
+      if (n > 500) n = n / 1000; // Compatibilidad con registros antiguos en miles
+      return '$' + n.toFixed(2) + ' MXN';
     }
 
     /* ============================ ESTADO ============================ */
@@ -1009,23 +1008,24 @@
     let origenNombre = 'Ubicación actual', origenDetalle = '', destinoNombre = '', destinoDetalle = '';
     let distanciaKm = 0, duracionMin = 0, servicioSeleccionado = null;
     let usuarioActual = null, claveServicioConductor = null, documentacionVehiculo = null;
-    let conductorActivo = true;
-    let viajeActivoPasajero = null;
-    let viajeActivoConductor = null;
-    let huboViajeActivo = false;
-    let viajesIdsVistos = null;
+    let conductorActivo = true; // Estado online/offline del conductor
+    let viajeActivoPasajero = null; // Viaje en curso del pasajero
+    let viajeActivoConductor = null; // Viaje en curso del conductor
+    let huboViajeActivo = false; // Para detectar cuando un viaje termina o se cancela
+    let viajesIdsVistos = null; // IDs de viajes ya mostrados al conductor (null = primera carga)
     let seqViajes = 0;
     let sesionYaVerificada = false, vistaHistorial = 'servicios', historialViajes = [], historialCargando = false;
 
     // Notificaciones push y sonido
-    let swRegistro = null, swListenerOk = false;
-    let pushSuscrito = false;
-    let audioCtx = null;
-    const viajesNotificados = new Set();
-    const estadosViajeVistos = new Map();
-    const avisosEstado = new Set();
-    let promesaPushPasajero = null;
-    const viajesAvisados = new Set();
+    let swRegistro = null, swListenerOk = false; // Service Worker
+    let pushSuscrito = false;                    // true cuando este dispositivo quedó registrado para recibir push
+    let ultimoErrorPush = '';
+    let audioCtx = null;                         // Contexto de audio para el sonido TOPDRIVE
+    const viajesNotificados = new Set();         // Viajes ya mostrados como notificación del sistema
+    const estadosViajeVistos = new Map();        // id de viaje → último estado visto (para detectar cambios)
+    const avisosEstado = new Set();              // "idViaje-estado" ya avisados con sonido (evita duplicados)
+    let promesaPushPasajero = null;              // Alta de notificaciones del pasajero en curso
+    const viajesAvisados = new Set();            // Viajes ya avisados con sonido (evita sonidos duplicados)
 
     let map, geocoder, autocompleteService, placesService, directionsService, directionsRenderer;
     let tokenOrigen = null, tokenDestino = null, marcadorOrigen = null, marcadorDestino = null, infoOrigen = null;
@@ -1084,11 +1084,11 @@
     const ESTILO_CLARO = [
       {elementType:'geometry',stylers:[{color:'#f5f7fa'}]},
       {elementType:'labels.icon',stylers:[{visibility:'off'}]},
-      {elementType:'labels.text.fill',stylers:[{color:'#5b6b78'}]},
+      {elementType:'labels.text.fill',stylers:[{color:'#FED700'}]},
       {elementType:'labels.text.stroke',stylers:[{color:'#ffffff'},{weight:3}]},
-      {featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#cdd8e0'}]},
-      {featureType:'landscape.man_made',elementType:'geometry',stylers:[{color:'#eef1f5'}]},
-      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#7a8a95'}]},
+      {featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#FED700'}]},
+      {featureType:'landscape.man_made',elementType:'geometry',stylers:[{color:'#FED700'}]},
+      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#FED700'}]},
       {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#dff0e2'}]},
       {featureType:'road',elementType:'geometry',stylers:[{color:'#ffffff'}]},
       {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#ffe9b8'}]},
@@ -1099,18 +1099,17 @@
     const ESTILO_OSCURO = [
       {elementType:'geometry',stylers:[{color:'#1b1b1b'}]},
       {elementType:'labels.icon',stylers:[{visibility:'off'}]},
-      {elementType:'labels.text.fill',stylers:[{color:'#9aa5ad'}]},
+      {elementType:'labels.text.fill',stylers:[{color:'#FED700'}]},
       {elementType:'labels.text.stroke',stylers:[{color:'#121212'}]},
-      {featureType:'administrative',elementType:'geometry',stylers:[{color:'#2c3a44'}]},
-      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#7f8b93'}]},
+      {featureType:'administrative',elementType:'geometry',stylers:[{color:'#FED700'}]},
+      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#FED700'}]},
       {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#1d2b23'}]},
       {featureType:'road',elementType:'geometry',stylers:[{color:'#2a2a2a'}]},
       {featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#343434'}]},
-      {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#3e4a52'}]},
+      {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#FED700'}]},
       {featureType:'water',elementType:'geometry',stylers:[{color:'#FED700'}]},
       {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#FED700'}]}
     ];
-
     const estiloActual = () => document.body.classList.contains('dark-mode') ? ESTILO_OSCURO : ESTILO_CLARO;
 
     function cargarGoogleMaps() {
@@ -1260,7 +1259,7 @@
     }
 
     async function establecerDestino(coords, corta, detalle, centrar) {
-      if (modoActual === 'conductor') return;
+      if (modoActual === 'conductor') return; // Conductor no establece destino manual
       destino = coords;
       destinoNombre = corta || 'Buscando dirección…';
       destinoDetalle = detalle || '';
@@ -1456,7 +1455,7 @@
     /* ============================ ESTADO CONDUCTOR ACTIVO / INACTIVO ============================ */
     function inicializarEstadoConductor() {
       const guardado = lsGet(K_ESTADO_CONDUCTOR);
-      conductorActivo = (guardado !== 'false');
+      conductorActivo = (guardado !== 'false'); // Por defecto activo
       actualizarBotonEstadoConductor();
     }
 
@@ -1485,8 +1484,8 @@
 
       if (conductorActivo) {
         mostrarToast('Estás ACTIVO · Recibiendo viajes', '✓');
-        desbloquearAudio();
-        iniciarPushConductor(true);
+        desbloquearAudio();          // El toque del conductor habilita el sonido TOPDRIVE
+        iniciarPushConductor(true);  // Pide permiso de notificaciones si aún no lo dio
         await cargarViajesSolicitados();
       } else {
         mostrarToast('Estás INACTIVO · No recibirás viajes', '!');
@@ -1538,13 +1537,14 @@
        - Sonido TOPDRIVE sintetizado con Web Audio cuando la app está abierta (primer plano o segundo plano).
        - Un conductor con push activo sigue contando como ACTIVO aunque cierre la app.
     ============================================================================================ */
-    const PUSH_SOPORTADO = ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
+    const PUSH_SOPORTADO = window.isSecureContext && ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
     const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || '');
     const esPWAInstalada = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
     const esConductorSesion = () => !!usuarioActual && String(usuarioActual.tipo_usuario || '').toLowerCase() === 'conductor';
     const vapidListo = () => !!VAPID_PUBLIC_KEY && !/^PEGA/i.test(VAPID_PUBLIC_KEY) && VAPID_PUBLIC_KEY.length > 40;
 
     /* ---------- Sonido TOPDRIVE ---------- */
+    // Melodía característica: [frecuencia Hz, inicio s, duración s]
     const MELODIA_TOPDRIVE = [
       [659.25, 0.00, 0.35], [880.00, 0.14, 0.35], [1108.73, 0.28, 0.35], [1318.51, 0.42, 0.75],
       [1108.73, 0.95, 0.35], [1318.51, 1.09, 0.35], [1760.00, 1.23, 1.10]
@@ -1589,6 +1589,7 @@
       if (!ctx) return;
       const pedido = Date.now();
       const reproducir = () => {
+        // Si no se pudo activar el audio a tiempo, no se reproduce un sonido atrasado
         if (ctx.state !== 'running' || Date.now() - pedido > 5000) return;
         const t0 = ctx.currentTime + 0.05;
         for (let r = 0; r < (repeticiones || 2); r++) {
@@ -1615,16 +1616,24 @@
 
     /* ---------- Service Worker ---------- */
     async function registrarServiceWorker() {
-      if (!('serviceWorker' in navigator)) return null;
+      if (!window.isSecureContext) {
+        ultimoErrorPush = 'Web Push requiere HTTPS (o localhost).';
+        return null;
+      }
+      if (!('serviceWorker' in navigator)) {
+        ultimoErrorPush = 'Este navegador no admite Service Workers.';
+        return null;
+      }
       if (!swListenerOk) {
         swListenerOk = true;
         navigator.serviceWorker.addEventListener('message', alMensajeServiceWorker);
       }
       if (swRegistro) return swRegistro;
       try {
-        swRegistro = await navigator.serviceWorker.register(URL_SW);
+        swRegistro = await navigator.serviceWorker.register(new URL(URL_SW, document.baseURI).href, { updateViaCache: 'none' });
         return swRegistro;
       } catch (e) {
+        ultimoErrorPush = (e && e.message) || 'No se pudo instalar sw.js.';
         console.warn('Service Worker no disponible:', e && e.message);
         return null;
       }
@@ -1634,11 +1643,13 @@
       const d = ev && ev.data;
       if (!d || typeof d !== 'object') return;
       if (d.tipo === 'push-viaje') {
+        // Llegó un push de viaje nuevo con la app abierta (o en segundo plano): suena el tono TOPDRIVE y se actualiza la lista
         if (modoActual === 'conductor' && conductorActivo) {
           avisarViajesNuevos([d.viaje_id]);
           cargarViajesSolicitados();
         }
       } else if (d.tipo === 'push-estado') {
+        // Llegó un aviso de cambio de estado del viaje (conductor asignado, en curso, finalizado, cancelado)
         anunciarEstadoViaje(d.viaje_id, d.estado, null, true);
         verificarViajeEnProgresoUsuario();
       } else if (d.tipo === 'abrir-viaje') {
@@ -1667,21 +1678,30 @@
     }
 
     async function suscribirPush(pedirPermiso) {
-      if (!db || !usuarioActual || usuarioActual.id == null || !PUSH_SOPORTADO) return false;
-      const rolPush = esConductorSesion() ? 'conductor' : 'pasajero';
-      if (!vapidListo()) { console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.'); return false; }
+      ultimoErrorPush = '';
+      if (!window.isSecureContext) { ultimoErrorPush = 'Web Push requiere HTTPS (o localhost).'; return false; }
+      if (!db) { ultimoErrorPush = 'No se pudo conectar con Supabase.'; return false; }
+      if (!usuarioActual || usuarioActual.id == null) { ultimoErrorPush = 'No se encontró el ID de la cuenta activa.'; return false; }
+      if (!PUSH_SOPORTADO) { ultimoErrorPush = 'Este navegador no admite Web Push.'; return false; }
+      const rolPush = esConductorSesion() ? 'conductor' : 'pasajero'; // el pasajero también recibe avisos de su viaje
+      if (!vapidListo()) { ultimoErrorPush = 'Falta configurar la llave pública VAPID.'; console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.'); return false; }
       try {
+        // El permiso se pide primero, mientras el toque del usuario sigue siendo válido
         let permiso = Notification.permission;
         if (permiso === 'default' && pedirPermiso) {
           try { permiso = await Notification.requestPermission(); } catch (e) { permiso = Notification.permission; }
         }
-        if (permiso !== 'granted') return false;
+        if (permiso !== 'granted') {
+          ultimoErrorPush = permiso === 'denied' ? 'El permiso de notificaciones está bloqueado en el navegador.' : 'No se concedió el permiso de notificaciones.';
+          return false;
+        }
 
         const reg = await registrarServiceWorker();
         if (!reg) return false;
         await navigator.serviceWorker.ready;
 
         let sub = await reg.pushManager.getSubscription();
+        // Si la llave VAPID cambió, se renueva la suscripción
         if (sub && sub.options && sub.options.applicationServerKey &&
             bufferABase64Url(sub.options.applicationServerKey) !== VAPID_PUBLIC_KEY) {
           try { await sub.unsubscribe(); } catch (e) {}
@@ -1703,12 +1723,14 @@
           p_user_agent: (navigator.userAgent || '').slice(0, 250)
         });
         if (error) {
+          ultimoErrorPush = error.message || 'No existe o falló la función Supabase bikar_registrar_push.';
           console.warn('Push: no se pudo registrar la suscripción (¿ejecutaste supabase_push.sql?):', error.message);
           return false;
         }
         pushSuscrito = true;
         return true;
       } catch (e) {
+        ultimoErrorPush = (e && e.message) || 'Falló la suscripción Web Push.';
         console.warn('Push: error al suscribir:', e && e.message);
         return false;
       }
@@ -1743,13 +1765,15 @@
       op = op || {};
       try {
         if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+        // Con la app a la vista no hace falta: ya se ve la tarjeta, el aviso y suena el tono
         const enPrimerPlano = !document.hidden && document.hasFocus();
         if (enPrimerPlano && !op.forzar) return false;
 
         const icono = new URL('icon-192.png', location.href).href;
         const opciones = {
-          body: cuerpo || '', icon: icono, tag: op.tag || 'topdrive-aviso',
-          renotify: false, silent: false, requireInteraction: !!op.persistente,
+          body: cuerpo || '', icon: icono, tag: op.tag || 'bikar-aviso',
+          renotify: false,          // el mismo tag (p. ej. el push del servidor) reemplaza sin sonar dos veces
+          silent: false, requireInteraction: !!op.persistente,
           vibrate: op.vibrar || [250, 100, 250, 100, 400], timestamp: Date.now(),
           data: { url: op.url || urlAppBase(), viaje_id: op.viaje_id || null, tipo: op.tipo || null }
         };
@@ -1784,30 +1808,33 @@
           '🚖 Nueva solicitud · ' + (v.tipo_servicio || v.nombre_servicio || 'Servicio'),
           formatoMoneda(v.tarifa) + (dist ? ' · ' + dist.toFixed(1) + ' km' : '') +
             '\nA: ' + (v.origen_nombre || 'Origen') + '\nB: ' + (v.destino_nombre || 'Destino'),
-          { tag: 'topdrive-viaje-' + k, viaje_id: v.id, tipo: 'nuevo_viaje', persistente: true, vibrar: [350, 120, 350, 120, 700, 200, 350, 120, 350] }
+          { tag: 'bikar-viaje-' + k, viaje_id: v.id, tipo: 'nuevo_viaje', persistente: true, vibrar: [350, 120, 350, 120, 700, 200, 350, 120, 350] }
         );
       });
     }
 
-    // Pasajero: pide el permiso y registra este dispositivo para recibir los avisos de su viaje
+    // Pasajero: pide el permiso (con un toque suyo) y registra este dispositivo para recibir los avisos de su viaje:
+    // conductor asignado, viaje en curso, finalizado o cancelado — aunque la app esté cerrada.
     async function iniciarPushPasajero(pedirPermiso) {
       if (!usuarioActual || esConductorSesion()) return false;
       if (!PUSH_SOPORTADO) {
         pushSuscrito = false;
+        ultimoErrorPush = !window.isSecureContext ? 'Web Push requiere HTTPS (o localhost).' : 'El navegador no admite Web Push.';
         pintarAvisoPush(esIOS && !esPWAInstalada() ? 'instalar' : 'nosoportado');
         return false;
       }
       if (pushSuscrito) { pintarAvisoPush(null); return true; }
-      if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return false; }
+      if (Notification.permission === 'denied') { ultimoErrorPush = 'El permiso está bloqueado en el navegador.'; pintarAvisoPush('bloqueado'); return false; }
       if (Notification.permission === 'default') {
         if (!pedirPermiso) { pintarAvisoPush('activar'); return false; }
         try { await Notification.requestPermission(); } catch (e) {}
-        if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return false; }
+        if (Notification.permission === 'denied') { ultimoErrorPush = 'El permiso está bloqueado en el navegador.'; pintarAvisoPush('bloqueado'); return false; }
       }
       if (Notification.permission !== 'granted') { pintarAvisoPush('activar'); return false; }
       if (!vapidListo()) {
-        console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código. Solo habrá avisos con la app abierta o en segundo plano.');
-        pintarAvisoPush(null);
+        ultimoErrorPush = 'Falta configurar una llave pública VAPID válida.';
+        console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.');
+        pintarAvisoPush('config');
         return false;
       }
       const ok = await suscribirPush(false);
@@ -1817,7 +1844,7 @@
 
     /* ---------- Cambios de estado del viaje: sonido TOPDRIVE + aviso (pasajero y conductor) ---------- */
     function grupoEstadoViaje(est) {
-      const e = String(est || '').toLowerCase().trim().replace(/[\s\-]+/g, '_');
+      const e = String(est || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
       if (/cancel|rechaz|anul/.test(e)) return 'cancelado';
       if (/finaliz|complet|termin|conclu/.test(e)) return 'finalizado';
       if (['en_camino', 'en_curso', 'en_progreso', 'en_viaje', 'iniciado'].includes(e)) return 'encurso';
@@ -1826,6 +1853,7 @@
       return '';
     }
 
+    // textos: [título de la notificación, cuerpo, mensaje corto del aviso en pantalla, icono del aviso]
     const TEXTOS_ESTADO_PASAJERO = {
       aceptado:   ['✅ ¡Conductor asignado!', 'Tu conductor aceptó el servicio y va hacia tu dirección de partida. Prepárate para abordar.', '¡Conductor asignado! Va hacia tu dirección', '✓'],
       encurso:    ['🚖 Viaje en curso', 'Vas rumbo a tu destino. ¡Buen viaje!', 'Viaje en curso · Vas rumbo a tu destino', '✓'],
@@ -1836,12 +1864,14 @@
       cancelado:  ['❌ Viaje cancelado', 'El pasajero canceló el viaje.', 'El pasajero canceló el viaje', '!']
     };
 
+    // Suena el tono TOPDRIVE (y muestra la notificación del sistema si la app no está a la vista) UNA sola vez por cambio de estado
     function anunciarEstadoViaje(idViaje, estado, viaje, desdePush) {
       if (!usuarioActual || idViaje === null || idViaje === undefined) return;
       const esCond = esConductorSesion();
       const grupo = grupoEstadoViaje(estado);
       const t = (esCond ? TEXTOS_ESTADO_CONDUCTOR : TEXTOS_ESTADO_PASAJERO)[grupo];
       if (!t) return;
+      // Si el propio pasajero canceló, no se le avisa de lo que acaba de hacer
       if (!esCond && grupo === 'cancelado' && viaje && String(viaje.cancelado_por || '').toLowerCase() === 'pasajero') return;
 
       const k = String(idViaje) + '-' + grupo;
@@ -1853,8 +1883,9 @@
       mostrarToast(t[2], t[3]);
       try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
       if (!desdePush) {
+        // El service worker ya muestra su propia notificación cuando llega el push; esta es el respaldo local
         notificarSistema(t[0], t[1], {
-          tag: 'topdrive-estado-' + idViaje + '-' + grupo, viaje_id: idViaje, tipo: 'estado_viaje',
+          tag: 'bikar-estado-' + idViaje + '-' + grupo, viaje_id: idViaje, tipo: 'estado_viaje',
           url: new URL('viaje.html?id=' + idViaje + '&rol=' + (esCond ? 'conductor' : 'pasajero'), location.href).href
         });
       }
@@ -1862,6 +1893,7 @@
 
     /* ---------- Aviso visual para el conductor ---------- */
     function pintarAvisoPush(estado) {
+      // Mismo recuadro para los dos roles: el del conductor (panel de viajes) o el del pasajero (panel de solicitar viaje)
       const pas = !esConductorSesion();
       const caja = pas ? avisoPushPas : avisoPush;
       const tit = pas ? avisoPushPasTit : avisoPushTit;
@@ -1872,14 +1904,16 @@
         activar:     { t: 'Activa los avisos de tu viaje', s: 'Te avisaremos cuando un conductor acepte tu viaje, llegue o lo cancele, aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
         bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de TOPDRIVE en los ajustes del navegador o del sitio para recibir los avisos de tu viaje.', b: null, alerta: true },
         instalar:    { t: 'Instala TOPDRIVE en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre TOPDRIVE desde su icono y activa los avisos.', b: null, alerta: false },
-        nosoportado: { t: 'Avisos push no disponibles', s: 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir los avisos de tu viaje.', b: null, alerta: true },
-        error:       { t: 'No se pudieron activar los avisos', s: 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
+        nosoportado: { t: 'Avisos push no disponibles', s: 'Se requiere HTTPS y un navegador actualizado compatible con notificaciones push.', b: null, alerta: true },
+        config:      { t: 'Falta configurar Web Push', s: 'La llave pública VAPID o su configuración en el servidor no está lista.', b: null, alerta: true },
+        error:       { t: 'No se pudieron activar los avisos', s: 'Revisa la configuración e inténtalo de nuevo.' + (ultimoErrorPush ? ' Detalle: ' + ultimoErrorPush : ''), b: 'Reintentar', alerta: true }
       } : {
         activar:     { t: 'Activa los avisos de viajes', s: 'Recibe cada solicitud con el sonido TOPDRIVE aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
         bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de TOPDRIVE en los ajustes del navegador o del sitio para recibir viajes con la app cerrada.', b: null, alerta: true },
         instalar:    { t: 'Instala TOPDRIVE en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre TOPDRIVE desde su icono y activa los avisos.', b: null, alerta: false },
-        nosoportado: { t: 'Avisos push no disponibles', s: 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir viajes con la app cerrada.', b: null, alerta: true },
-        error:       { t: 'No se pudieron activar los avisos', s: 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
+        nosoportado: { t: 'Avisos push no disponibles', s: 'Se requiere HTTPS y un navegador actualizado compatible con notificaciones push.', b: null, alerta: true },
+        config:      { t: 'Falta configurar Web Push', s: 'La llave pública VAPID o su configuración en el servidor no está lista.', b: null, alerta: true },
+        error:       { t: 'No se pudieron activar los avisos', s: 'Revisa la configuración e inténtalo de nuevo.' + (ultimoErrorPush ? ' Detalle: ' + ultimoErrorPush : ''), b: 'Reintentar', alerta: true }
       };
       const x = textos[estado];
       if (!x) { caja.classList.add('oculto'); return; }
@@ -1892,23 +1926,26 @@
     }
 
     async function iniciarPushConductor(pedirPermiso) {
-      if (!usuarioActual || !esConductorSesion()) return;
+      if (!usuarioActual || !esConductorSesion()) return false;
       if (!PUSH_SOPORTADO) {
         pushSuscrito = false;
+        ultimoErrorPush = !window.isSecureContext ? 'Web Push requiere HTTPS (o localhost).' : 'El navegador no admite Web Push.';
         pintarAvisoPush(esIOS && !esPWAInstalada() ? 'instalar' : 'nosoportado');
-        return;
+        return false;
       }
-      if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return; }
-      if (Notification.permission === 'default' && !pedirPermiso) { pintarAvisoPush('activar'); return; }
+      if (Notification.permission === 'denied') { ultimoErrorPush = 'El permiso está bloqueado en el navegador.'; pintarAvisoPush('bloqueado'); return false; }
+      if (Notification.permission === 'default' && !pedirPermiso) { pintarAvisoPush('activar'); return false; }
       if (Notification.permission === 'default') {
+        // El permiso se pide aquí (dentro del toque del usuario) y NO depende de la llave VAPID
         try { await Notification.requestPermission(); } catch (e) {}
-        if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return; }
-        if (Notification.permission !== 'granted') { pintarAvisoPush('activar'); return; }
+        if (Notification.permission === 'denied') { ultimoErrorPush = 'El permiso está bloqueado en el navegador.'; pintarAvisoPush('bloqueado'); return false; }
+        if (Notification.permission !== 'granted') { pintarAvisoPush('activar'); return false; }
       }
       if (!vapidListo()) {
-        console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código. Solo habrá avisos con la app abierta o en segundo plano.');
-        pintarAvisoPush(null);
-        return;
+        ultimoErrorPush = 'Falta configurar una llave pública VAPID válida.';
+        console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.');
+        pintarAvisoPush('config');
+        return false;
       }
 
       const ok = await suscribirPush(pedirPermiso);
@@ -1916,20 +1953,22 @@
       else if (Notification.permission === 'denied') pintarAvisoPush('bloqueado');
       else if (Notification.permission === 'default') pintarAvisoPush('activar');
       else pintarAvisoPush('error');
+      return ok;
     }
 
     btnActivarPush.addEventListener('click', async () => {
       desbloquearAudio();
       btnActivarPush.disabled = true;
-      await iniciarPushConductor(true);
-      btnActivarPush.disabled = false;
-      const permitido = ('Notification' in window) && Notification.permission === 'granted';
-      if (pushSuscrito || permitido) {
-        mostrarToast(pushSuscrito
-          ? 'Notificaciones activadas · Recibirás los viajes con la app cerrada'
-          : 'Notificaciones activadas en este dispositivo', '✓');
-        sonidoNuevoViaje(1);
-        notificarSistema('🔔 TOPDRIVE · Avisos activados', 'Así te llegarán las solicitudes de viaje.', { forzar: true, tag: 'topdrive-prueba' });
+      let ok = false;
+      try { ok = await iniciarPushConductor(true); }
+      finally { btnActivarPush.disabled = false; }
+      if (ok && pushSuscrito) {
+        mostrarToast('Notificaciones activadas · Recibirás los viajes con la app cerrada', '✓');
+        sonidoNuevoViaje(1); // Vista previa del sonido TOPDRIVE
+        // Notificación de prueba en la barra del móvil: confirma que el dispositivo muestra los avisos
+        notificarSistema('🔔 TOPDRIVE · Avisos activados', 'Así te llegarán las solicitudes de viaje.', { forzar: true, tag: 'bikar-prueba' });
+      } else if (Notification.permission === 'granted') {
+        mostrarToast(ultimoErrorPush || 'Permiso concedido, pero no se registró Web Push.', '!');
       }
     });
 
@@ -1937,19 +1976,20 @@
     btnActivarPushPas.addEventListener('click', async () => {
       desbloquearAudio();
       btnActivarPushPas.disabled = true;
-      await iniciarPushPasajero(true);
-      btnActivarPushPas.disabled = false;
-      const permitido = ('Notification' in window) && Notification.permission === 'granted';
-      if (pushSuscrito || permitido) {
-        mostrarToast(pushSuscrito
-          ? 'Notificaciones activadas · Te avisaremos de tu viaje aunque cierres la app'
-          : 'Notificaciones activadas en este dispositivo', '✓');
-        sonidoNuevoViaje(1);
-        notificarSistema('🔔 TOPDRIVE · Avisos activados', 'Así te llegarán los avisos de tu viaje.', { forzar: true, tag: 'topdrive-prueba' });
+      let ok = false;
+      try { ok = await iniciarPushPasajero(true); }
+      finally { btnActivarPushPas.disabled = false; }
+      if (ok && pushSuscrito) {
+        mostrarToast('Notificaciones activadas · Te avisaremos de tu viaje aunque cierres la app', '✓');
+        sonidoNuevoViaje(1); // Vista previa del sonido TOPDRIVE
+        notificarSistema('🔔 TOPDRIVE · Avisos activados', 'Así te llegarán los avisos de tu viaje.', { forzar: true, tag: 'bikar-prueba' });
+      } else if (Notification.permission === 'granted') {
+        mostrarToast(ultimoErrorPush || 'Permiso concedido, pero no se registró Web Push.', '!');
       }
     });
 
     /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO Y CONDUCTOR) ============================ */
+    /* Aplica el color correspondiente al estado del viaje en la alerta, el bloqueo y el acceso del menú */
     function aplicarColorEstadoAlerta(clase) {
       const clases = ['estado-solicitado', 'estado-aceptado', 'estado-encurso'];
       alertaViajeActivo.classList.remove.apply(alertaViajeActivo.classList, clases);
@@ -1983,18 +2023,23 @@
 
         if (data && data.length > 0) {
           const viaje = data[0];
-          const est = String(viaje.estado || '').toLowerCase().trim().replace(/[\s\-]+/g, '_');
+          const est = String(viaje.estado || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
           ultimoEstado = est;
 
+          // Si el estado cambió desde la última lectura (no en la primera carga de la página): suena el tono TOPDRIVE
           const grupoPrevio = estadosViajeVistos.get(String(viaje.id));
           const grupoActual = grupoEstadoViaje(est);
           estadosViajeVistos.set(String(viaje.id), grupoActual);
           if (grupoPrevio !== undefined && grupoPrevio !== grupoActual) anunciarEstadoViaje(viaje.id, grupoActual, viaje, false);
 
+          // Estados finalizados o cancelados (Paso 4): cualquier variante de cancelado/finalizado
           const esFinalizado = /finaliz|complet|termin|conclu|cancel|rechaz|anul/.test(est);
+
+          // Estados activos (Pasos 1, 2 y 3)
           const esPaso1 = ['solicitado', 'buscando', 'pendiente'].includes(est);
           const esPaso2 = ['aceptado', 'asignado'].includes(est);
           const esPaso3 = ['en_camino', 'en_curso', 'en_progreso', 'en_viaje', 'iniciado'].includes(est);
+
           const esActivo = !esFinalizado && (esPaso1 || esPaso2 || esPaso3);
 
           if (esActivo) {
@@ -2012,6 +2057,7 @@
             const txtBloqueoTit = $('txt-bloqueo-tit');
             const txtBloqueoSub = $('txt-bloqueo-sub');
 
+            // Actualización dinámica del texto y del color según el paso en el que se encuentra el viaje
             if (esPaso1) {
               aplicarColorEstadoAlerta('estado-solicitado');
               if (txtAlerta) txtAlerta.textContent = esConductor
@@ -2046,17 +2092,20 @@
 
             if (esConductor) {
               viajeActivoConductor = viaje;
+              // Para el conductor no se bloquea la recepción de solicitudes en su categoría
             } else {
               viajeActivoPasajero = viaje;
               bloqueoViajeActivo.classList.remove('oculto');
               seccionSolicitarPasajero.classList.add('oculto');
               btnIrViajeActivo.onclick = () => { window.location.href = url; };
+              // Cancelar solo mientras el viaje no esté en curso hacia el destino
               btnCancelarViaje.classList.toggle('oculto', esPaso3);
             }
             return;
           }
         }
 
+        // Si no hay viaje o si el último viaje fue FINALIZADO / COMPLETADO / CANCELADO (Paso 4):
         alertaViajeActivo.classList.add('oculto');
         menuItemMisViajes.classList.add('oculto');
         aplicarColorEstadoAlerta(null);
@@ -2065,6 +2114,7 @@
         bloqueoViajeActivo.classList.add('oculto');
         seccionSolicitarPasajero.classList.remove('oculto');
 
+        // Si hasta hace un instante había un viaje activo y ahora terminó/canceló: liberar la interfaz de inmediato
         if (huboViajeActivo) {
           huboViajeActivo = false;
           if (/cancel|rechaz|anul/.test(ultimoEstado)) mostrarToast('El viaje fue cancelado', '!');
@@ -2090,7 +2140,7 @@
       btnCancelarViaje.disabled = false;
       if (error) { mostrarToast('No se pudo cancelar: ' + error.message, '!'); return; }
       mostrarToast('Viaje cancelado', '✓');
-      estadosViajeVistos.set(String(v.id), 'cancelado');
+      estadosViajeVistos.set(String(v.id), 'cancelado'); // cancelación propia: no se anuncia con sonido
       huboViajeActivo = false;
       viajeActivoPasajero = null;
       await verificarViajeEnProgresoUsuario();
@@ -2156,7 +2206,7 @@
         try {
           const { data, error } = await db.from(tabla).select(cols).eq(col, val).limit(20);
           if (!error) return data || [];
-        } catch (e) {}
+        } catch (e) { /* reintenta con todas las columnas */ }
       }
       return [];
     }
@@ -2207,6 +2257,7 @@
       if (filaBD && filaBD.id != null && mezcla.id == null) mezcla.id = filaBD.id;
       mezcla.foto = u.foto || u.foto_url || (filaBD && (filaBD.foto || filaBD.foto_url)) || '';
       if (esConductor) {
+        // Limpia restos de documentos de sesiones anteriores; los datos del vehículo vienen siempre de Supabase
         CLAVES_DOC_ARCHIVO.concat(['marca', 'modelo', 'anio', 'placa']).forEach((k) => { delete mezcla[k]; });
         if (vehiculo && vehiculo.tipo_servicio) mezcla.tipo_servicio = vehiculo.tipo_servicio;
       }
@@ -2239,6 +2290,7 @@
       fotoHeader.src = fotoDeUsuario(usuario);
       perfilSuperior.classList.remove('oculto');
 
+      // El rol se define directamente por su perfil
       if (usuario.tipo_usuario === 'conductor') {
         modoActual = 'conductor';
         uiPasajero.classList.add('oculto');
@@ -2246,7 +2298,7 @@
         inicializarEstadoConductor();
         sincronizarEstadoConductorDB();
         await resolverServicioDelConductor();
-        iniciarPushConductor(false);
+        iniciarPushConductor(false); // Registra / renueva las notificaciones push de este dispositivo
         if (conductorActivo) {
           cargarViajesSolicitados();
         } else {
@@ -2258,7 +2310,7 @@
         uiConductor.classList.add('oculto');
         uiPasajero.classList.remove('oculto');
         btnConductorEstado.classList.add('oculto');
-        iniciarPushPasajero(false);
+        iniciarPushPasajero(false); // Si ya dio el permiso, registra / renueva los avisos de su viaje en este dispositivo
         if (usuario.tipo_usuario === 'comercio' && !uiPasajero.querySelector('.comercio-info')) {
           uiPasajero.insertAdjacentHTML('afterbegin',
             '<div class="comercio-info"><b>Comercio activo:</b> ' +
@@ -2309,11 +2361,13 @@
     });
 
     async function cerrarSesion() {
+      // Un conductor que cierra sesión deja de contarse como activo
       try {
         if (db && usuarioActual && String(usuarioActual.tipo_usuario || '').toLowerCase() === 'conductor' && usuarioActual.id != null) {
           await db.from('usuarios').update({ conductor_activo: false }).eq('id', usuarioActual.id);
         }
       } catch (e) {}
+      // Y este dispositivo deja de recibir notificaciones push de esa cuenta
       try { await desactivarPush(); } catch (e) {}
       try { localStorage.removeItem(K_SESION); } catch (e) {}
       usuarioActual = null;
@@ -2379,13 +2433,14 @@
     ];
 
     function valorLegible(clave, valor) {
+      // Las políticas/términos son requisito obligatorio del registro: siempre figuran como aceptadas
       if (/^(politicas?_aceptadas?|acepto_politicas|acepta_politicas|terminos_aceptados|acepto_terminos)$/i.test(String(clave))) return 'Sí';
       if (valor === null || valor === undefined || valor === '' || typeof valor === 'object') return null;
       if (typeof valor === 'boolean') return valor ? 'Sí' : 'No';
       const txt = String(valor);
       if (/^\d{4}-\d{2}-\d{2}T/.test(txt)) {
         const f = new Date(txt);
-        if (!isNaN(f)) return f.toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' });
+        if (!isNaN(f)) return f.toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' });
       }
       return txt;
     }
@@ -2433,6 +2488,7 @@
       }
       $('perfil-rol-badge').textContent = textoRol;
 
+      // Conductor: botón "Mi vehículo" en lugar de "Cambiar tema"
       const esCond = rol === 'conductor';
       $('btn-perfil-vehiculo').classList.toggle('oculto', !esCond);
       $('btn-perfil-tema').classList.toggle('oculto', esCond);
@@ -2478,8 +2534,12 @@
     $('perfil-foto-grande').addEventListener('error', function () { this.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
 
     /* ============================ MI VEHÍCULO (CONDUCTOR) ============================ */
+    // Solo se muestran datos del vehículo (servicio, marca, modelo, año, placa) y su foto; nunca documentos personales
+
+    /* ---- Foto y datos reales del vehículo desde Supabase ---- */
     const tsDeNombre = (n) => { const m = String(n).match(/_(\d{10,})_/); return m ? Number(m[1]) : 0; };
 
+    // Convierte el valor guardado (URL pública, Base64 o ruta de Storage) en una URL utilizable
     function imagenDesdeValor(valor) {
       if (typeof valor !== 'string') return null;
       const t = valor.trim();
@@ -2492,6 +2552,7 @@
       } catch (e) { return null; }
     }
 
+    // Respaldo: busca en Storage la última foto del vehículo que subió este conductor
     async function fotoVehiculoDesdeStorage(cid) {
       if (!db || cid === null || cid === undefined) return null;
       try {
@@ -2515,8 +2576,10 @@
       modalPerfil.classList.add('oculto');
       modalVehiculo.classList.remove('oculto');
 
+      // Datos reales: usuarios → conductores (conductor_id) → vehiculos y documentos_conductor
       const { cid, veh, doc } = await datosVehiculoDB(u, true);
 
+      // Foto del vehículo (columna foto_vehiculo; respaldo: última foto en Storage)
       let foto = imagenDesdeValor(doc && doc.foto_vehiculo);
       if (!foto) foto = await fotoVehiculoDesdeStorage(cid);
       contFotos.innerHTML = '';
@@ -2531,6 +2594,7 @@
         contFotos.innerHTML = '<div class="vehiculo-sin-foto">No hay foto del vehículo registrada.</div>';
       }
 
+      // Datos del vehículo: servicio, marca, modelo, año y placa
       const valorDe = (k) => {
         const fuentes = [veh, doc];
         for (let n = 0; n < fuentes.length; n++) {
@@ -2572,8 +2636,8 @@
     }
 
     const textoFecha = (d) => !d ? 'Sin fecha' :
-      d.toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' }) + ' · ' +
-      d.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
+      d.toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' }) + ' · ' +
+      d.toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' });
 
     function dentroDePeriodo(d, periodo) {
       if (periodo === 'todo' || !d) return true;
@@ -2691,7 +2755,7 @@
     function descargarHistorial() {
       const lista = viajesFiltrados();
       if (!lista.length) { mostrarToast('No hay datos para descargar', '!'); return; }
-      const cab = ['id','tipo_servicio','origen_nombre','destino_nombre','distancia_km','tarifa_pesos','estado','fecha'];
+      const cab = ['id','tipo_servicio','origen_nombre','destino_nombre','distancia_km','tarifa_mxn','estado','fecha'];
       const filas = lista.map((v) => [
         v.id ?? '', v.tipo_servicio || v.nombre_servicio || '', v.origen_nombre || '', v.destino_nombre || '',
         v.distancia_km ?? '', (v.tarifa ? Number(v.tarifa > 500 ? v.tarifa/1000 : v.tarifa).toFixed(2) : '0.00'), v.estado || '', textoFecha(fechaDeViaje(v))
@@ -2732,6 +2796,7 @@
     async function resolverServicioDelConductor() {
       claveServicioConductor = null;
       const u = usuarioActual || {};
+      // El servicio real del conductor está en 'vehiculos' / 'documentos_conductor' (no en 'usuarios')
       const resumen = (documentacionVehiculo && documentacionVehiculo.tipo_servicio) ? documentacionVehiculo : await resumenVehiculoDB(u);
       const bruto = (resumen && resumen.tipo_servicio) || u.tipo_servicio || u.servicio || null;
 
@@ -2753,7 +2818,7 @@
         mostrarToast('Selecciona origen y destino', '!');
         return;
       }
-      promesaPushPasajero = iniciarPushPasajero(true);
+      promesaPushPasajero = iniciarPushPasajero(true); // Pide el permiso de notificaciones (dentro del toque del usuario)
       abrirPanelServicios();
     });
 
@@ -2789,6 +2854,7 @@
     backdrop.addEventListener('click', cerrarPanelServicios);
 
     /* Cuenta REAL de conductores activos por tipo de servicio desde Supabase */
+    // Lee una tabla probando listas de columnas (de más a menos completa); nivel = índice que funcionó
     async function leerTabla(tabla, intentos, filtro) {
       for (let i = 0; i < intentos.length; i++) {
         try {
@@ -2796,7 +2862,7 @@
           if (filtro) q = q.eq(filtro[0], filtro[1]);
           const r = await q;
           if (!r.error) return { filas: r.data || [], nivel: i };
-        } catch (e) {}
+        } catch (e) { /* prueba con menos columnas */ }
       }
       return { filas: [], nivel: -1 };
     }
@@ -2818,8 +2884,10 @@
       ]);
       const ru = res[0], rc = res[1], rv = res[2], rd = res[3];
 
+      // usuarios.id → conductores.id
       const condDeUsuario = new Map();
       rc.filas.forEach((c) => { if (c.usuario_id !== null && c.usuario_id !== undefined) condDeUsuario.set(String(c.usuario_id), c.id); });
+      // Servicio registrado: vehiculos (por conductor_id) y documentos_conductor (por usuario_id / conductor_id)
       const servVeh = new Map(), servDocUsuario = new Map(), servDocCond = new Map();
       rv.filas.forEach((v) => {
         const k = normalizarClaveServicio(v.tipo_servicio);
@@ -2832,6 +2900,7 @@
         if (d.conductor_id !== null && d.conductor_id !== undefined) servDocCond.set(String(d.conductor_id), k);
       });
 
+      // Estricto: existe la columna conductor_activo (niveles 0, 1 y 2) y, en los niveles 0 y 1, ultima_conexion
       const estricto = ru.nivel >= 0 && ru.nivel <= 2;
       if (!estricto) console.warn('usuarios.conductor_activo no existe: ejecuta el SQL de TOPDRIVE para contar solo conductores activos.');
       const ahora = Date.now();
@@ -2839,6 +2908,8 @@
       ru.filas.forEach((u) => {
         if (estricto) {
           if (u.conductor_activo !== true) return;
+          // Un conductor con notificaciones push activas (recibe_push) sigue ACTIVO aunque tenga la app cerrada:
+          // solo se le exige conexión reciente cuando NO puede recibir push.
           if (ru.nivel <= 1 && u.ultima_conexion && u.recibe_push !== true) {
             const t = new Date(u.ultima_conexion).getTime();
             if (!isNaN(t) && (ahora - t) > VENTANA_ACTIVO_MS) return;
@@ -2905,6 +2976,7 @@
       if (!servicioSeleccionado) return;
       btnConfirmarServicio.disabled = true;
       btnConfirmarServicio.textContent = 'Solicitando…';
+      // Antes de pasar al seguimiento se termina de registrar este dispositivo para los avisos (máx. 6 s)
       if (promesaPushPasajero) {
         try { await Promise.race([promesaPushPasajero, new Promise((r) => setTimeout(r, 6000))]); } catch (e) {}
       }
@@ -2949,6 +3021,7 @@
       ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id)
       : CONDUCTOR_ID_PRUEBA;
 
+    // Viajes que ESTE conductor rechazó (siguen visibles para los demás conductores)
     function rechazadosDelConductor() {
       const todo = lsJSON(K_RECHAZADOS);
       const lista = todo && typeof todo === 'object' ? todo[String(idConductorActual())] : null;
@@ -2987,6 +3060,8 @@
       return { promedio: nums.reduce((a, b) => a + b, 0) / nums.length, total: nums.length };
     }
 
+    // Detecta qué columnas tiene realmente la tabla 'calificaciones' (una sola vez) para no pedir columnas
+    // que no existen: PostgREST responde 400 y el navegador lo muestra como error rojo en la consola.
     let esquemaCalifPromesa = null, esquemaCalifTs = 0, esquemaCalifFijo = false;
     function esquemaCalificaciones() {
       if (esquemaCalifPromesa && (esquemaCalifFijo || Date.now() - esquemaCalifTs < 60000)) return esquemaCalifPromesa;
@@ -2996,14 +3071,16 @@
         try {
           const r = await db.from('calificaciones').select('*').limit(1);
           if (!r.error && r.data && r.data.length) columnas = Object.keys(r.data[0]);
-        } catch (e) {}
-        esquemaCalifFijo = columnas.length > 0;
+        } catch (e) { /* tabla no accesible: se omite */ }
+        esquemaCalifFijo = columnas.length > 0; // si la tabla está vacía se vuelve a revisar al minuto
         return columnas;
       })();
       return esquemaCalifPromesa;
     }
 
+    // Busca la calificación del pasajero (la que se registra en viaje.html)
     async function calificacionDePasajero(id, filaUsuario) {
+      // 1) Columna directa en la tabla usuarios
       if (filaUsuario) {
         const directas = ['calificacion', 'calificacion_pasajero', 'rating', 'puntuacion', 'estrellas', 'promedio_calificacion'];
         for (let i = 0; i < directas.length; i++) {
@@ -3011,6 +3088,7 @@
           if (!isNaN(v) && v > 0) return { promedio: v, total: Number(filaUsuario.total_calificaciones || filaUsuario.num_calificaciones || 0) };
         }
       }
+      // 2) Tabla de calificaciones: solo se consultan las columnas que existen de verdad
       const columnasTabla = await esquemaCalificaciones();
       if (columnasTabla.length) {
         const columnasId = ['pasajero_id', 'usuario_id', 'calificado_id'].filter((c) => columnasTabla.includes(c));
@@ -3021,9 +3099,10 @@
             const vals = r.data.map((f) => f.calificacion ?? f.estrellas ?? f.puntuacion ?? f.rating ?? f.valor ?? f.puntaje);
             const p = promedioCalificaciones(vals);
             if (p) return p;
-          } catch (e) {}
+          } catch (e) { /* siguiente columna */ }
         }
       }
+      // 3) Calificaciones guardadas dentro de la tabla viajes
       try {
         const r = await db.from('viajes').select('*').eq('pasajero_id', id).limit(200);
         if (!r.error && r.data && r.data.length) {
@@ -3134,6 +3213,7 @@
       card.querySelector('.btn-aceptar-viaje').addEventListener('click', () => aceptarViaje(viaje));
       card.querySelector('.btn-rechazar').addEventListener('click', () => rechazarViaje(viaje, card));
 
+      // Carga asíncrona de la foto, el nombre y la calificación del pasajero
       const cajaPasajero = card.querySelector('.viaje-pasajero');
       Promise.resolve(obtenerPasajero(viaje.pasajero_id))
         .then((info) => pintarPasajeroEnTarjeta(cajaPasajero, info))
@@ -3168,6 +3248,7 @@
       }
     }
 
+    // Avisa al conductor que el pasajero canceló la solicitud que tenía en su lista
     function marcarViajeCancelado(el) {
       if (!el || el.classList.contains('cancelada')) return;
       el.classList.remove('nuevo');
@@ -3180,7 +3261,7 @@
       banner.innerHTML = SVG_RECHAZAR + ' Viaje cancelado';
       el.insertBefore(banner, el.firstChild);
       mostrarToast('Viaje cancelado por el pasajero', '!');
-      notificarSistema('❌ Viaje cancelado', 'El pasajero canceló la solicitud.', { tag: 'topdrive-cancelado-' + el.dataset.id });
+      notificarSistema('❌ Viaje cancelado', 'El pasajero canceló la solicitud.', { tag: 'bikar-cancelado-' + el.dataset.id });
       try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
       pintarEstadoLista();
       setTimeout(() => {
@@ -3205,6 +3286,7 @@
     async function cargarViajesSolicitados() {
       if (modoActual !== 'conductor' || !db) return;
 
+      // Si el conductor está inactivo, no debe cargar ni recibir nada
       if (!conductorActivo) {
         renderizarConductorInactivo();
         return;
@@ -3222,7 +3304,7 @@
       const { data, error } = await db.from('viajes').select('*')
         .eq('estado', 'solicitado').order('id', { ascending:false });
 
-      if (miSeq !== seqViajes || !conductorActivo) return;
+      if (miSeq !== seqViajes || !conductorActivo) return; // llegó una respuesta más nueva
 
       if (error) {
         statusConductor.textContent = 'Error al cargar viajes: ' + error.message;
@@ -3232,10 +3314,12 @@
 
       let viajes = data || [];
 
+      // Filtrado estricto: El conductor SOLO recibe los viajes que correspondan a su servicio inscrito
       if (claveServicioConductor) {
         viajes = viajes.filter(v => normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === claveServicioConductor);
       }
 
+      // Excluir los viajes que este conductor ya rechazó (los demás conductores los siguen viendo)
       const rechazados = new Set(rechazadosDelConductor());
       viajes = viajes.filter(v => !rechazados.has(String(v.id)));
 
@@ -3244,10 +3328,12 @@
       const idsNuevos = new Set(nuevos.map(v => String(v.id)));
       viajesIdsVistos = ids;
 
+      // Actualización sin parpadeo: se conservan tarjetas existentes y solo se animan las nuevas
       Array.from(contSolicitudes.children).forEach((el) => {
         if (!el.classList.contains('tarjeta-viaje')) el.remove();
       });
 
+      // Tarjetas que ya no están pendientes: si fueron canceladas por el pasajero, se notifica al conductor
       const perdidas = Array.from(contSolicitudes.querySelectorAll(':scope > .tarjeta-viaje')).filter((el) =>
         !el.classList.contains('saliendo') && !el.classList.contains('cancelada') && !ids.has(el.dataset.id));
       if (perdidas.length) {
@@ -3281,8 +3367,8 @@
       pintarEstadoLista();
 
       if (nuevos.length) {
-        avisarViajesNuevos(nuevos.map(v => v.id));
-        notificarViajesNuevosSistema(nuevos);
+        avisarViajesNuevos(nuevos.map(v => v.id)); // Sonido TOPDRIVE (una sola vez por viaje)
+        notificarViajesNuevosSistema(nuevos);      // Notificación en la barra del móvil si la app no está a la vista
         mostrarToast(nuevos.length === 1 ? 'Nueva solicitud de viaje' : nuevos.length + ' nuevas solicitudes de viaje', '+');
         try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
       }
@@ -3314,10 +3400,11 @@
     document.addEventListener('DOMContentLoaded', () => {
       inicializarTema();
       cargarGoogleMaps();
-      registrarServiceWorker();
+      registrarServiceWorker(); // Habilita notificaciones push y la instalación como app
       suscribirRealtime();
       verificarSesionGuardada();
 
+      // Sincronización al regresar a la pestaña o ventana desde viaje.html
       window.addEventListener('focus', () => {
         verificarViajeEnProgresoUsuario();
         if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
@@ -3331,11 +3418,14 @@
         }
       });
 
+      // Al volver desde viaje.html con el botón "atrás" (página restaurada de caché): sincronizar al instante
+      // Al cerrar o salir de la página el conductor deja de contarse como activo (se reactiva solo al volver),
+      // EXCEPTO si tiene notificaciones push activas: entonces sigue ACTIVO y recibirá los viajes como notificación.
       window.addEventListener('pagehide', () => {
         if (!usuarioActual || modoActual !== 'conductor' || usuarioActual.id == null) return;
         if (pushSuscrito) return;
         try {
-          fetch(SUPABASE_REST_URL + 'usuarios?id=eq.' + encodeURIComponent(usuarioActual.id), {
+          fetch(SUPABASE_URL + '/rest/v1/usuarios?id=eq.' + encodeURIComponent(usuarioActual.id), {
             method: 'PATCH', keepalive: true,
             headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
             body: JSON.stringify({ conductor_activo: false })
@@ -3349,17 +3439,21 @@
         if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
       });
 
+      // Polling ligero en segundo plano para garantizar sincronización en tiempo real
       setInterval(() => {
         if (!document.hidden) {
           verificarViajeEnProgresoUsuario();
+          // Respaldo al tiempo real: el conductor ve nuevas solicitudes y cancelaciones sin recargar
           if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
         }
       }, 3500);
 
+      // Latido: informa a Supabase que el conductor sigue en línea
       setInterval(() => {
         if (modoActual === 'conductor' && conductorActivo) sincronizarEstadoConductorDB();
       }, LATIDO_CONDUCTOR_MS);
 
+      // Actualiza el "hace X min" de las tarjetas de viaje del conductor
       setInterval(() => {
         document.querySelectorAll('[data-ts]').forEach((el) => {
           el.textContent = tiempoRelativo(Number(el.dataset.ts));
