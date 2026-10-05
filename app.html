@@ -1932,7 +1932,7 @@
           '🚖 Nueva solicitud · ' + (v.tipo_servicio || v.nombre_servicio || 'Servicio'),
           formatoMoneda(v.tarifa) + (dist ? ' · ' + dist.toFixed(1) + ' km' : '') +
             '\nA: ' + (v.origen_nombre || 'Origen') + '\nB: ' + (v.destino_nombre || 'Destino'),
-          { tag: 'bikar-viaje-' + k, viaje_id: v.id, tipo: 'nuevo_viaje', persistente: true, vibrar: [350, 120, 350, 120, 700, 200, 350, 120, 350] }
+          { forzar: true, tag: 'bikar-viaje-' + k, viaje_id: v.id, tipo: 'nuevo_viaje', persistente: true, vibrar: [350, 120, 350, 120, 700, 200, 350, 120, 350] }
         );
       });
     }
@@ -2008,8 +2008,11 @@
       try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
       if (!desdePush) {
         // El service worker ya muestra su propia notificación cuando llega el push; esta es el respaldo local
+        // forzar: aparece en la bandeja de notificaciones del móvil también con la app abierta.
+        // Misma etiqueta que el aviso del servidor: si llegan los dos, uno reemplaza al otro sin duplicarse.
         notificarSistema(t[0], t[1], {
-          tag: 'bikar-estado-' + idViaje + '-' + grupo, viaje_id: idViaje, tipo: 'estado_viaje',
+          forzar: true,
+          tag: 'topdrive-estado-' + idViaje + '-' + grupo, viaje_id: idViaje, tipo: 'estado_viaje',
           url: new URL('viaje.html?id=' + idViaje + '&rol=' + (esCond ? 'conductor' : 'pasajero'), location.href).href
         });
       }
@@ -3404,7 +3407,7 @@
       banner.innerHTML = SVG_RECHAZAR + ' Viaje cancelado';
       el.insertBefore(banner, el.firstChild);
       mostrarToast('Viaje cancelado por el pasajero', '!');
-      notificarSistema('❌ Viaje cancelado', 'El pasajero canceló la solicitud.', { tag: 'bikar-cancelado-' + el.dataset.id });
+      notificarSistema('❌ Viaje cancelado', 'El pasajero canceló la solicitud.', { forzar: true, tag: 'topdrive-estado-' + el.dataset.id + '-cancelado' });
       try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
       pintarEstadoLista();
       setTimeout(() => {
