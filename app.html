@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#121212">
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icon-192.png" type="image/png">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="apple-touch-icon" href="icon-512.png" sizes="512x512">
+  <link rel="icon" href="icono-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icono-192.png">
+  <link rel="apple-touch-icon" href="icono-512.png" sizes="512x512">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="TOPDRIVE">
@@ -1834,7 +1834,7 @@
         const enPrimerPlano = !document.hidden && document.hasFocus();
         if (enPrimerPlano && !op.forzar) return false;
 
-        const icono = new URL('icon-192.png', location.href).href;
+        const icono = new URL('icono-192.png', location.href).href;
         const opciones = {
           body: cuerpo || '', icon: icono, tag: op.tag || 'topdrive-aviso',
           renotify: false, silent: false, requireInteraction: !!op.persistente,
@@ -2035,9 +2035,18 @@
         btn.textContent = 'Activando…';
       }
       try {
+        if (!('Notification' in window)) {
+          ultimoErrorPush = 'Este navegador no soporta notificaciones';
+          pintarAvisoPush('nosoportado');
+          mostrarToast(ultimoErrorPush, '!');
+          return;
+        }
+        if (Notification.permission === 'default') {
+          try { await Notification.requestPermission(); } catch (e) {}
+        }
         if (esPasajero) await iniciarPushPasajero(true);
         else await iniciarPushConductor(true);
-        const permitido = ('Notification' in window) && Notification.permission === 'granted';
+        const permitido = Notification.permission === 'granted';
         if (pushSuscrito || permitido) {
           pintarAvisoPush(null);
           mostrarToast(pushSuscrito
@@ -2053,6 +2062,9 @@
               { forzar: true, tag: 'topdrive-prueba' }
             );
           } catch (e) {}
+        } else {
+          pintarAvisoPush(Notification.permission === 'denied' ? 'bloqueado' : (ultimoErrorPush ? 'error' : 'activar'));
+          if (ultimoErrorPush) mostrarToast(ultimoErrorPush, '!');
         }
       } catch (e) {
         ultimoErrorPush = (e && e.message) || 'Error al activar avisos';
