@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1d1d1d">
+  <title>TOPDRIVE · Panel</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-color:#f2f4f7;--card-bg:#ffffff;--text-color:#1d1d1d;--primary-color:#fed700;--deep-blue:#52a6c8;
+      --muted-text:#6b7280;--border-color:#e2e5ea;--on-primary:#1d1d1d;
+      --glass-bg:rgba(255,255,255,.82);--glass-border:rgba(29,29,29,.10);--shadow:0 24px 60px rgba(29,29,29,.16);
+      --glow:rgba(254,215,0,.26);
+    }
+    body.dark-mode{
+      --bg-color:#1d1d1d;--card-bg:#262626;--text-color:#f6f6f6;--border-color:#3a3a3a;
+      --muted-text:rgba(246,246,246,.62);--glass-bg:rgba(38,38,38,.72);--glass-border:rgba(254,215,0,.16);
+      --shadow:0 30px 70px rgba(0,0,0,.6);--glow:rgba(254,215,0,.22);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+    html,body{width:100%;min-height:100%;background:var(--bg-color);color:var(--text-color);-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s}
+    .wrap{min-height:100dvh;display:flex;flex-direction:column;padding:28px 20px calc(28px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto;gap:18px}
+    .marca{font-family:"Space Grotesk","Inter",sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.34em;text-transform:uppercase;color:var(--deep-blue)}
+    body.dark-mode .marca{color:var(--primary-color)}
+    h1{font-family:"Space Grotesk","Inter",sans-serif;font-size:2rem;line-height:1.05;font-weight:700;letter-spacing:-.02em;margin-top:6px}
+    .sub{color:var(--muted-text);font-size:.9rem;line-height:1.5;margin-top:8px}
+    .tarjeta{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+    .fila{display:flex;align-items:center;gap:14px}
+    .avatar{width:56px;height:56px;border-radius:16px;object-fit:cover;background:linear-gradient(145deg,rgba(254,215,0,.3),rgba(82,166,200,.25));border:1px solid var(--glass-border);display:grid;place-items:center;font-family:"Space Grotesk","Inter",sans-serif;font-weight:700;font-size:1.3rem;color:var(--on-primary)}
+    body.dark-mode .avatar{color:#1d1d1d}
+    .nombre{font-family:"Space Grotesk","Inter",sans-serif;font-size:1.12rem;font-weight:700;line-height:1.2;word-break:break-word}
+    .rol{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:4px 10px;border-radius:999px;font-size:.66rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:rgba(254,215,0,.18);color:#8a7400;border:1px solid rgba(254,215,0,.42)}
+    body.dark-mode .rol{color:var(--primary-color)}
+    .datos{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+    .dato{display:flex;justify-content:space-between;gap:14px;padding-bottom:10px;border-bottom:1px dashed var(--border-color);font-size:.84rem}
+    .dato:last-child{border-bottom:0;padding-bottom:0}
+    .dato span:first-child{color:var(--muted-text);white-space:nowrap}
+    .dato span:last-child{font-weight:600;text-align:right;word-break:break-word}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .stat{background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:14px 12px;text-align:left}
+    .stat b{display:block;font-family:"Space Grotesk","Inter",sans-serif;font-size:1.35rem;line-height:1;letter-spacing:-.02em}
+    .stat small{display:block;margin-top:6px;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-text)}
+    .acciones{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:8px}
+    .btn-main{position:relative;display:block;width:100%;padding:15px 46px 15px 20px;border:none;border-radius:999px;background:linear-gradient(100deg,#fed700,#ffe14d 45%,#fed700);color:#1d1d1d;font-size:1rem;font-weight:800;cursor:pointer;overflow:hidden;box-shadow:0 12px 28px rgba(254,215,0,.32);text-decoration:none;text-align:left;transition:transform .2s,box-shadow .2s}
+    .btn-main::after{content:"→";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.15rem;transition:transform .25s}
+    .btn-main:hover{transform:translateY(-1px);box-shadow:0 16px 34px rgba(254,215,0,.42)}
+    .btn-main:hover::after{transform:translate(4px,-50%)}
+    .btn-secondary{width:100%;padding:13px 16px;border-radius:999px;background:transparent;color:var(--text-color);border:1px solid var(--border-color);font-weight:600;font-size:.88rem;cursor:pointer;transition:border-color .2s,transform .2s}
+    .btn-secondary:hover{border-color:var(--primary-color);transform:translateY(-1px)}
+    .btn-tema{position:absolute;top:calc(20px + env(safe-area-inset-top));right:18px;width:44px;height:44px;border-radius:50%;border:1px solid rgba(254,215,0,.55);background:var(--glass-bg);font-size:1.15rem;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+    .nota{font-size:.72rem;color:var(--muted-text);text-align:center;letter-spacing:.02em}
+  </style>
+</head>
+<body class="dark-mode">
+  <button id="btn-tema" class="btn-tema" aria-label="Cambiar tema"><span id="icono-tema">☀️</span></button>
+  <div class="wrap">
+    <div>
+      <p class="marca">TOPDRIVE</p>
+      <h1 id="saludo">Hola</h1>
+      <p class="sub">Tu cuenta está activa. Desde aquí gestionas tu perfil, tus viajes y tu documentación.</p>
+    </div>
+
+    <div class="tarjeta">
+      <div class="fila">
+        <div class="avatar" id="avatar">T</div>
+        <div>
+          <div class="nombre" id="nombre-usuario">Usuario TOPDRIVE</div>
+          <div class="rol" id="rol-usuario">ROL</div>
+        </div>
+      </div>
+      <div class="datos">
+        <div class="dato"><span>Correo</span><span id="dato-email">—</span></div>
+        <div class="dato"><span>Teléfono</span><span id="dato-telefono">—</span></div>
+        <div class="dato"><span>Documento</span><span id="dato-doc">—</span></div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b id="stat-viajes">0</b><small>Viajes</small></div>
+      <div class="stat"><b id="stat-docs">0/5</b><small>Docs</small></div>
+      <div class="stat"><b id="stat-estado">Activo</b><small>Estado</small></div>
+    </div>
+
+    <div class="acciones">
+      <a class="btn-main" href="topdrive.html">Volver al inicio</a>
+      <button class="btn-secondary" id="btn-salir">Cerrar sesión</button>
+      <p class="nota">TOPDRIVE · Plataforma de movilidad · Datos protegidos según Ley N.º 29733</p>
+    </div>
+  </div>
+
+  <script>
+    const LLAVE_SESION = "bikar_usuario";
+    const LLAVE_TEMA = "bikar_theme_pref";
+    const LLAVE_DOCUMENTACION = "bikar_documentacion_vehiculo";
+
+    const iconoTema = document.getElementById('icono-tema');
+    function aplicarTema(tema) {
+      if (tema === 'light') { document.body.classList.remove('dark-mode'); iconoTema.innerText = '🌙'; }
+      else { document.body.classList.add('dark-mode'); iconoTema.innerText = '☀️'; }
+    }
+    aplicarTema(localStorage.getItem(LLAVE_TEMA) || 'dark');
+    document.getElementById('btn-tema').addEventListener('click', () => {
+      const oscuro = document.body.classList.toggle('dark-mode');
+      localStorage.setItem(LLAVE_TEMA, oscuro ? 'dark' : 'light');
+      iconoTema.innerText = oscuro ? '☀️' : '🌙';
+    });
+
+    let usuario = null;
+    try { usuario = JSON.parse(localStorage.getItem(LLAVE_SESION) || 'null'); } catch (e) { usuario = null; }
+
+    const nombre = (usuario && (usuario.nombre || usuario.name)) || 'Usuario TOPDRIVE';
+    const rol = (usuario && (usuario.tipo_usuario || usuario.rol)) || 'pasajero';
+    document.getElementById('saludo').textContent = 'Hola, ' + nombre.split(' ')[0];
+    document.getElementById('nombre-usuario').textContent = nombre;
+    document.getElementById('rol-usuario').textContent = rol;
+    document.getElementById('avatar').textContent = (nombre.trim()[0] || 'T').toUpperCase();
+    document.getElementById('dato-email').textContent = (usuario && usuario.email) || '—';
+    document.getElementById('dato-telefono').textContent = (usuario && usuario.telefono) || '—';
+    const doc = usuario ? [usuario.tipo_documento, usuario.numero_documento].filter(Boolean).join(' · ') : '';
+    document.getElementById('dato-doc').textContent = doc || '—';
+
+    let docsCargados = 0;
+    try {
+      const docData = JSON.parse(localStorage.getItem(LLAVE_DOCUMENTACION) || 'null');
+      if (docData) {
+        docsCargados = ['dni_ce', 'antecedente_policial', 'brevete', 'foto_vehiculo', 'tarjeta_propiedad']
+          .filter((k) => docData[k]).length;
+      }
+    } catch (e) { docsCargados = 0; }
+    document.getElementById('stat-docs').textContent = docsCargados + '/5';
+
+    document.getElementById('btn-salir').addEventListener('click', () => {
+      try { localStorage.removeItem(LLAVE_SESION); } catch (e) {}
+      window.location.href = 'topdrive.html';
+    });
+  </script>
+</body>
+</html>
