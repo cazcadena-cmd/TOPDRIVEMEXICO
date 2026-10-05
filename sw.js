@@ -9,17 +9,6 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// El evento 'fetch' es indispensable para cumplir con los requisitos de PWA instalable en todos los navegadores
-self.addEventListener('fetch', (event) => {
-  // Simplemente respondemos con la petición de red normal para no interferir con Supabase o llamadas dinámicas,
-  // pero cumpliendo con el requisito del navegador para disparar el prompt de instalación.
-  event.respondWith(
-    fetch(event.request).catch((err) => {
-      console.warn('[SW] Error de red en fetch:', err);
-    })
-  );
-});
-
 function leerDatosPush(event) {
   if (!event.data) return {};
   try {
