@@ -3,7 +3,7 @@
   "name": "TOPDRIVE",
   "short_name": "TOPDRIVE",
   "description": "Viajes TOPDRIVE en tiempo real",
-  "lang": "es",
+  "lang": "es-MX",
   "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
@@ -11,27 +11,28 @@
   "orientation": "portrait",
   "background_color": "#121212",
   "theme_color": "#FED700",
+  "categories": ["travel", "navigation"],
   "icons": [
     {
-      "src": "icono-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icono-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icono-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "icono-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
