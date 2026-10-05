@@ -6,11 +6,6 @@
   <meta name="theme-color" content="#1d1d1d">
   <title>TOPDRIVE</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="TOPDRIVE">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -56,14 +51,13 @@
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @keyframes slideInLeft{from{opacity:0;transform:translateX(-64px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes orbFloat{from{transform:translate(0,0)}to{transform:translate(-40px,50px)}}
     @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(254,215,0,.65)}70%{box-shadow:0 0 0 9px rgba(254,215,0,0)}100%{box-shadow:0 0 0 0 rgba(254,215,0,0)}}
     @keyframes scan{from{transform:translateY(-10vh);opacity:0}15%{opacity:1}85%{opacity:1}to{transform:translateY(110vh);opacity:0}}
     @keyframes mecanografiar{from{width:0}to{width:100%}}
     @keyframes parpadeoCursor{from,to{border-color:transparent}50%{border-color:var(--primary-color)}}
     @keyframes opcionesAsomar{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
     @keyframes bounceArrow{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
-    @keyframes panelIn{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
-    @keyframes pwaModalIn{from{opacity:0;transform:translate(-50%,-50%) scale(.94)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 
     /* BOTÓN TEMA */
     .btn-theme-toggle{position:absolute;top:calc(60px + env(safe-area-inset-top));right:16px;z-index:3000;width:46px;height:46px;border-radius:50%;
@@ -211,8 +205,11 @@
       display:flex;align-items:center;justify-content:center;font-size:22px!important;font-weight:400!important;margin-top:4px}
     #modal-opciones-rol .btn-opcion-rol{width:auto!important;max-width:max-content!important;padding:9px 14px!important;font-size:13px!important;
       line-height:1.2!important;align-self:flex-start}
+    @keyframes panelIn{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
     body.dark-mode #modal-login .panel-title,
-    body.dark-mode #modal-registro .panel-title { color:#ffffff!important }
+    body.dark-mode #modal-registro .panel-title {
+      color: #ffffff !important;
+    }
 
     /* ============================================================
        DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor)
@@ -266,63 +263,15 @@
     .doc-quitar{display:grid;place-items:center;width:30px;height:30px;flex-shrink:0;border-radius:50%;border:1px solid rgba(255,255,255,.18);
       background:rgba(255,255,255,.06);color:var(--text-color);font-size:14px;line-height:1;cursor:pointer;transition:background .2s,border-color .2s}
     .doc-quitar:hover{background:rgba(231,76,60,.25);border-color:rgba(231,76,60,.60)}
-
-    /* ============================================================
-       MODAL DE INSTALACIÓN PWA · CSS 100% INDEPENDIENTE
-       (Todas las reglas llevan !important para que NINGUNA clase
-        heredada (.ui-panel / panelIn / transform / bottom) pueda
-        moverlo fuera de pantalla u ocultarlo.)
-       ============================================================ */
-    #modal-instalar-pwa{
-      position:fixed!important;
-      top:50%!important;
-      left:50%!important;
-      right:auto!important;
-      bottom:auto!important;
-      transform:translate(-50%,-50%)!important;
-      width:88%!important;
-      max-width:360px!important;
-      z-index:999999!important;
-      padding:24px 20px 20px!important;
-      display:block!important;
-      visibility:visible!important;
-      opacity:1!important;
-      pointer-events:auto!important;
-      animation:none!important;
-      text-align:center!important;
-      background:var(--modal-box-bg)!important;
-      border:1px solid rgba(254,215,0,.55)!important;
-      border-radius:24px!important;
-      -webkit-backdrop-filter:blur(22px)!important;
-      backdrop-filter:blur(22px)!important;
-      box-shadow:0 0 0 200vmax rgba(0,0,0,.55),0 25px 60px rgba(0,0,0,.5),0 0 0 6px rgba(254,215,0,.12)!important;
-      color:var(--text-color)!important;
-      max-height:calc(100dvh - 30px)!important;
-      overflow-y:auto!important;
-      overscroll-behavior:contain!important;
+    
+    #modal-instalar-pwa .panel-title::before {
+      display: none !important;
     }
-    #modal-instalar-pwa.mostrar{animation:pwaModalIn .38s cubic-bezier(.2,.8,.2,1) both!important}
-    #modal-instalar-pwa .panel-title{color:#FED700!important;font-size:1.3rem;margin-bottom:6px}
-    #modal-instalar-pwa .panel-title::before{display:none!important}
-    #modal-instalar-pwa .panel-subtitle{color:var(--muted-text)!important;font-size:.84rem;margin-bottom:14px}
-    .pwa-logo-box{display:flex;justify-content:center;margin-bottom:12px}
-    .pwa-logo-inner{background:#ffffff!important;padding:8px;border-radius:20px;display:inline-flex;align-items:center;justify-content:center;
-      box-shadow:0 8px 24px rgba(0,0,0,.35);border:1px solid rgba(254,215,0,.45)}
-    .pwa-logo-inner img{width:64px;height:64px;border-radius:14px;object-fit:contain;display:block;background:#ffffff}
-    .pwa-caja{ text-align:left; background:rgba(254,215,0,.10); padding:12px 14px; border-radius:14px; margin-bottom:14px; font-size:.8rem;
-      color:var(--text-color)!important; border:1px solid rgba(254,215,0,.32) }
-    .pwa-caja p{font-weight:700; margin-bottom:6px; color:var(--primary-color)!important}
-    .pwa-caja ol{padding-left:18px; line-height:1.55}
-    .pwa-caja strong{color:var(--primary-color)!important}
-    .btn-chip-instalar{position:fixed!important;right:14px!important;bottom:calc(20px + env(safe-area-inset-bottom))!important;z-index:999998!important;
-      display:flex!important;align-items:center;gap:8px;padding:11px 18px!important;border:none!important;border-radius:999px!important;
-      background:linear-gradient(100deg,#fed700 0%,#ffe14d 50%,#fed700 100%)!important;color:#1d1d1d!important;
-      font-size:.76rem;font-weight:800;letter-spacing:.04em;cursor:pointer;text-transform:uppercase;
-      box-shadow:0 10px 26px rgba(0,0,0,.45),0 0 0 3px rgba(254,215,0,.18),inset 0 1px 0 rgba(255,255,255,.5)!important;
-      transition:transform .2s,box-shadow .2s;animation:riseIn .6s .35s cubic-bezier(.2,.8,.2,1) backwards}
-    .btn-chip-instalar:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.5),0 0 0 5px rgba(254,215,0,.26)!important}
-    .btn-chip-instalar:active{transform:translateY(0) scale(.98)}
-    .btn-chip-instalar svg{width:16px;height:16px;stroke:#1d1d1d;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+    /* ESPECÍFICO PARA ALERTA PWA: Centrado perfecto garantizado sin importar panelIn */
+    #modal-instalar-pwa {
+      animation: modalIn .5s cubic-bezier(.2,.8,.2,1) both !important;
+    }
 
     /* ============================================================
        POLÍTICAS DE PRIVACIDAD Y PROTECCIÓN DE DATOS (LEGAL)
@@ -341,6 +290,7 @@
     .politicas-flecha{font-size:.9rem;color:var(--primary-color);transition:transform .2s}
     .btn-abrir-politicas:hover .politicas-flecha{transform:translateX(3px)}
 
+    /* CHECKBOX DE POLÍTICAS */
     .politicas-check-wrapper{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:12px;
       background:rgba(254,215,0,.10);border:1px solid rgba(254,215,0,.28);cursor:pointer;user-select:none;transition:all .25s}
     .politicas-check-wrapper:hover{background:rgba(254,215,0,.14);border-color:var(--primary-color)}
@@ -356,6 +306,7 @@
     .politicas-check-texto strong{color:var(--deep-blue)}
     body.dark-mode .politicas-check-texto strong{color:var(--primary-color)}
 
+    /* MODAL POLÍTICAS */
     #modal-politicas{top:50%;bottom:auto;transform:translate(-50%,-50%);z-index:2800;width:92%;max-width:440px;
       background:var(--modal-box-bg)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
       max-height:calc(100vh - 30px);max-height:calc(100dvh - 30px);overflow:hidden;display:flex;flex-direction:column;
@@ -364,7 +315,7 @@
       animation:modalIn .45s cubic-bezier(.2,.8,.2,1) both}
     #modal-politicas .panel-title{color:var(--modal-box-title)!important;font-size:1.15rem;margin-bottom:4px}
     #modal-politicas .panel-subtitle{font-size:.78rem;margin-bottom:10px}
-
+    
     .politicas-contenedor-texto{position:relative;flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 14px 40px;
       background:var(--legal-box-bg);border:1px solid var(--glass-border);border-radius:16px;text-align:left;
       font-size:.78rem;line-height:1.55;color:var(--legal-text-color);max-height:45vh;scrollbar-width:thin;scrollbar-color:var(--primary-color) transparent}
@@ -378,6 +329,7 @@
     .politicas-contenedor-texto .nota-formal{margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(254,215,0,.14);
       border-left:3px solid var(--primary-color);font-size:.74rem}
 
+    /* BOTÓN FLOTANTE SCROLL ABAJO */
     .btn-scroll-abajo{position:sticky;bottom:8px;left:50%;transform:translateX(-50%);z-index:10;
       display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:.72rem;font-weight:700;
       background:var(--primary-color);color:#1d1d1d;border:1px solid rgba(255,255,255,.3);box-shadow:0 4px 14px rgba(0,0,0,.35);
@@ -385,6 +337,7 @@
     .btn-scroll-abajo:hover{transform:translateX(-50%) scale(1.04);opacity:1;box-shadow:0 6px 18px rgba(254,215,0,.5)}
     .btn-scroll-abajo.oculto{display:none!important}
 
+    /* CHECK DENTRO DEL MODAL */
     .politicas-modal-actions{margin-top:12px;display:flex;flex-direction:column;gap:8px}
     .politicas-modal-check{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;
       background:rgba(254,215,0,.14);border:1px solid rgba(254,215,0,.32);cursor:pointer;user-select:none}
@@ -395,7 +348,7 @@
        ALERTA PERSONALIZADA FLOTANTE (ADAPTABLE CLARO/OSCURO)
        ============================================================ */
     .bikar-alerta-toast{
-      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999999;
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;
       width:86%;max-width:330px;padding:20px 18px;border-radius:20px;
       background:var(--glass-bg-strong);color:var(--text-color);
       border:1px solid var(--primary-color);
@@ -415,7 +368,9 @@
     .bikar-alerta-mensaje{color:var(--text-color);word-break:break-word}
 
     /* ============================================================
-       ACENTO AMARILLO
+       ACENTO AMARILLO · En modo oscuro todo el acento es #FED700 puro.
+       En modo claro, el texto de acento usa un ámbar profundo de la misma
+       familia para mantener contraste legible sobre fondo blanco.
        ============================================================ */
     body:not(.dark-mode) .panel-title::before,
     body:not(.dark-mode) .doc-seccion,
@@ -430,24 +385,6 @@
     body.dark-mode .bikar-alerta-icono,
     body.dark-mode .politicas-flecha{color:#fed700}
   </style>
-
-  <!-- CAPTURA TEMPRANA DEL EVENTO beforeinstallprompt -->
-  <script>
-    (function () {
-      window.__tdPrompt = null;
-      window.__tdInstalada = false;
-      window.addEventListener('beforeinstallprompt', function (e) {
-        e.preventDefault();
-        window.__tdPrompt = e;
-        console.log('[TOPDRIVE PWA] beforeinstallprompt recibido ✔');
-        try { window.dispatchEvent(new Event('td:instalable')); } catch (x) {}
-      });
-      window.addEventListener('appinstalled', function () {
-        window.__tdInstalada = true;
-        console.log('[TOPDRIVE PWA] app instalada ✔');
-      });
-    })();
-  </script>
 </head>
 <body class="dark-mode">
 
@@ -481,12 +418,6 @@
     </div>
   </div>
 
-  <!-- BOTÓN FLOTANTE "INSTALAR APP" (siempre disponible mientras no esté instalada) -->
-  <button type="button" id="btn-abrir-instalar-pwa" class="btn-chip-instalar" aria-controls="modal-instalar-pwa">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
-    Instalar app
-  </button>
-
   <!-- OPCIONES DEL ROL -->
   <div id="modal-opciones-rol" class="opciones-rol-bikar oculto">
     <button type="button" id="btn-iniciar-sesion" class="btn-opcion-rol">Iniciar sesión</button>
@@ -500,6 +431,8 @@
     <p class="panel-subtitle">Ingresa tus datos para continuar</p>
     <form id="form-login">
       <div class="input-group"><input type="text" id="login-dni" placeholder="Número de Documento (DNI / CE)" required autocomplete="username"></div>
+      
+      <!-- CONTRASEÑA LOGIN CON OJITO -->
       <div class="input-group input-group-password">
         <input type="password" id="login-password" placeholder="Contraseña" required autocomplete="current-password">
         <button type="button" class="btn-toggle-eye" data-target="login-password" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">
@@ -507,6 +440,7 @@
           <svg class="eye-cerrado oculto" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
       </div>
+
       <button type="submit" id="btn-login" class="btn-main">Iniciar sesión</button>
       <button type="button" id="btn-cancelar-login" class="btn-secondary" style="margin-top:8px">Volver</button>
     </form>
@@ -518,6 +452,8 @@
     <p class="panel-subtitle">Completa tus datos para continuar</p>
     <form id="form-registro">
       <div class="input-group"><input type="text" id="reg-nombre" placeholder="Nombre completo" required autocomplete="name"></div>
+      
+      <!-- CONTRASEÑA REGISTRO CON OJITO -->
       <div class="input-group input-group-password">
         <input type="password" id="reg-password" placeholder="Crear contraseña" required autocomplete="new-password">
         <button type="button" class="btn-toggle-eye" data-target="reg-password" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">
@@ -525,6 +461,8 @@
           <svg class="eye-cerrado oculto" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
       </div>
+      
+      <!-- CONFIRMAR CONTRASEÑA CON OJITO -->
       <div class="input-group input-group-password">
         <input type="password" id="reg-password-confirm" placeholder="Confirmar contraseña" required autocomplete="new-password">
         <button type="button" class="btn-toggle-eye" data-target="reg-password-confirm" aria-label="Mostrar u ocultar contraseña" title="Mostrar contraseña">
@@ -532,6 +470,7 @@
           <svg class="eye-cerrado oculto" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
       </div>
+
       <div class="input-group"><input type="tel" id="reg-telefono" placeholder="Teléfono / WhatsApp" required autocomplete="tel"></div>
       <div class="input-group"><input type="email" id="reg-email" placeholder="Correo electrónico" required autocomplete="email"></div>
       <div class="input-group">
@@ -553,7 +492,7 @@
         <div id="preview-foto-container" class="preview-container oculto"><img id="preview-foto" src="" alt="Vista previa de foto"></div>
       </div>
 
-      <!-- Documentación del vehículo (solo CONDUCTOR) -->
+      <!-- Botón "Documentación para el vehículo" (solo visible para CONDUCTOR) -->
       <div id="bloque-documentacion" class="input-group oculto">
         <button type="button" id="btn-documentacion-vehiculo" class="btn-documentacion" aria-haspopup="dialog" aria-controls="modal-documentacion">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
@@ -562,6 +501,7 @@
         </button>
       </div>
 
+      <!-- BOTÓN Y CHECK DE POLÍTICAS DE PROTECCIÓN DE DATOS (ENCIMA DEL BOTÓN GUARDAR) -->
       <div class="politicas-registro-bloque">
         <button type="button" id="btn-abrir-politicas" class="btn-abrir-politicas" aria-haspopup="dialog" aria-controls="modal-politicas">
           <div class="btn-abrir-politicas-content">
@@ -583,6 +523,7 @@
         </label>
       </div>
 
+      <!-- BOTÓN GUARDAR (DESHABILITADO HASTA QUE SE ACEPTE LA POLÍTICA) -->
       <button type="submit" id="btn-guardar-registro" class="btn-main" disabled>Guardar y Continuar</button>
       <button type="button" id="btn-cancelar-registro" class="btn-secondary" style="margin-top:8px">Volver</button>
       <p class="form-note">
@@ -592,12 +533,14 @@
     </form>
   </div>
 
-  <!-- MODAL POLÍTICAS -->
+  <!-- MODAL POLÍTICAS DE PROTECCIÓN DE DATOS PERSONALES -->
   <div id="modal-politicas" class="ui-panel oculto" role="dialog" aria-modal="true" aria-labelledby="politicas-titulo">
     <h3 id="politicas-titulo" class="panel-title">Política de Privacidad</h3>
     <p class="panel-subtitle">Protección de Datos Personales · TOPDRIVE</p>
+    
     <div class="politicas-contenedor-texto" id="scroll-politicas-body">
       <h4>DOCUMENTO TÉCNICO Y LEGAL DE INSCRIPCIÓN Y POLÍTICA DE PROTECCIÓN DE DATOS PERSONALES – TOPDRIVE</h4>
+      
       <h4>1. MARCO NORMATIVO DE REFERENCIA</h4>
       <p>De conformidad con la Ley N.º 29733 (Ley de Protección de Datos Personales) y su reglamento actualizado (Decreto Supremo N.º 016-24-JUS), TOPDRIVE adopta los principios fundamentales para el tratamiento legítimo de datos personales:</p>
       <ul>
@@ -605,6 +548,7 @@
         <li><strong>Responsabilidad Proactiva (Accountability):</strong> TOPDRIVE implementa medidas técnicas, legales y organizativas rigurosas para garantizar la seguridad de la información y demostrar su cumplimiento normativo ante la Autoridad Nacional de Protección de Datos Personales (ANPD).</li>
         <li><strong>Finalidad:</strong> Los datos recopilados se limitan estrictamente a fines determinados, explícitos, lícitos y directamente relacionados con la prestación y gestión del servicio de transporte por intermediación tecnológica.</li>
       </ul>
+
       <h4>2. FICHA DE INSCRIPCIÓN DEL BANCO DE DATOS PERSONALES: "USUARIOS PASAJEROS - TOPDRIVE"</h4>
       <p><strong>Titular del Banco de Datos:</strong> [Razón Social o Empresa Operadora de TOPDRIVE] / <strong>RUC:</strong> [Número de RUC]<br>
       <strong>Denominación del Banco de Datos:</strong> USUARIOS - PASAJEROS (TOPDRIVE)<br>
@@ -623,6 +567,7 @@
         <li><strong>Soporte:</strong> Informático / Magnético.</li>
         <li><strong>Procedimiento:</strong> Formularios de registro digital, interacción directa en la interfaz de la app y transmisión electrónica de datos.</li>
       </ul>
+
       <h4>3. FICHA DE INSCRIPCIÓN DEL BANCO DE DATOS PERSONALES: "USUARIOS CONDUCTORES - TOPDRIVE"</h4>
       <p><strong>Denominación del Banco de Datos:</strong> USUARIOS - CONDUCTORES (TOPDRIVE)</p>
       <h5>Finalidad del Tratamiento:</h5>
@@ -633,6 +578,7 @@
         <li><strong>Datos de características personales y del vehículo:</strong> Fecha de nacimiento, nacionalidad, sexo, ciudad, datos del vehículo (SOAT, tarjeta de propiedad, revisión técnica) y antecedentes penales/policiales.</li>
         <li><strong>Datos económicos y financieros:</strong> Cuentas bancarias para la dispersión de cobros o pagos de comisiones.</li>
       </ul>
+
       <h4>4. MEDIDAS DE SEGURIDAD DE LA INFORMACIÓN</h4>
       <p>TOPDRIVE implementa los más altos estándares de seguridad técnica y legal para salvaguardar la base de datos de los usuarios:</p>
       <ul>
@@ -642,12 +588,14 @@
         <li>Infraestructura con control ambiental seguro y políticas para impedir la reproducción o copias no autorizadas de documentos por parte del personal.</li>
         <li>Designación formal de un responsable de seguridad de la base de datos.</li>
       </ul>
+
       <h4>5. TRANSFERENCIA NACIONAL E INTERNACIONAL DE DATOS (FLUJO TRANSFRONTERIZO)</h4>
       <p>Para el funcionamiento operativo, almacenamiento en la nube y optimización de la plataforma TOPDRIVE, los datos podrán ser transferidos a nivel nacional e internacional bajo estrictos acuerdos de confidencialidad y protección de datos:</p>
       <ul>
         <li><strong>Transferencia a Nivel Nacional:</strong> Proveedores locales de pasarela de pagos, infraestructura tecnológica y agencias de marketing autorizadas.</li>
         <li><strong>Flujo Transfronterizo (Internacional):</strong> Los servidores y proveedores de servicios tecnológicos se encuentran alojados en jurisdicciones seguras bajo normativas homologadas (tales como servicios de computación en la nube, pasarelas antifraude y herramientas de analítica móvil en regiones como América, Europa y Asia).</li>
       </ul>
+
       <h4>6. EJERCICIO DE DERECHOS ARCO (Acceso, Rectificación, Cancelación y Oposición)</h4>
       <p>Los usuarios de TOPDRIVE (pasajeros y conductores) podrán ejercer en todo momento sus derechos de Acceso, Actualización, Rectificación, Inclusión, Supresión/Cancelación u Oposición al tratamiento de sus datos personales, así como revocar su consentimiento.</p>
       <p>Para tal efecto, TOPDRIVE habilita un enlace directo de atención dentro de su plataforma digital y centro de soporte:</p>
@@ -656,12 +604,15 @@
         <li><strong>Correo Electrónico de Notificaciones Legales y Oficiales:</strong> privacidad@topdrive.com / soporte@topdrive.com.</li>
       </ul>
       <div class="nota-formal">
-        <strong>Nota formal:</strong> Una vez completados los formularios de inscripción correspondientes en la plataforma de la Autoridad Nacional de Protección de Datos Personales (ANPD) en el Perú, el Estado emitirá la respectiva Resolución Directoral que formaliza y autoriza la titularidad y operación legal de las bases de datos de TOPDRIVE.
+        <strong>Nota formal:</strong> Una vez completados los formularios de inscripción correspondientes en la plataforma de la Autoridad Nacional de Protección de Datos Personales (ANPD) en el Perú, el Estado emitirá la respectiva Resolución Directoral que formaliza y autoriza la titularidad y operation legal de las bases de datos de TOPDRIVE.
       </div>
+
+      <!-- BOTÓN INDICADOR PARA DESPLAZARSE ABAJO -->
       <button type="button" id="btn-scroll-abajo-politicas" class="btn-scroll-abajo" title="Ir al final del documento">
         <span>Desplazarse abajo</span> ↓
       </button>
     </div>
+
     <div class="politicas-modal-actions">
       <label class="politicas-modal-check">
         <input type="checkbox" id="check-politicas-modal">
@@ -672,11 +623,36 @@
     </div>
   </div>
 
+  <!-- ALERTA DE INSTALACIÓN PWA -->
+  <div id="modal-instalar-pwa" class="ui-panel oculto" style="z-index:3500; top:50%; bottom:auto; transform:translate(-50%, -50%);">
+    <!-- CONTENEDOR CON FONDO BLANCO SIEMPRE -->
+    <div style="display:flex; justify-content:center; margin-bottom:14px;">
+      <div style="background:#ffffff !important; padding:8px; border-radius:20px; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.3); border:1px solid rgba(254,215,0,0.45);">
+        <img src="icon-192.png" alt="TOPDRIVE Logo" style="width:60px; height:60px; border-radius:14px; object-fit:contain; display:block; background:#ffffff;">
+      </div>
+    </div>
+    <h3 class="panel-title" style="color:#FED700 !important;">Instalar TOPDRIVE</h3>
+    <p id="pwa-instalar-texto" class="panel-subtitle" style="margin-bottom:14px;">Instala la aplicación en tu dispositivo para acceder rápidamente</p>
+    
+    <!-- Instrucciones exclusivas para iPhone / iPad o navegadores que requieran instalación manual -->
+    <div id="pwa-instrucciones-ios" class="oculto" style="text-align:left; background:rgba(255,255,255,0.06); padding:12px 14px; border-radius:14px; margin-bottom:16px; font-size:0.82rem; color:#f6f6f6; border:1px solid rgba(254,215,0,0.32);">
+      <p style="font-weight:600; margin-bottom:6px; color:var(--primary-color);">Para instalar en tu iPhone / iPad:</p>
+      <ol style="padding-left:18px; line-height:1.5;">
+        <li>Presiona el botón <strong>Compartir</strong> <span style="font-size:1.1rem; vertical-align:middle;">⎋</span> en la barra inferior.</li>
+        <li>Busca y selecciona <strong>"Agregar al inicio"</strong> ➕.</li>
+      </ol>
+    </div>
+
+    <button type="button" id="btn-instalar-pwa" class="btn-main">Instalar aplicación</button>
+    <button type="button" id="btn-cerrar-instalar-pwa" class="btn-secondary" style="margin-top:8px;">Ahora no</button>
+  </div>
+
   <!-- DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor) -->
   <div id="modal-documentacion" class="ui-panel oculto" role="dialog" aria-modal="true" aria-labelledby="documentacion-titulo">
     <h3 id="documentacion-titulo" class="panel-title">Documentación del vehículo</h3>
     <p class="panel-subtitle">Adjunta fotos o PDF · <span id="doc-contador">0/5 documentos</span></p>
     <form id="form-documentacion" novalidate>
+
       <p class="doc-seccion">Datos del vehículo</p>
       <div class="input-group">
         <select id="doc-tipo-servicio" required>
@@ -704,8 +680,10 @@
           <input type="file" id="doc-dni" accept="image/*,application/pdf,.pdf">
         </label>
         <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa"><span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span><button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
+          <img class="doc-preview-img oculto" alt="Vista previa">
+          <span class="doc-preview-pdf oculto">PDF</span>
+          <span class="doc-preview-nombre"></span>
+          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
         </div>
       </div>
 
@@ -717,22 +695,35 @@
           <input type="file" id="doc-antecedentes" accept="image/*,application/pdf,.pdf">
         </label>
         <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa"><span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span><button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
+          <img class="doc-preview-img oculto" alt="Vista previa">
+          <span class="doc-preview-pdf oculto">PDF</span>
+          <span class="doc-preview-nombre"></span>
+          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
         </div>
       </div>
 
       <div class="doc-item" data-doc="brevete">
         <span class="doc-label">Brevete de conductor</span>
-        <div class="input-group"><input type="text" id="doc-licencia" placeholder="Número de licencia" required autocomplete="off"></div>
+         <!-- Número de licencia -->
+  <div class="input-group">
+    <input
+      type="text"
+      id="doc-licencia"
+      placeholder="Número de licencia"
+      required
+      autocomplete="off"
+    >
+  </div>
         <label class="doc-drop">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
           <span class="doc-drop-text">Subir foto o PDF</span>
           <input type="file" id="doc-brevete" accept="image/*,application/pdf,.pdf">
         </label>
         <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa"><span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span><button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
+          <img class="doc-preview-img oculto" alt="Vista previa">
+          <span class="doc-preview-pdf oculto">PDF</span>
+          <span class="doc-preview-nombre"></span>
+          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
         </div>
       </div>
 
@@ -744,8 +735,10 @@
           <input type="file" id="doc-foto-vehiculo" accept="image/*">
         </label>
         <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa"><span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span><button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
+          <img class="doc-preview-img oculto" alt="Vista previa">
+          <span class="doc-preview-pdf oculto">PDF</span>
+          <span class="doc-preview-nombre"></span>
+          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
         </div>
       </div>
 
@@ -757,11 +750,14 @@
           <input type="file" id="doc-tarjeta" accept="image/*,application/pdf,.pdf">
         </label>
         <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa"><span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span><button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
+          <img class="doc-preview-img oculto" alt="Vista previa">
+          <span class="doc-preview-pdf oculto">PDF</span>
+          <span class="doc-preview-nombre"></span>
+          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
         </div>
       </div>
 
+      <!-- Solo aparece si el vehículo tiene más de 3 años -->
       <div id="doc-item-revision" class="doc-item oculto" data-doc="revision_tecnica">
         <span class="doc-label">Revisión técnica (vehículo con más de 3 años)</span>
         <label class="doc-drop">
@@ -770,8 +766,10 @@
           <input type="file" id="doc-revision" accept="image/*,application/pdf,.pdf">
         </label>
         <div class="doc-preview oculto">
-          <img class="doc-preview-img oculto" alt="Vista previa"><span class="doc-preview-pdf oculto">PDF</span>
-          <span class="doc-preview-nombre"></span><button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
+          <img class="doc-preview-img oculto" alt="Vista previa">
+          <span class="doc-preview-pdf oculto">PDF</span>
+          <span class="doc-preview-nombre"></span>
+          <button type="button" class="doc-quitar" aria-label="Quitar archivo">✕</button>
         </div>
       </div>
 
@@ -784,62 +782,24 @@
     </form>
   </div>
 
-  <!-- ================= ALERTA DE INSTALACIÓN PWA ================= -->
-  <div id="modal-instalar-pwa" class="oculto" role="dialog" aria-modal="true" aria-labelledby="pwa-titulo">
-    <div class="pwa-logo-box">
-      <div class="pwa-logo-inner">
-        <img src="icon-192.png" alt="TOPDRIVE Logo" onerror="this.style.display='none'">
-      </div>
-    </div>
-    <h3 id="pwa-titulo" class="panel-title">Instalar TOPDRIVE</h3>
-    <p id="pwa-instalar-texto" class="panel-subtitle">Instala la aplicación en tu dispositivo para acceder rápidamente</p>
-
-    <div id="pwa-instrucciones-ios" class="pwa-caja oculto">
-      <p>Para instalar en tu iPhone / iPad:</p>
-      <ol>
-        <li>Presiona el botón <strong>Compartir</strong> en la barra inferior.</li>
-        <li>Busca y selecciona <strong>"Agregar al inicio"</strong>.</li>
-      </ol>
-    </div>
-
-    <div id="pwa-instrucciones-android" class="pwa-caja oculto">
-      <p>Instalación manual en Android:</p>
-      <ol>
-        <li>Abre el menú del navegador <strong>⋮</strong>.</li>
-        <li>Toca <strong>"Instalar aplicación"</strong> o <strong>"Agregar a pantalla de inicio"</strong>.</li>
-      </ol>
-    </div>
-
-    <div id="pwa-instrucciones-escritorio" class="pwa-caja oculto">
-      <p>Instalación en PC:</p>
-      <ol>
-        <li>Busca el icono <strong>⊕ Instalar</strong> en la barra de direcciones.</li>
-        <li>O abre el menú <strong>⋮</strong> → <strong>Instalar TOPDRIVE</strong>.</li>
-      </ol>
-    </div>
-
-    <button type="button" id="btn-instalar-pwa" class="btn-main">Instalar aplicación</button>
-    <button type="button" id="btn-cerrar-instalar-pwa" class="btn-secondary" style="margin-top:8px">Ahora no</button>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     /* ================= SERVICE WORKER (PWA) ================= */
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('[TOPDRIVE] Service Worker registrado:', reg.scope))
-          .catch(err => console.warn('[TOPDRIVE] Error en Service Worker:', err.message));
+          .then(reg => console.log('Service Worker registrado:', reg.scope))
+          .catch(err => console.error('Error en Service Worker:', err));
       });
     }
-
+    
     /* ================= SUPABASE ================= */
     const SUPABASE_URL = "https://qwxegdvvcsmwemyrzvis.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3eGVnZHZ2Y3Ntd2VteXJ6dmlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwMDQ4ODQsImV4cCI6MjEwNjU4MDg4NH0.Xc--jnccpdXJtFPzI28QGv8t29P030ghRrWK0QU5NT0";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const APP_URL = "app.html";
-    const LLAVE_SESION = "bikar_usuario";
-    const LLAVE_TEMA = "bikar_theme_pref";
+    const APP_URL = "app.html";            /* Destino tras el acceso */
+    const LLAVE_SESION = "bikar_usuario";  /* Puente entre las 2 páginas */
+    const LLAVE_TEMA = "bikar_theme_pref"; /* Memoria del modo claro / oscuro */
 
     /* ================= ESTADO ================= */
     let rolSeleccionado = null;
@@ -861,11 +821,12 @@
     const btnLogin = $('btn-login');
     const camposEspecificos = $('campos-especificos');
     const regFoto = $('reg-foto');
+    const labelRegFoto = $('label-reg-foto');
     const textoLabelFoto = $('texto-label-foto');
     const btnThemeToggle = $('btn-theme-toggle');
     const themeIcon = $('theme-icon');
 
-    /* ================= SUPABASE STORAGE ================= */
+    /* ================= SUPABASE STORAGE (FOTOS Y DOCUMENTOS) ================= */
     const BUCKET_FOTOS = "fotos-perfil";
     const BUCKET_DOCUMENTOS = "documentos-vehiculos";
 
@@ -878,6 +839,8 @@
       return { blob: new Blob([bytes], { type: mime }), mime: mime };
     }
 
+    /* Sube un archivo en Base64 a un bucket público de Supabase Storage y
+       devuelve su URL pública. Si la subida falla, devuelve el Base64 original. */
     async function subirASupabaseStorage(dataUrl, bucket, carpeta, baseNombre) {
       try {
         if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) return dataUrl || null;
@@ -896,7 +859,7 @@
       }
     }
 
-    /* ================= ALERTAS FLOTANTES ================= */
+    /* ================= SISTEMA DE ALERTAS ADAPTABLE CLARO/OSCURO (SIN DOMINIO) ================= */
     function mostrarAlerta(mensaje, tipo = 'info') {
       const previa = document.querySelector('.bikar-alerta-toast');
       if (previa) previa.remove();
@@ -916,12 +879,20 @@
         svgIcono = `<svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
       }
 
-      toast.innerHTML = `<div class="bikar-alerta-icono ${claseIcono}">${svgIcono}</div><div class="bikar-alerta-mensaje">${mensaje}</div>`;
+      toast.innerHTML = `
+        <div class="bikar-alerta-icono ${claseIcono}">${svgIcono}</div>
+        <div class="bikar-alerta-mensaje">${mensaje}</div>
+      `;
+
       document.body.appendChild(toast);
-      setTimeout(() => { toast.classList.add('alerta-salir'); setTimeout(() => toast.remove(), 320); }, 2600);
+
+      setTimeout(() => {
+        toast.classList.add('alerta-salir');
+        setTimeout(() => toast.remove(), 320);
+      }, 2600);
     }
 
-    /* ================= TEMA ================= */
+    /* ================= MEMORIA DE TEMA (MODO CLARO / OSCURO) ================= */
     function reproducirVideoActivo() {
       const claro = document.querySelector('.video-claro');
       const oscuro = document.querySelector('.video-oscuro');
@@ -931,28 +902,43 @@
       if (inactivo) inactivo.pause();
       if (activo) { activo.muted = true; activo.play().catch(() => {}); }
     }
+
     function aplicarTema(tema) {
-      if (tema === 'light') { document.body.classList.remove('dark-mode'); themeIcon.innerText = '🌙'; }
-      else { document.body.classList.add('dark-mode'); themeIcon.innerText = '☀️'; }
+      if (tema === 'light') {
+        document.body.classList.remove('dark-mode');
+        themeIcon.innerText = '🌙';
+      } else {
+        document.body.classList.add('dark-mode');
+        themeIcon.innerText = '☀️';
+      }
       reproducirVideoActivo();
     }
-    aplicarTema(localStorage.getItem(LLAVE_TEMA) || 'dark');
+
+    // Cargar preferencia persistente
+    const temaGuardado = localStorage.getItem(LLAVE_TEMA) || 'dark';
+    aplicarTema(temaGuardado);
+
     btnThemeToggle.addEventListener('click', () => {
       const esOscuro = document.body.classList.toggle('dark-mode');
-      localStorage.setItem(LLAVE_TEMA, esOscuro ? 'dark' : 'light');
+      const nuevoTema = esOscuro ? 'dark' : 'light';
+      localStorage.setItem(LLAVE_TEMA, nuevoTema);
       themeIcon.innerText = esOscuro ? '☀️' : '🌙';
       reproducirVideoActivo();
     });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) reproducirVideoActivo(); });
 
-    /* ================= OJITO CONTRASEÑAS ================= */
+    /* ================= OJITO PARA CONTRASEÑAS (MOSTRAR / OCULTAR) ================= */
     document.querySelectorAll('.btn-toggle-eye').forEach((btn) => {
       btn.addEventListener('click', (e) => {
-        e.preventDefault(); e.stopPropagation();
-        const input = $(btn.getAttribute('data-target'));
+        e.preventDefault();
+        e.stopPropagation();
+        const targetId = btn.getAttribute('data-target');
+        const input = $(targetId);
         if (!input) return;
+
         const eyeAbierto = btn.querySelector('.eye-abierto');
         const eyeCerrado = btn.querySelector('.eye-cerrado');
+
         if (input.type === 'password') {
           input.type = 'text';
           if (eyeAbierto) eyeAbierto.classList.add('oculto');
@@ -986,6 +972,8 @@
       modalRegistro.classList.remove('oculto');
       registroTitulo.innerText = `Registro - ${rolSeleccionado.toUpperCase()}`;
       camposEspecificos.innerHTML = "";
+
+      // Adaptación de foto según el rol
       if (rolSeleccionado === 'comercio') {
         textoLabelFoto.innerText = "Foto del logo de tu comercio";
         regFoto.removeAttribute('capture');
@@ -996,7 +984,11 @@
         textoLabelFoto.innerText = "toma una selfie";
         regFoto.setAttribute('capture', 'user');
       }
+
+      // Documentación solo visible para conductor
       $('bloque-documentacion').classList.toggle('oculto', rolSeleccionado !== 'conductor');
+
+      // Resetear estado de aceptación de políticas
       actualizarEstadoPoliticas(checkPoliticasRegistro.checked);
     });
 
@@ -1019,7 +1011,7 @@
       reproducirVideoActivo();
     });
 
-    /* ================= FOTO (compresión) ================= */
+    /* ================= FOTO (compresión en Canvas) ================= */
     regFoto.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -1043,10 +1035,11 @@
       reader.readAsDataURL(file);
     });
 
-    /* ================= POLÍTICAS ================= */
+    /* ================= POLÍTICAS DE PROTECCIÓN DE DATOS (LEGAL) ================= */
     const modalPoliticas = $('modal-politicas');
     const scrollPoliticasBody = $('scroll-politicas-body');
     const btnScrollAbajo = $('btn-scroll-abajo-politicas');
+    const btnAbrirPoliticas = $('btn-abrir-politicas');
     const btnCerrarPoliticasModal = $('btn-cerrar-politicas-modal');
     const btnAceptarPoliticasModal = $('btn-aceptar-politicas-modal');
     const checkPoliticasModal = $('check-politicas-modal');
@@ -1054,41 +1047,69 @@
     const contenedorCheckPoliticas = $('contenedor-check-politicas');
     const btnGuardarRegistro = $('btn-guardar-registro');
 
+    // Inicializar correctamente el estado al inicio
+    actualizarEstadoPoliticas(checkPoliticasRegistro.checked);
+
     function actualizarEstadoPoliticas(aceptadas) {
       checkPoliticasRegistro.checked = aceptadas;
       checkPoliticasModal.checked = aceptadas;
       contenedorCheckPoliticas.classList.toggle('aceptado', aceptadas);
       btnGuardarRegistro.disabled = !aceptadas;
     }
+
     function abrirModalPoliticas() {
       modalRegistro.classList.add('oculto');
       modalPoliticas.classList.remove('oculto');
       scrollPoliticasBody.scrollTop = 0;
       btnScrollAbajo.classList.remove('oculto');
     }
+
     function cerrarModalPoliticas() {
       modalPoliticas.classList.add('oculto');
       modalRegistro.classList.remove('oculto');
     }
-    $('btn-abrir-politicas').addEventListener('click', abrirModalPoliticas);
+
+    btnAbrirPoliticas.addEventListener('click', abrirModalPoliticas);
     btnCerrarPoliticasModal.addEventListener('click', cerrarModalPoliticas);
-    btnScrollAbajo.addEventListener('click', () => scrollPoliticasBody.scrollTo({ top: scrollPoliticasBody.scrollHeight, behavior: 'smooth' }));
-    scrollPoliticasBody.addEventListener('scroll', () => {
-      const abajo = scrollPoliticasBody.scrollTop + scrollPoliticasBody.clientHeight;
-      btnScrollAbajo.classList.toggle('oculto', (scrollPoliticasBody.scrollHeight - abajo) < 60);
+
+    // Scroll indicator dentro del modal de políticas
+    btnScrollAbajo.addEventListener('click', () => {
+      scrollPoliticasBody.scrollTo({
+        top: scrollPoliticasBody.scrollHeight,
+        behavior: 'smooth'
+      });
     });
+
+    scrollPoliticasBody.addEventListener('scroll', () => {
+      const scrollPos = scrollPoliticasBody.scrollTop + scrollPoliticasBody.clientHeight;
+      const totalHeight = scrollPoliticasBody.scrollHeight;
+      if (totalHeight - scrollPos < 60) {
+        btnScrollAbajo.classList.add('oculto');
+      } else {
+        btnScrollAbajo.classList.remove('oculto');
+      }
+    });
+
+    // Check en el modal de políticas
     btnAceptarPoliticasModal.addEventListener('click', () => {
       actualizarEstadoPoliticas(true);
       cerrarModalPoliticas();
       mostrarAlerta("Políticas aceptadas correctamente.", "exito");
     });
-    checkPoliticasModal.addEventListener('change', (e) => actualizarEstadoPoliticas(e.target.checked));
-    checkPoliticasRegistro.addEventListener('change', (e) => {
+
+    checkPoliticasModal.addEventListener('change', (e) => {
       actualizarEstadoPoliticas(e.target.checked);
-      if (e.target.checked) mostrarAlerta("Políticas aceptadas.", "exito");
     });
 
-    /* ================= DOCUMENTACIÓN VEHÍCULO ================= */
+    // Checkbox en el formulario de registro
+    checkPoliticasRegistro.addEventListener('change', (e) => {
+      actualizarEstadoPoliticas(e.target.checked);
+      if (e.target.checked) {
+        mostrarAlerta("Políticas aceptadas.", "exito");
+      }
+    });
+
+    /* ================= DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor) ================= */
     const LLAVE_DOCUMENTACION = "bikar_documentacion_vehiculo";
     const MAX_MB_DOCUMENTO = 5;
     const DOCS_OBLIGATORIOS = [
@@ -1112,7 +1133,9 @@
       return !isNaN(anio) && (new Date().getFullYear() - anio) > 3;
     }
     function listaDocumentosRequeridos() {
-      return requiereRevisionTecnica() ? [...DOCS_OBLIGATORIOS, ['revision_tecnica', 'Revisión técnica']] : DOCS_OBLIGATORIOS;
+      return requiereRevisionTecnica()
+        ? [...DOCS_OBLIGATORIOS, ['revision_tecnica', 'Revisión técnica']]
+        : DOCS_OBLIGATORIOS;
     }
     function actualizarContadorDocumentos() {
       const requeridos = listaDocumentosRequeridos();
@@ -1255,10 +1278,21 @@
 
     async function guardarDocumentacionConductor(usuarioId, conductorId) {
       const archivos = documentacionVehiculo.archivos;
+
+      /* 1) Subir cada documento (foto o PDF) a Supabase Storage y obtener su URL pública.
+            Si la subida falla, la función devuelve el Base64 como respaldo. */
       const urlsDocumentos = {};
       for (const clave of Object.keys(archivos)) {
-        urlsDocumentos[clave] = await subirASupabaseStorage(archivos[clave].data, BUCKET_DOCUMENTOS, 'conductor_' + conductorId, clave);
+        urlsDocumentos[urlsDocumentos] = await subirASupabaseStorage(
+          archivos[clave].data,
+          BUCKET_DOCUMENTOS,
+          'conductor_' + conductorId,
+          clave
+        );
       }
+
+      /* 2) Registrar toda la documentación en la tabla 'documentos_conductor'
+            con las URLs públicas de los archivos (visibles desde Supabase). */
       const registro = {
         usuario_id: usuarioId,
         conductor_id: conductorId,
@@ -1277,36 +1311,42 @@
       };
       try {
         const resumen = { ...registro };
-        ['dni_ce','antecedente_policial','brevete','foto_vehiculo','tarjeta_propiedad','revision_tecnica']
+        ['dni_ce', 'antecedente_policial', 'brevete', 'foto_vehiculo', 'tarjeta_propiedad', 'revision_tecnica']
           .forEach((clave) => { resumen[clave] = archivos[clave] ? archivos[clave].nombre : null; });
         localStorage.setItem(LLAVE_DOCUMENTACION, JSON.stringify(resumen));
-      } catch (errStorage) { console.warn("No se pudo guardar el resumen:", errStorage); }
+      } catch (errStorage) { console.warn("No se pudo guardar el resumen de la documentación:", errStorage); }
       try {
         const { error } = await supabaseClient.from('documentos_conductor').insert([registro]);
-        if (error) console.warn("No se pudo guardar la documentación:", error.message);
-      } catch (err) { console.warn("Error al guardar la documentación:", err); }
+        if (error) console.warn("No se pudo guardar la documentación en Supabase (tabla 'documentos_conductor'):", error.message);
+      } catch (err) { console.warn("Error al guardar la documentación del vehículo:", err); }
     }
 
     actualizarContadorDocumentos();
 
-    /* ================= LOGIN ================= */
+    /* ================= INICIO DE SESIÓN ================= */
     formLogin.addEventListener('submit', async (e) => {
       e.preventDefault();
       const dni = loginDni.value.trim();
       const pwd = loginPassword.value;
+
       btnLogin.disabled = true;
       btnLogin.innerText = "Verificando...";
+
       try {
         const { data: usuarios, error: errUsuario } = await supabaseClient
-          .from('usuarios').select('*')
-          .or(`numero_documento.eq.${dni},email.eq.${dni}`).limit(1);
+          .from('usuarios')
+          .select('*')
+          .or(`numero_documento.eq.${dni},email.eq.${dni}`)
+          .limit(1);
 
         if (errUsuario) { mostrarAlerta("Error al buscar el usuario: " + errUsuario.message, "error"); return; }
         if (!usuarios || usuarios.length === 0) { mostrarAlerta("No se encontró usuario con ese documento o correo.", "error"); return; }
 
         const usuario = usuarios[0];
+
         if (usuario.tipo_usuario && rolSeleccionado && usuario.tipo_usuario !== rolSeleccionado) {
-          mostrarAlerta("No existe una cuenta con ese documento para este rol.", "error"); return;
+          mostrarAlerta("No existe una cuenta con ese documento para este rol.", "error");
+          return;
         }
         if (!usuario.email) { mostrarAlerta("Esta cuenta no tiene un correo asociado.", "error"); return; }
 
@@ -1318,6 +1358,7 @@
             .from('conductores').select('id').eq('usuario_id', usuario.id || usuario.Id).limit(1);
           if (cond && cond.length > 0) usuario.conductor_id = cond[0].id;
         }
+
         usuarioActual = usuario;
         guardarSesion(usuario);
         modalLogin.classList.add('oculto');
@@ -1342,8 +1383,16 @@
       const regTipoDoc = $('reg-tipo-doc');
       const regNumDoc = $('reg-num-doc');
 
-      if (!checkPoliticasRegistro.checked) { mostrarAlerta("Debes aceptar la Política de Protección de Datos para continuar.", "error"); return; }
-      if (regPassword.value !== regPasswordConfirm.value) { mostrarAlerta("Las contraseñas no coinciden.", "error"); return; }
+      if (!checkPoliticasRegistro.checked) {
+        mostrarAlerta("Debes aceptar la Política de Protección de Datos para continuar.", "error");
+        return;
+      }
+
+      if (regPassword.value !== regPasswordConfirm.value) { 
+        mostrarAlerta("Las contraseñas no coinciden.", "error"); 
+        return; 
+      }
+
       if (rolSeleccionado === 'conductor' && !documentacionVehiculo.completa) {
         mostrarAlerta("Completa la documentación para el vehículo antes de continuar.", "error");
         abrirModalDocumentacion();
@@ -1365,6 +1414,8 @@
         return;
       }
 
+      /* Subir la foto de perfil a Supabase Storage (bucket 'fotos-perfil').
+         Se guarda la URL pública en la tabla; si la subida falla se guarda el Base64. */
       const fotoUrl = fotoBase64
         ? await subirASupabaseStorage(fotoBase64, BUCKET_FOTOS, rolSeleccionado || 'usuarios', ((regNumDoc && regNumDoc.value.trim()) || 'usuario'))
         : null;
@@ -1395,59 +1446,76 @@
       const usuarioCreado = usuarioInsertado[0];
       const nuevoUsuarioId = usuarioCreado.id || usuarioCreado.Id;
 
+      /* Registrar en Supabase si el usuario ACEPTÓ (o no) las políticas de protección de datos */
       try {
         const { error: errPolitica } = await supabaseClient.from('politicas_aceptaciones').insert([{
-          usuario_id: nuevoUsuarioId, rol: rolSeleccionado, aceptado: checkPoliticasRegistro.checked,
-          version: 'v1.0', fecha: new Date().toISOString()
+          usuario_id: nuevoUsuarioId,
+          rol: rolSeleccionado,
+          aceptado: checkPoliticasRegistro.checked,
+          version: 'v1.0',
+          fecha: new Date().toISOString()
         }]);
-        if (errPolitica) console.warn("No se pudo registrar la aceptación de políticas:", errPolitica.message);
+        if (errPolitica) console.warn("No se pudo registrar la aceptación de políticas (tabla 'politicas_aceptaciones'):", errPolitica.message);
       } catch (errPoliticas) { console.warn("Error al registrar la aceptación de políticas:", errPoliticas); }
 
+      /* TABLA PASAJEROS: datos del rol pasajero */
       if (rolSeleccionado === 'pasajero') {
         try {
-          const { error: errPasajero } = await supabaseClient.from('pasajeros').insert([{ usuario_id: nuevoUsuarioId }]);
-          if (errPasajero) console.warn("No se pudo guardar en 'pasajeros':", errPasajero.message);
+          const { error: errPasajero } = await supabaseClient
+            .from('pasajeros').insert([{ usuario_id: nuevoUsuarioId }]);
+          if (errPasajero) console.warn("No se pudo guardar en la tabla 'pasajeros':", errPasajero.message);
         } catch (errPas) { console.warn("Error al guardar el pasajero:", errPas); }
       }
 
+      /* TABLA COMERCIOS: nombre del establecimiento, categoría y logo */
       if (rolSeleccionado === 'comercio') {
         try {
           const inputComercioNombre = document.getElementById('reg-comercio-nombre');
           const inputComercioCategoria = document.getElementById('reg-comercio-categoria');
-          const { error: errComercio } = await supabaseClient.from('comercios').insert([{
-            usuario_id: nuevoUsuarioId,
-            nombre_establecimiento: inputComercioNombre ? inputComercioNombre.value : '',
-            categoria: inputComercioCategoria ? inputComercioCategoria.value : '',
-            logo: fotoUrl
-          }]);
-          if (errComercio) console.warn("No se pudo guardar en 'comercios':", errComercio.message);
+          const { error: errComercio } = await supabaseClient
+            .from('comercios').insert([{
+              usuario_id: nuevoUsuarioId,
+              nombre_establecimiento: inputComercioNombre ? inputComercioNombre.value : '',
+              categoria: inputComercioCategoria ? inputComercioCategoria.value : '',
+              logo: fotoUrl
+            }]);
+          if (errComercio) console.warn("No se pudo guardar en la tabla 'comercios':", errComercio.message);
         } catch (errCom) { console.warn("Error al guardar el comercio:", errCom); }
       }
 
+      /* TABLAS CONDUCTORES + VEHÍCULOS + DOCUMENTACIÓN DEL VEHÍCULO */
       if (rolSeleccionado === 'conductor') {
         const { data: conductorInsertado, error: errCond } = await supabaseClient
-          .from('conductores').insert([{ usuario_id: nuevoUsuarioId, licencia: documentacionVehiculo.licencia }]).select();
+  .from('conductores')
+  .insert([{
+    usuario_id: nuevoUsuarioId,
+    licencia: documentacionVehiculo.licencia
+  }])
+  .select();
         if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
           const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
           usuarioCreado.conductor_id = conductorId;
           const inputVehiculoModelo = document.getElementById('reg-vehiculo');
           const inputVehiculoPlaca = document.getElementById('reg-placa');
-          const { error: errVehiculo } = await supabaseClient.from('vehiculos').insert([{
-            conductor_id: conductorId,
-            tipo_servicio: documentacionVehiculo.tipo_servicio || null,
-            marca: documentacionVehiculo.marca || null,
-            modelo: documentacionVehiculo.modelo || (inputVehiculoModelo ? inputVehiculoModelo.value : null),
-            anio: documentacionVehiculo.anio || null,
-            placa: documentacionVehiculo.placa || (inputVehiculoPlaca ? inputVehiculoPlaca.value : null),
-            color: documentacionVehiculo.color || null
-          }]);
-          if (errVehiculo) {
-            console.error("ERROR AL GUARDAR VEHÍCULO:", errVehiculo);
-            mostrarAlerta("No se pudo guardar el vehículo: " + errVehiculo.message, "error");
-          }
+          const { error: errVehiculo } = await supabaseClient
+  .from('vehiculos')
+  .insert([{
+    conductor_id: conductorId,
+    tipo_servicio: documentacionVehiculo.tipo_servicio || null,
+    marca: documentacionVehiculo.marca || null,
+    modelo: documentacionVehiculo.modelo || (inputVehiculoModelo ? inputVehiculoModelo.value : null),
+    anio: documentacionVehiculo.anio || null,
+    placa: documentacionVehiculo.placa || (inputVehiculoPlaca ? inputVehiculoPlaca.value : null),
+    color: documentacionVehiculo.color || null
+  }]);
+
+if (errVehiculo) {
+  console.error("ERROR AL GUARDAR VEHÍCULO:", errVehiculo);
+  mostrarAlerta("No se pudo guardar el vehículo: " + errVehiculo.message, "error");
+}
           await guardarDocumentacionConductor(nuevoUsuarioId, conductorId);
         } else if (errCond) {
-          console.warn("No se pudo guardar en 'conductores':", errCond.message);
+          console.warn("No se pudo guardar en la tabla 'conductores':", errCond.message);
         }
       }
 
@@ -1462,10 +1530,14 @@
     /* ================= PUENTE ENTRE PÁGINAS ================= */
     function guardarSesion(usuario) {
       try { localStorage.setItem(LLAVE_SESION, JSON.stringify(usuario)); }
-      catch (errStorage) { console.warn("No se pudo guardar la sesión:", errStorage); }
+      catch (errStorage) { console.warn("No se pudo guardar la sesión en el navegador:", errStorage); }
     }
-    function irAlApp() { setTimeout(() => { window.location.href = APP_URL; }, 400); }
 
+    function irAlApp() {
+      setTimeout(() => { window.location.href = APP_URL; }, 400);
+    }
+
+    /* Si ya hay sesión activa, entra directo a la app */
     (function verificarSesionGuardada() {
       const sesionGuardada = localStorage.getItem(LLAVE_SESION);
       if (!sesionGuardada) return;
@@ -1475,147 +1547,93 @@
       } catch (e) { console.error("Error al cargar sesión:", e); }
     })();
 
-    /* ============================================================
-       LÓGICA DE INSTALACIÓN PWA · SIEMPRE VISIBLE
-       · No depende de beforeinstallprompt
-       · No usa localStorage para bloquearse (esa era la causa)
-       · Fuerza estilos inline para que nada la esconda
-       ============================================================ */
-    (function logicaInstalacionPwa() {
-      const modalInstalar = $('modal-instalar-pwa');
-      const btnInstalar = $('btn-instalar-pwa');
-      const btnCerrarInstalar = $('btn-cerrar-instalar-pwa');
-      const btnAbrirInstalar = $('btn-abrir-instalar-pwa');
-      const cajaIos = $('pwa-instrucciones-ios');
-      const cajaAndroid = $('pwa-instrucciones-android');
-      const cajaPc = $('pwa-instrucciones-escritorio');
-      const textoInstalar = $('pwa-instalar-texto');
-      if (!modalInstalar) return;
+    /* ================= LÓGICA DE INSTALACIÓN PWA ================= */
+    let deferredPrompt = null;
+    const modalInstalar = document.getElementById('modal-instalar-pwa');
+    const btnInstalar = document.getElementById('btn-instalar-pwa');
+    const btnCerrarInstalar = document.getElementById('btn-cerrar-instalar-pwa');
+    const instruccionesIos = document.getElementById('pwa-instrucciones-ios');
+    const textoInstalar = document.getElementById('pwa-instalar-texto');
 
-      let deferredPrompt = window.__tdPrompt || null;
-      let instalando = false;
+    const esPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const esIos = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
 
-      function esStandalone() {
-        try {
-          return window.matchMedia('(display-mode: standalone)').matches
-            || window.matchMedia('(display-mode: minimal-ui)').matches
-            || window.matchMedia('(display-mode: fullscreen)').matches
-            || window.navigator.standalone === true
-            || window.__tdInstalada === true;
-        } catch (x) { return false; }
-      }
-
-      const esIos = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
-      const esAndroid = /Android/i.test(navigator.userAgent);
-
-      function prepararContenido() {
-        const nativo = !!deferredPrompt;
-        btnInstalar.classList.toggle('oculto', !nativo);
-
-        cajaIos.classList.toggle('oculto', !esIos);
-        cajaAndroid.classList.toggle('oculto', esIos || nativo || !esAndroid);
-        cajaPc.classList.toggle('oculto', esIos || nativo || esAndroid);
-
-        if (esIos) textoInstalar.innerText = "Agrega TOPDRIVE a tu pantalla de inicio para acceder rápidamente.";
-        else if (nativo) textoInstalar.innerText = "Instala la aplicación en tu dispositivo para acceder rápidamente.";
-        else textoInstalar.innerText = "Instala TOPDRIVE desde el menú de tu navegador, toma menos de un segundo.";
-      }
-
-      function forzarVisible() {
-        /* Garantía anti-CSS: nada puede ocultar el modal */
-        modalInstalar.style.setProperty('display', 'block', 'important');
-        modalInstalar.style.setProperty('visibility', 'visible', 'important');
-        modalInstalar.style.setProperty('opacity', '1', 'important');
-        modalInstalar.style.setProperty('position', 'fixed', 'important');
-        modalInstalar.style.setProperty('top', '50%', 'important');
-        modalInstalar.style.setProperty('left', '50%', 'important');
-        modalInstalar.style.setProperty('transform', 'translate(-50%,-50%)', 'important');
-        modalInstalar.style.setProperty('z-index', '999999', 'important');
-      }
-
-      function mostrar() {
-        if (esStandalone()) { if (btnAbrirInstalar) btnAbrirInstalar.classList.add('oculto'); return; }
-        prepararContenido();
-        modalInstalar.classList.remove('oculto');
-        modalInstalar.classList.add('mostrar');
-        forzarVisible();
-        if (btnAbrirInstalar) btnAbrirInstalar.classList.add('oculto');
-        console.log('[TOPDRIVE PWA] Modal de instalación mostrado');
-      }
-
-      function ocultar() {
-        modalInstalar.classList.add('oculto');
-        modalInstalar.classList.remove('mostrar');
-        if (btnAbrirInstalar && !esStandalone()) btnAbrirInstalar.classList.remove('oculto');
-      }
-
-      /* Exponer globalmente para depurar desde la consola: window.topdriveInstalar() */
-      window.topdriveInstalar = mostrar;
-      window.topdriveCerrarInstalar = ocultar;
-
-      /* 1) Mostrar SIEMPRE al cargar (con una pequeña espera para el render) */
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => setTimeout(mostrar, 700));
-      } else {
-        setTimeout(mostrar, 700);
-      }
-
-      /* 2) Si el navegador ofrece instalación nativa, se prepara */
+    // Solo configuramos el prompt si no estamos ya en modo independiente/standalone
+    if (!esPwa) {
+      // Escuchar el prompt de instalación nativo en Android/Desktop
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        window.__tdPrompt = e;
-        if (!modalInstalar.classList.contains('oculto')) prepararContenido();
+        
+        // El navegador soporta instalación nativa con botón. Mostramos el botón
+        if (btnInstalar) btnInstalar.classList.remove('oculto');
+        if (instruccionesIos) instruccionesIos.classList.add('oculto');
+        
+        mostrarAlertaInstalacion();
       });
 
-      /* 3) Instalación completada */
-      window.addEventListener('appinstalled', () => {
-        window.__tdInstalada = true;
+      // FORZAR el anuncio de instalación tras 2 segundos para asegurar que aparezca SÍ O SÍ
+      setTimeout(() => {
+        // Usamos sessionStorage para que al recargar la página la alerta vuelva a aparecer durante las pruebas
+        if (sessionStorage.getItem('bikar_pwa_ignorado') !== 'true') {
+          if (esIos) {
+            // Mostrar instrucciones manuales exclusivas de iOS
+            if (instruccionesIos) instruccionesIos.classList.remove('oculto');
+            if (btnInstalar) btnInstalar.classList.add('oculto');
+            if (textoInstalar) textoInstalar.innerText = "Agrega TOPDRIVE a tu pantalla de inicio para acceder rápidamente.";
+          } else if (!deferredPrompt) {
+            // Si es un navegador que requiere instalación manual o el prompt nativo aún no está listo
+            if (instruccionesIos) {
+              instruccionesIos.innerHTML = `
+                <p style="font-weight:600; margin-bottom:6px; color:var(--primary-color);">Para instalar en tu dispositivo:</p>
+                <ol style="padding-left:18px; line-height:1.5;">
+                  <li>Presiona el botón de <strong>Menú</strong> (tres puntos <span style="font-size:1.1rem; vertical-align:middle;">⋮</span>) de tu navegador.</li>
+                  <li>Selecciona <strong>"Instalar aplicación"</strong> o <strong>"Agregar a pantalla de inicio"</strong>.</li>
+                </ol>
+              `;
+              instruccionesIos.classList.remove('oculto');
+            }
+            if (btnInstalar) btnInstalar.classList.add('oculto');
+          } else {
+            // Si el prompt nativo sí está listo
+            if (btnInstalar) btnInstalar.classList.remove('oculto');
+            if (instruccionesIos) instruccionesIos.classList.add('oculto');
+          }
+          mostrarAlertaInstalacion();
+        }
+      }, 2000);
+    }
+
+    function mostrarAlertaInstalacion() {
+      // Si el usuario ya lo cerró activamente en esta sesión de pruebas, respetamos la decisión
+      if (sessionStorage.getItem('bikar_pwa_ignorado') === 'true') return;
+      modalInstalar.classList.remove('oculto');
+    }
+
+    btnInstalar.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const choiceResult = await deferredPrompt.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+          console.log('El usuario aceptó la instalación');
+          sessionStorage.setItem('bikar_pwa_ignorado', 'true');
+        }
         deferredPrompt = null;
-        modalInstalar.classList.add('oculto');
-        if (btnAbrirInstalar) btnAbrirInstalar.classList.add('oculto');
-        mostrarAlerta("¡TOPDRIVE se instaló correctamente!", "exito");
-      });
-
-      /* 4) Botón Instalar del modal */
-      btnInstalar.addEventListener('click', async () => {
-        if (instalando) return;
-        if (!deferredPrompt) {
-          ocultar();
-          mostrarAlerta('Abre el menú del navegador y elige "Instalar aplicación" o "Agregar a pantalla de inicio".', 'info');
-          return;
-        }
-        instalando = true;
-        btnInstalar.innerText = "Abriendo instalador...";
-        try {
-          deferredPrompt.prompt();
-          const choiceResult = await deferredPrompt.userChoice;
-          console.log('[TOPDRIVE PWA] Resultado:', choiceResult && choiceResult.outcome);
-          if (choiceResult && choiceResult.outcome === 'accepted') { /* el navegador se encarga */ }
-          deferredPrompt = null;
-        } catch (errPrompt) {
-          console.warn('[TOPDRIVE PWA] Error al lanzar el instalador:', errPrompt);
-        }
-        instalando = false;
-        btnInstalar.innerText = "Instalar aplicación";
-        ocultar();
-      });
-
-      /* 5) Cerrar / reabrir */
-      btnCerrarInstalar.addEventListener('click', ocultar);
-      if (btnAbrirInstalar) {
-        btnAbrirInstalar.addEventListener('click', mostrar);
-        if (esStandalone()) btnAbrirInstalar.classList.add('oculto');
       }
+      modalInstalar.classList.add('oculto');
+    });
 
-      /* 6) Diagnóstico en consola */
-      try {
-        fetch('manifest.json', { method: 'GET' })
-          .then(r => console.log('[TOPDRIVE PWA] manifest.json HTTP', r.status))
-          .catch(() => console.warn('[TOPDRIVE PWA] manifest.json no accesible'));
-      } catch (x) {}
-      console.log('[TOPDRIVE PWA] Estado → standalone:', esStandalone(), '| iOS:', esIos, '| Android:', esAndroid);
-    })();
+    window.addEventListener('appinstalled', () => {
+      sessionStorage.setItem('bikar_pwa_ignorado', 'true');
+      modalInstalar.classList.add('oculto');
+      mostrarAlerta("¡TOPDRIVE se ha instalado correctamente!", "exito");
+    });
+
+    btnCerrarInstalar.addEventListener('click', () => {
+      // Se guarda en el sessionStorage para permitir pruebas fáciles al refrescar la pestaña
+      sessionStorage.setItem('bikar_pwa_ignorado', 'true');
+      modalInstalar.classList.add('oculto');
+    });
   </script>
 </body>
 </html>
