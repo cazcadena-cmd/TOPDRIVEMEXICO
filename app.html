@@ -1081,34 +1081,59 @@
     }
 
     /* ============================ MAPA ============================ */
+    /* Mapa claro: fondo blanco, calles blancas con borde gris suave, textos grises normales */
     const ESTILO_CLARO = [
-      {elementType:'geometry',stylers:[{color:'#f5f7fa'}]},
+      {elementType:'geometry',stylers:[{color:'#f7f7f7'}]},
       {elementType:'labels.icon',stylers:[{visibility:'off'}]},
-      {elementType:'labels.text.fill',stylers:[{color:'#FED700'}]},
+      {elementType:'labels.text.fill',stylers:[{color:'#5f6368'}]},
       {elementType:'labels.text.stroke',stylers:[{color:'#ffffff'},{weight:3}]},
-      {featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#FED700'}]},
-      {featureType:'landscape.man_made',elementType:'geometry',stylers:[{color:'#FED700'}]},
-      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#FED700'}]},
-      {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#dff0e2'}]},
-      {featureType:'road',elementType:'geometry',stylers:[{color:'#ffffff'}]},
-      {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#ffe9b8'}]},
-      {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#f0d090'}]},
-      {featureType:'transit.line',elementType:'geometry',stylers:[{color:'#e3e7ec'}]},
-      {featureType:'water',elementType:'geometry',stylers:[{color:'#FED700'}]}
+      {featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#dadce0'},{weight:0.8}]},
+      {featureType:'administrative.land_parcel',elementType:'labels',stylers:[{visibility:'off'}]},
+      {featureType:'administrative.locality',elementType:'labels.text.fill',stylers:[{color:'#3c4043'}]},
+      {featureType:'landscape.man_made',elementType:'geometry',stylers:[{color:'#f1f3f4'}]},
+      {featureType:'landscape.natural',elementType:'geometry',stylers:[{color:'#f5f5f5'}]},
+      {featureType:'poi',elementType:'geometry',stylers:[{color:'#eeeeee'}]},
+      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#80868b'}]},
+      {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#e6f2e6'}]},
+      {featureType:'poi.park',elementType:'labels.text.fill',stylers:[{color:'#7a9a7a'}]},
+      {featureType:'road',elementType:'geometry.fill',stylers:[{color:'#ffffff'}]},
+      {featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#e3e3e3'},{weight:0.6}]},
+      {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#70757a'}]},
+      {featureType:'road.arterial',elementType:'geometry.fill',stylers:[{color:'#ffffff'}]},
+      {featureType:'road.highway',elementType:'geometry.fill',stylers:[{color:'#ffffff'}]},
+      {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#d6d6d6'},{weight:0.8}]},
+      {featureType:'road.local',elementType:'labels.text.fill',stylers:[{color:'#9aa0a6'}]},
+      {featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]},
+      {featureType:'transit.line',elementType:'geometry',stylers:[{color:'#e5e5e5'}]},
+      {featureType:'water',elementType:'geometry',stylers:[{color:'#dbe7f0'}]},
+      {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#9aa0a6'}]}
     ];
+    /* Mapa oscuro: fondo oscuro, calles grises discretas (sin bordes marcados), textos grises suaves, sin amarillo */
     const ESTILO_OSCURO = [
-      {elementType:'geometry',stylers:[{color:'#1b1b1b'}]},
+      {elementType:'geometry',stylers:[{color:'#1d1d1d'}]},
       {elementType:'labels.icon',stylers:[{visibility:'off'}]},
-      {elementType:'labels.text.fill',stylers:[{color:'#FED700'}]},
-      {elementType:'labels.text.stroke',stylers:[{color:'#121212'}]},
-      {featureType:'administrative',elementType:'geometry',stylers:[{color:'#FED700'}]},
-      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#FED700'}]},
-      {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#1d2b23'}]},
-      {featureType:'road',elementType:'geometry',stylers:[{color:'#2a2a2a'}]},
-      {featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#343434'}]},
-      {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#FED700'}]},
-      {featureType:'water',elementType:'geometry',stylers:[{color:'#FED700'}]},
-      {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#FED700'}]}
+      {elementType:'labels.text.fill',stylers:[{color:'#8a8a8a'}]},
+      {elementType:'labels.text.stroke',stylers:[{color:'#1d1d1d'},{weight:2}]},
+      {featureType:'administrative',elementType:'geometry',stylers:[{color:'#2e2e2e'}]},
+      {featureType:'administrative',elementType:'geometry.stroke',stylers:[{color:'#333333'},{weight:0.6}]},
+      {featureType:'administrative.land_parcel',elementType:'labels',stylers:[{visibility:'off'}]},
+      {featureType:'administrative.locality',elementType:'labels.text.fill',stylers:[{color:'#a8a8a8'}]},
+      {featureType:'landscape.man_made',elementType:'geometry',stylers:[{color:'#202020'}]},
+      {featureType:'poi',elementType:'geometry',stylers:[{color:'#222222'}]},
+      {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#6f6f6f'}]},
+      {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#1f2620'}]},
+      {featureType:'poi.park',elementType:'labels.text.fill',stylers:[{color:'#5e6e5e'}]},
+      {featureType:'road',elementType:'geometry.fill',stylers:[{color:'#2b2b2b'}]},
+      {featureType:'road',elementType:'geometry.stroke',stylers:[{visibility:'off'}]},
+      {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#7a7a7a'}]},
+      {featureType:'road.arterial',elementType:'geometry.fill',stylers:[{color:'#303030'}]},
+      {featureType:'road.highway',elementType:'geometry.fill',stylers:[{color:'#363636'}]},
+      {featureType:'road.highway',elementType:'labels.text.fill',stylers:[{color:'#8a8a8a'}]},
+      {featureType:'road.local',elementType:'labels.text.fill',stylers:[{color:'#666666'}]},
+      {featureType:'transit',elementType:'labels',stylers:[{visibility:'off'}]},
+      {featureType:'transit.line',elementType:'geometry',stylers:[{color:'#262626'}]},
+      {featureType:'water',elementType:'geometry',stylers:[{color:'#141a1f'}]},
+      {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#4a5560'}]}
     ];
     const estiloActual = () => document.body.classList.contains('dark-mode') ? ESTILO_OSCURO : ESTILO_CLARO;
 
