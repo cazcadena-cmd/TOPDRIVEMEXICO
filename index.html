@@ -479,7 +479,7 @@
       <!-- FOTO / SELFIE O LOGO DE COMERCIO -->
       <div class="input-group foto-group">
         <label for="reg-foto" class="label-foto" id="label-reg-foto">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2 2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           <span id="texto-label-foto">toma una selfie</span>
         </label>
         <input type="file" id="reg-foto" accept="image/*" capture="user" required>
@@ -598,7 +598,7 @@
         <li><strong>Correo Electrónico de Notificaciones Legales y Oficiales:</strong> privacidad@topdrive.com / soporte@topdrive.com.</li>
       </ul>
       <div class="nota-formal">
-        <strong>Nota formal:</strong> Una vez completados los formularios de inscripción correspondientes en la plataforma de la Autoridad Nacional de Protección de Datos Personales (ANPD) en el Perú, el Estado emitirá la respectiva Resolución Directoral que formaliza y autoriza la titularidad y operación legal de las bases de datos de TOPDRIVE.
+        <strong>Nota formal:</strong> Una vez completados los formularios de inscripción correspondientes en la plataforma de la Autoridad Nacional de Protección de Datos Personales (ANPD) en el Perú, el Estado emitirá la respectiva Resolución Directoral que formaliza y autoriza la titularidad y operation legal de las bases de datos de TOPDRIVE.
       </div>
 
       <!-- BOTÓN INDICADOR PARA DESPLAZARSE ABAJO -->
@@ -615,6 +615,30 @@
       <button type="button" id="btn-aceptar-politicas-modal" class="btn-main">Confirmar y Aceptar</button>
       <button type="button" id="btn-cerrar-politicas-modal" class="btn-secondary">Cerrar</button>
     </div>
+  </div>
+
+  <!-- ALERTA DE INSTALACIÓN PWA -->
+  <div id="modal-instalar-pwa" class="ui-panel oculto" style="z-index:3500; top:50%; bottom:auto; transform:translate(-50%, -50%);">
+    <!-- CONTENEDOR CON FONDO BLANCO SIEMPRE -->
+    <div style="display:flex; justify-content:center; margin-bottom:14px;">
+      <div style="background:#ffffff !important; padding:8px; border-radius:20px; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.3); border:1px solid rgba(254,215,0,0.45);">
+        <img src="icon-192.png" alt="TOPDRIVE Logo" style="width:60px; height:60px; border-radius:14px; object-fit:contain; display:block; background:#ffffff;">
+      </div>
+    </div>
+    <h3 class="panel-title" style="color:#FED700 !important;">Instalar TOPDRIVE</h3>
+    <p id="pwa-instalar-texto" class="panel-subtitle" style="margin-bottom:14px;">Instala la aplicación en tu dispositivo para acceder rápidamente</p>
+    
+    <!-- Instrucciones exclusivas para iPhone / iPad -->
+    <div id="pwa-instrucciones-ios" class="oculto" style="text-align:left; background:rgba(255,255,255,0.06); padding:12px 14px; border-radius:14px; margin-bottom:16px; font-size:0.82rem; color:#f6f6f6; border:1px solid rgba(254,215,0,0.32);">
+      <p style="font-weight:600; margin-bottom:6px; color:var(--primary-color);">Para instalar en tu iPhone / iPad:</p>
+      <ol style="padding-left:18px; line-height:1.5;">
+        <li>Presiona el botón <strong>Compartir</strong> <span style="font-size:1.1rem; vertical-align:middle;">⎋</span> en la barra inferior.</li>
+        <li>Busca y selecciona <strong>"Agregar al inicio"</strong> ➕.</li>
+      </ol>
+    </div>
+
+    <button type="button" id="btn-instalar-pwa" class="btn-main">Instalar aplicación</button>
+    <button type="button" id="btn-cerrar-instalar-pwa" class="btn-secondary" style="margin-top:8px;">Ahora no</button>
   </div>
 
   <!-- DOCUMENTACIÓN PARA EL VEHÍCULO (Conductor) -->
@@ -750,30 +774,6 @@
         Tus documentos se guardan de forma segura
       </p>
     </form>
-  </div>
-
-  <!-- ALERTA DE INSTALACIÓN PWA -->
-  <div id="modal-instalar-pwa" class="ui-panel oculto" style="z-index:3500; top:50%; bottom:auto; transform:translate(-50%, -50%);">
-    <!-- CONTENEDOR CON FONDO BLANCO SIEMPRE -->
-    <div style="display:flex; justify-content:center; margin-bottom:14px;">
-      <div style="background:#ffffff !important; padding:8px; border-radius:20px; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(0,0,0,0.3); border:1px solid rgba(254,215,0,0.45);">
-        <img src="icon-192.png" alt="TOPDRIVE Logo" style="width:60px; height:60px; border-radius:14px; object-fit:contain; display:block; background:#ffffff;">
-      </div>
-    </div>
-    <h3 class="panel-title" style="color:#FED700 !important;">Instalar TOPDRIVE</h3>
-    <p id="pwa-instalar-texto" class="panel-subtitle" style="margin-bottom:14px;">Instala la aplicación en tu dispositivo para acceder rápidamente</p>
-    
-    <!-- Instrucciones exclusivas para iPhone / iPad -->
-    <div id="pwa-instrucciones-ios" class="oculto" style="text-align:left; background:rgba(255,255,255,0.06); padding:12px 14px; border-radius:14px; margin-bottom:16px; font-size:0.82rem; color:#f6f6f6; border:1px solid rgba(254,215,0,0.32);">
-      <p style="font-weight:600; margin-bottom:6px; color:var(--primary-color);">Para instalar en tu iPhone / iPad:</p>
-      <ol style="padding-left:18px; line-height:1.5;">
-        <li>Presiona el botón <strong>Compartir</strong> <span style="font-size:1.1rem; vertical-align:middle;">⎋</span> en la barra inferior.</li>
-        <li>Busca y selecciona <strong>"Agregar al inicio"</strong> ➕.</li>
-      </ol>
-    </div>
-
-    <button type="button" id="btn-instalar-pwa" class="btn-main">Instalar aplicación</button>
-    <button type="button" id="btn-cerrar-instalar-pwa" class="btn-secondary" style="margin-top:8px;">Ahora no</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1040,6 +1040,9 @@
     const checkPoliticasRegistro = $('check-politicas-registro');
     const contenedorCheckPoliticas = $('contenedor-check-politicas');
     const btnGuardarRegistro = $('btn-guardar-registro');
+
+    // Inicializar correctamente el estado al inicio
+    actualizarEstadoPoliticas(checkPoliticasRegistro.checked);
 
     function actualizarEstadoPoliticas(aceptadas) {
       checkPoliticasRegistro.checked = aceptadas;
