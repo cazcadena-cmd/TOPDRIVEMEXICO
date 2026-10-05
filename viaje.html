@@ -996,7 +996,8 @@
       sonidoTopdrive(1);
       mostrarToast(t[2]);
       try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
-      notificarSistema(t[0], t[1], { tag: 'topdrive-estado-' + viajeId + '-' + grupo, viaje_id: viajeId, tipo: 'estado_viaje' });
+      /* forzar: aparece en la bandeja de notificaciones del móvil también con la página abierta */
+      notificarSistema(t[0], t[1], { forzar: true, tag: 'topdrive-estado-' + viajeId + '-' + grupo, viaje_id: viajeId, tipo: 'estado_viaje' });
     }
 
     /* Detecta un cambio de estado distinto al de la lectura anterior (la primera lectura nunca se anuncia) */
