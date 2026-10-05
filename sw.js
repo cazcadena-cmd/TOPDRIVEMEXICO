@@ -32,7 +32,7 @@ function datosNotificacion(payload) {
   if (!url && viajeId) {
     url = new URL('viaje.html?id=' + encodeURIComponent(viajeId) + '&rol=' + encodeURIComponent(rol), APP_SCOPE).href;
   }
-  if (!url) url = new URL('./', APP_SCOPE).href;
+  if (!url) url = new URL('app.html', APP_SCOPE).href;
 
   return {
     title: payload.title || anidado.title || 'TOPDRIVE',
@@ -69,7 +69,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const data = event.notification.data || {};
-  const destino = data.url || new URL('./', APP_SCOPE).href;
+  const destino = data.url || new URL('app.html', APP_SCOPE).href;
 
   event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientes) => {
     for (const cliente of clientes) {
