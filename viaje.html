@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0d1117">
   <title>TOPDRIVE · Estado del Viaje</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -401,6 +404,20 @@
     .llamada-estado{text-align:center;font-weight:800;font-size:1rem;margin-bottom:4px}
     .llamada-tiempo{text-align:center;color:var(--muted-text);font-size:.85rem;margin-bottom:10px}
     @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}}
+
+    /* AVISOS PUSH DEL VIAJE (activar notificaciones con la app cerrada) */
+    .avisos-card{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius);
+      background:linear-gradient(135deg,#ef4444,#c62828);color:#ffffff;box-shadow:0 10px 24px rgba(198,40,40,.28)}
+    .avisos-ico{flex-shrink:0;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.18)}
+    .avisos-ico svg{width:20px;height:20px}
+    .avisos-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+    .avisos-tit{font-size:.86rem;font-weight:800;line-height:1.25}
+    .avisos-sub{font-size:.74rem;font-weight:500;line-height:1.35;opacity:.95}
+    .avisos-btn{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;padding:9px 14px;border-radius:11px;
+      border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.16);color:#ffffff;font-size:.78rem;font-weight:800;cursor:pointer;transition:background .2s}
+    .avisos-btn:hover{background:rgba(255,255,255,.28)}
+    .avisos-btn:disabled{opacity:.6;cursor:not-allowed}
+    @media (max-width:420px){.avisos-card{flex-wrap:wrap}.avisos-btn{width:100%}}
   </style>
 </head>
 <body>
@@ -485,6 +502,18 @@
         <div class="step"><div class="step-icon">3</div><span class="step-text">En curso</span></div>
         <div class="step"><div class="step-icon">4</div><span class="step-text">Finalizado</span></div>
       </div>
+    </section>
+
+    <!-- AVISOS PUSH: activar notificaciones de cada cambio de estado (aunque la app esté cerrada) -->
+    <section class="avisos-card" id="card-avisos" style="display:none" role="status">
+      <div class="avisos-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="avisos-txt">
+        <span class="avisos-tit" id="avisos-tit">Activa los avisos de este viaje</span>
+        <span class="avisos-sub" id="avisos-sub">Te avisaremos de cada cambio del viaje, aunque cierres la app.</span>
+      </div>
+      <button type="button" class="avisos-btn" id="avisos-btn">Activar</button>
     </section>
 
     <!-- CONTRAPARTE -->
@@ -889,6 +918,8 @@
         /* Llegó un push (o se tocó una notificación): se lee el viaje y, si cambió de estado, suena y se avisa */
         if (d.tipo === 'push-estado' && (d.viaje_id == null || mismoId(d.viaje_id, viajeId))) obtenerDatosViaje(true);
         else if (d.tipo === 'abrir-viaje') obtenerDatosViaje(true);
+        /* El navegador renovó la suscripción push: se vuelve a registrar este dispositivo */
+        else if (d.tipo === 'renovar-push') registrarDispositivoPush(false);
       });
     }
 
@@ -938,7 +969,12 @@
       terminado:   ['🏁 Viaje finalizado', 'Gracias por viajar con TOPDRIVE. Toca para calificar tu experiencia.', 'Viaje finalizado'],
       cancelado:   ['❌ Viaje cancelado', 'Tu viaje fue cancelado. Puedes solicitar otro cuando quieras.', 'Tu viaje fue cancelado']
     };
+    /* Conductor: también se le avisa de cada cambio de estado que no haya hecho él mismo desde esta página */
     const AVISOS_CONDUCTOR = {
+      aceptado:    ['✅ Viaje asignado', 'Quedaste asignado a este viaje. Dirígete al punto de recogida.', 'Viaje asignado'],
+      en_camino:   ['🚗 En camino al origen', 'El viaje está en camino al punto de recogida del pasajero.', 'En camino al origen'],
+      en_progreso: ['🚖 Viaje en curso', 'El viaje inició. Conduce con seguridad hasta el destino.', 'Viaje en curso'],
+      terminado:   ['🏁 Viaje finalizado', 'El viaje se completó. ¡Gracias por conducir con TOPDRIVE!', 'Viaje finalizado'],
       cancelado:   ['❌ Viaje cancelado', 'El pasajero canceló el viaje.', 'El pasajero canceló el viaje']
     };
 
@@ -971,6 +1007,163 @@
       if (propioEstado === estado) { propioEstado = null; return; }  /* lo cambió este mismo usuario */
       anunciarEstado(estado);
     }
+
+    /* ============================================================
+       ALTA DE ESTE DISPOSITIVO PARA AVISOS PUSH (con la app cerrada)
+       Registra la suscripción del navegador en Supabase con la misma función que usa app.html
+       (bikar_registrar_push). El servidor (Edge Function topdrive-push) envía un aviso en cada
+       cambio de estado del viaje a los dispositivos registrados.
+       ============================================================ */
+    const VAPID_PUBLIC_KEY = 'BI2fmyQSPd3TPSs5jO-EFGNlXIeG5NnqjFRvAic7kc4nGNOgG2OHCjVDK5VOLHX35wmSuoRlDgUU2dro4K6GviQ';
+    const PUSH_SOPORTADO = window.isSecureContext && ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
+    const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || '');
+    const esPWAInstalada = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    let errorPush = '';
+
+    /* Sesión para los avisos: la de esta página o la que guarda app.html */
+    function sesionPush() { return usuarioSesion || lsJSON('bikar_usuario'); }
+
+    /* Evita que el botón se quede esperando para siempre si algo no responde */
+    function conLimite(promesa, ms, mensaje) {
+      let t;
+      return Promise.race([
+        Promise.resolve(promesa),
+        new Promise((_, rechazar) => { t = setTimeout(() => rechazar(new Error(mensaje)), ms); })
+      ]).finally(() => clearTimeout(t));
+    }
+
+    /* Pide el permiso de notificaciones (compatible con la versión antigua de Safari basada en callback) */
+    function pedirPermisoNotificaciones() {
+      return new Promise((resolve) => {
+        let hecho = false;
+        const fin = (p) => { if (hecho) return; hecho = true; resolve(p || Notification.permission); };
+        try {
+          const r = Notification.requestPermission(fin);
+          if (r && typeof r.then === 'function') r.then(fin, () => fin());
+        } catch (e) { fin(); }
+        setTimeout(() => fin(), 60000);
+      });
+    }
+
+    function b64UrlABytes(b64) {
+      const pad = '='.repeat((4 - b64.length % 4) % 4);
+      const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+      const out = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+      return out;
+    }
+    function bytesAB64Url(buf) {
+      if (!buf) return '';
+      const bytes = new Uint8Array(buf);
+      let s = '';
+      for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+      return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    async function registrarDispositivoPush(pedirPermiso) {
+      errorPush = '';
+      const u = sesionPush();
+      if (!PUSH_SOPORTADO) { errorPush = 'Este navegador no admite notificaciones push (se requiere HTTPS y un navegador actualizado).'; return false; }
+      if (!db) { errorPush = 'Sin conexión con Supabase.'; return false; }
+      if (!u || u.id == null) { errorPush = 'Inicia sesión en TOPDRIVE para activar los avisos.'; return false; }
+      try {
+        let permiso = Notification.permission;
+        if (permiso === 'default' && pedirPermiso) permiso = await pedirPermisoNotificaciones();
+        if (permiso !== 'granted') {
+          errorPush = permiso === 'denied'
+            ? 'Las notificaciones están bloqueadas en el navegador.'
+            : 'El navegador no mostró la ventana de permiso. Toca el candado junto a la dirección web → Permisos → Notificaciones → Permitir, y vuelve a intentarlo.';
+          return false;
+        }
+        const reg = swRegistro || await registrarServiceWorker();
+        if (!reg) { errorPush = 'No se pudo instalar sw.js (debe estar en la misma carpeta que viaje.html).'; return false; }
+        await conLimite(navigator.serviceWorker.ready, 15000, 'El service worker (sw.js) no se activó.');
+
+        let sub = await conLimite(reg.pushManager.getSubscription(), 10000, 'El navegador no respondió al consultar la suscripción push.');
+        /* Si la llave VAPID cambió, se renueva la suscripción */
+        if (sub && sub.options && sub.options.applicationServerKey &&
+            bytesAB64Url(sub.options.applicationServerKey) !== VAPID_PUBLIC_KEY) {
+          try { await sub.unsubscribe(); } catch (e) {}
+          sub = null;
+        }
+        if (!sub) {
+          sub = await conLimite(
+            reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64UrlABytes(VAPID_PUBLIC_KEY) }),
+            20000, 'El servicio push del navegador no respondió. Revisa tu conexión.');
+        }
+
+        const keys = (sub.toJSON() || {}).keys || {};
+        const esCond = String(u.tipo_usuario || '').toLowerCase() === 'conductor';
+        const r = await conLimite(db.rpc('bikar_registrar_push', {
+          p_usuario_id: String(u.id),
+          p_rol: esCond ? 'conductor' : 'pasajero',
+          p_servicio: esCond ? (normalizarClaveServicio(u.tipo_servicio || u.servicio) || null) : null,
+          p_endpoint: sub.endpoint,
+          p_p256dh: keys.p256dh || '',
+          p_auth: keys.auth || '',
+          p_url_app: new URL('app.html', location.href).href,
+          p_user_agent: (navigator.userAgent || '').slice(0, 250)
+        }), 15000, 'Supabase no respondió al registrar el dispositivo.');
+        if (r && r.error) { errorPush = 'Supabase: ' + (r.error.message || 'no se pudo registrar el dispositivo.'); return false; }
+        return true;
+      } catch (e) {
+        errorPush = (e && e.message) || 'No se pudieron activar los avisos.';
+        return false;
+      }
+    }
+
+    function pintarAvisosPush(estado) {
+      const card = $('card-avisos');
+      if (!card) return;
+      const esCond = rolUsuario === 'conductor';
+      const textos = {
+        activar:   ['Activa los avisos de este viaje',
+                    esCond ? 'Te avisaremos de cada cambio del viaje (por ejemplo, si el pasajero cancela), aunque cierres la app.'
+                           : 'Te avisaremos cuando tu conductor acepte, vaya en camino, inicie o finalice el viaje, aunque cierres la app.',
+                    'Activar'],
+        bloqueado: ['Notificaciones bloqueadas', 'Permite las notificaciones de TOPDRIVE en los ajustes del navegador (candado junto a la dirección web) para recibir los avisos del viaje.', null],
+        instalar:  ['Instala TOPDRIVE en tu iPhone', 'Toca Compartir → «Añadir a pantalla de inicio», abre TOPDRIVE desde su icono y activa los avisos.', null],
+        error:     ['No se pudieron activar los avisos', errorPush || 'Inténtalo de nuevo.', 'Reintentar']
+      };
+      const x = textos[estado];
+      if (!x) { card.style.display = 'none'; return; }
+      $('avisos-tit').textContent = x[0];
+      $('avisos-sub').textContent = x[1];
+      const b = $('avisos-btn');
+      if (x[2]) { b.textContent = x[2]; b.style.display = 'inline-flex'; }
+      else b.style.display = 'none';
+      card.style.display = 'flex';
+    }
+
+    /* Al abrir la página: si ya hay permiso se renueva el registro en silencio; si no, se muestra el aviso para activarlo */
+    async function revisarAvisosPush() {
+      const u = sesionPush();
+      if (!u || u.id == null) { pintarAvisosPush(null); return; }
+      if (!PUSH_SOPORTADO) { pintarAvisosPush(esIOS && !esPWAInstalada() ? 'instalar' : null); return; }
+      if (Notification.permission === 'denied') { pintarAvisosPush('bloqueado'); return; }
+      if (Notification.permission === 'default') { pintarAvisosPush('activar'); return; }
+      const ok = await registrarDispositivoPush(false);
+      pintarAvisosPush(ok ? null : 'error');
+    }
+
+    $('avisos-btn').addEventListener('click', async () => {
+      const b = $('avisos-btn');
+      b.disabled = true;
+      b.textContent = 'Activando…';
+      let ok = false;
+      try { ok = await registrarDispositivoPush(true); }
+      finally { b.disabled = false; }
+      if (ok) {
+        pintarAvisosPush(null);
+        mostrarToast('Avisos activados · Te avisaremos de cada cambio del viaje');
+        sonidoTopdrive(1);
+        notificarSistema('🔔 TOPDRIVE · Avisos activados', 'Así te llegarán los avisos de este viaje.', { forzar: true, tag: 'topdrive-prueba' });
+      } else {
+        const bloqueado = ('Notification' in window) && Notification.permission === 'denied';
+        pintarAvisosPush(bloqueado ? 'bloqueado' : 'error');
+        mostrarToast('No se activaron los avisos');
+      }
+    });
 
     /* ============================================================
        Consultas tolerantes
@@ -2141,6 +2334,7 @@ function obtenerFotoVehiculo(info, v) {
       if (!urlParams.get('rol') && usuarioSesion && usuarioSesion.tipo_usuario === 'conductor') rolUsuario = 'conductor';
 
       registrarServiceWorker();   /* habilita los avisos push y las notificaciones del sistema en esta página */
+      revisarAvisosPush();        /* registra (o pide activar) los avisos push de este viaje en este dispositivo */
 
       personaFoto.src = avatarDe('B');
       personaFoto.addEventListener('error', function () { this.src = avatarDe(personaNombre.textContent || 'B'); });
