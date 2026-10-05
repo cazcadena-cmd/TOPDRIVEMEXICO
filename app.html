@@ -943,9 +943,19 @@
     const URL_SW = "sw.js";
     const VAPID_PUBLIC_KEY = "BI2fmyQSPd3TPSs5jO-EFGNlXIeG5NnqjFRvAic7kc4nGNOgG2OHCjVDK5VOLHX35wmSuoRlDgUU2dro4K6GviQ";
     function urlEnApp(archivo) {
-      const path = location.pathname || '/';
-      const dir = /\/$/.test(path) ? path : path.replace(/[^/]+$/, '');
-      return dir + String(archivo || '').replace(/^\.?\//, '');
+      const known = 'https://cazcadena-cmd.github.io/TOPDRIVEMEXICO/';
+      let base = known;
+      try {
+        if (location.hostname !== 'cazcadena-cmd.github.io') {
+          const path = location.pathname || '/';
+          let dir;
+          if (path.endsWith('/')) dir = path;
+          else if (/\.[a-z0-9]+$/i.test((path.split('/').pop() || ''))) dir = path.replace(/[^/]+$/, '');
+          else dir = path + '/';
+          base = location.origin + dir;
+        }
+      } catch (e) {}
+      return new URL(String(archivo || ''), base).href;
     }
 
     const K_SESION = "bikar_usuario";
@@ -1544,9 +1554,11 @@
        - Sonido TOPDRIVE sintetizado con Web Audio cuando la app está abierta (primer plano o segundo plano).
        - Un conductor con push activo sigue contando como ACTIVO aunque cierre la app.
     ============================================================================================ */
-    const PUSH_SOPORTADO = ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window) && (window.isSecureContext || location.hostname === 'localhost');
+    const PUSH_SOPORTADO = ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window) && (window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
     const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent || '');
+    const esNavegadorInApp = /FBAN|FBAV|Instagram|Line\/|WhatsApp|Snapchat|TikTok|Twitter/i.test(navigator.userAgent || '');
     const esPWAInstalada = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    let ultimoErrorPush = '';
     const esConductorSesion = () => !!usuarioActual && String(usuarioActual.tipo_usuario || '').toLowerCase() === 'conductor';
     const vapidListo = () => !!VAPID_PUBLIC_KEY && !/^PEGA/i.test(VAPID_PUBLIC_KEY) && VAPID_PUBLIC_KEY.length > 40;
 
@@ -1626,15 +1638,25 @@
         swListenerOk = true;
         navigator.serviceWorker.addEventListener('message', alMensajeServiceWorker);
       }
-      if (swRegistro) return swRegistro;
+      if (swRegistro && swRegistro.active) return swRegistro;
       try {
         swRegistro = await navigator.serviceWorker.register(urlEnApp(URL_SW), {
-          scope: urlEnApp(''),
+          scope: urlEnApp('./'),
           updateViaCache: 'none'
         });
+        const waiting = swRegistro.installing || swRegistro.waiting;
+        if (waiting) {
+          await new Promise((resolve) => {
+            const listo = () => { if (waiting.state === 'activated' || waiting.state === 'redundant') resolve(); };
+            waiting.addEventListener('statechange', listo);
+            setTimeout(resolve, 4000);
+          });
+        }
+        await navigator.serviceWorker.ready;
         return swRegistro;
       } catch (e) {
-        console.warn('Service Worker no disponible:', e && e.message);
+        ultimoErrorPush = (e && e.message) || 'No se pudo registrar sw.js';
+        console.warn('Service Worker no disponible:', ultimoErrorPush);
         return null;
       }
     }
@@ -1675,9 +1697,61 @@
       return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     }
 
+    async function guardarSuscripcionPush(sub, rolPush, idUsuarioPush) {
+      const j = sub.toJSON(), keys = j.keys || {};
+      const fila = {
+        usuario_id: String(idUsuarioPush),
+        rol: rolPush,
+        servicio: rolPush === 'conductor' ? (claveServicioConductor || null) : null,
+        endpoint: sub.endpoint,
+        p256dh: keys.p256dh || '',
+        auth: keys.auth || '',
+        url_app: location.href.split('#')[0].split('?')[0],
+        user_agent: (navigator.userAgent || '').slice(0, 250),
+        activo: true
+      };
+      if (!db) return false;
+      try {
+        const rpc = await db.rpc('bikar_registrar_push', {
+          p_usuario_id: fila.usuario_id,
+          p_rol: fila.rol,
+          p_servicio: fila.servicio,
+          p_endpoint: fila.endpoint,
+          p_p256dh: fila.p256dh,
+          p_auth: fila.auth,
+          p_url_app: fila.url_app,
+          p_user_agent: fila.user_agent
+        });
+        if (!rpc.error) return true;
+        console.warn('Push RPC:', rpc.error.message);
+        ultimoErrorPush = rpc.error.message;
+      } catch (e) {
+        ultimoErrorPush = (e && e.message) || 'Error RPC';
+      }
+      try {
+        const ins = await db.from('push_suscripciones').upsert({
+          usuario_id: fila.usuario_id,
+          rol: fila.rol,
+          servicio: fila.servicio,
+          endpoint: fila.endpoint,
+          p256dh: fila.p256dh,
+          auth: fila.auth,
+          url_app: fila.url_app,
+          user_agent: fila.user_agent,
+          activo: true
+        }, { onConflict: 'endpoint' });
+        if (!ins.error) return true;
+        console.warn('Push tabla:', ins.error.message);
+        ultimoErrorPush = ins.error.message;
+      } catch (e) {
+        ultimoErrorPush = (e && e.message) || 'No se pudo guardar la suscripción';
+      }
+      return false;
+    }
+
     async function suscribirPush(pedirPermiso) {
       const idUsuarioPush = usuarioActual && (usuarioActual.id ?? usuarioActual.Id);
-      if (!db || idUsuarioPush == null || !PUSH_SOPORTADO) return false;
+      if (!PUSH_SOPORTADO) return false;
       const rolPush = esConductorSesion() ? 'conductor' : 'pasajero';
       if (!vapidListo()) { console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.'); return false; }
       try {
@@ -1701,24 +1775,14 @@
           sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY) });
         }
 
-        const j = sub.toJSON(), keys = j.keys || {};
-        const { error } = await db.rpc('bikar_registrar_push', {
-          p_usuario_id: String(idUsuarioPush),
-          p_rol: rolPush,
-          p_servicio: rolPush === 'conductor' ? (claveServicioConductor || null) : null,
-          p_endpoint: sub.endpoint,
-          p_p256dh: keys.p256dh || '',
-          p_auth: keys.auth || '',
-          p_url_app: location.href.split('#')[0].split('?')[0],
-          p_user_agent: (navigator.userAgent || '').slice(0, 250)
-        });
-        if (error) {
-          console.warn('Push: no se pudo registrar la suscripción (¿ejecutaste supabase_push.sql?):', error.message);
-          return false;
-        }
         pushSuscrito = true;
+        if (idUsuarioPush != null) {
+          const guardado = await guardarSuscripcionPush(sub, rolPush, idUsuarioPush);
+          if (!guardado) console.warn('Push: permiso local activo, pero no se guardó en Supabase:', ultimoErrorPush);
+        }
         return true;
       } catch (e) {
+        ultimoErrorPush = (e && e.message) || 'Error al activar avisos';
         console.error('Push: error al suscribir:', e);
         return false;
       }
@@ -1761,9 +1825,10 @@
         const opciones = {
           body: cuerpo || '', icon: icono, tag: op.tag || 'topdrive-aviso',
           renotify: false, silent: false, requireInteraction: !!op.persistente,
-          vibrate: op.vibrar || [250, 100, 250, 100, 400], timestamp: Date.now(),
+          timestamp: Date.now(),
           data: { url: op.url || urlAppBase(), viaje_id: op.viaje_id || null, tipo: op.tipo || null }
         };
+        if (op.vibrar) opciones.vibrate = op.vibrar;
 
         let reg = null;
         if ('serviceWorker' in navigator) {
@@ -1803,6 +1868,11 @@
     // Pasajero: pide el permiso y registra este dispositivo para recibir los avisos de su viaje
     async function iniciarPushPasajero(pedirPermiso) {
       if (!usuarioActual || esConductorSesion()) return false;
+      if (esNavegadorInApp) {
+        pushSuscrito = false;
+        pintarAvisoPush('nosoportado');
+        return false;
+      }
       if (esIOS && !esPWAInstalada()) {
         pushSuscrito = false;
         pintarAvisoPush('instalar');
@@ -1888,14 +1958,14 @@
         activar:     { t: 'Activa los avisos de tu viaje', s: 'Te avisaremos cuando un conductor acepte tu viaje, llegue o lo cancele, aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
         bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de TOPDRIVE en los ajustes del navegador o del sitio para recibir los avisos de tu viaje.', b: null, alerta: true },
         instalar:    { t: 'Instala TOPDRIVE en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre TOPDRIVE desde su icono y activa los avisos.', b: null, alerta: false },
-        nosoportado: { t: 'Avisos push no disponibles', s: 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir los avisos de tu viaje.', b: null, alerta: true },
-        error:       { t: 'No se pudieron activar los avisos', s: 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
+        nosoportado: { t: 'Avisos push no disponibles', s: esNavegadorInApp ? 'Ábrelo en Chrome o Safari, no dentro de otra app.' : 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir los avisos de tu viaje.', b: null, alerta: true },
+        error:       { t: 'No se pudieron activar los avisos', s: ultimoErrorPush || 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
       } : {
         activar:     { t: 'Activa los avisos de viajes', s: 'Recibe cada solicitud con el sonido TOPDRIVE aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
         bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de TOPDRIVE en los ajustes del navegador o del sitio para recibir viajes con la app cerrada.', b: null, alerta: true },
         instalar:    { t: 'Instala TOPDRIVE en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre TOPDRIVE desde su icono y activa los avisos.', b: null, alerta: false },
-        nosoportado: { t: 'Avisos push no disponibles', s: 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir viajes con la app cerrada.', b: null, alerta: true },
-        error:       { t: 'No se pudieron activar los avisos', s: 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
+        nosoportado: { t: 'Avisos push no disponibles', s: esNavegadorInApp ? 'Ábrelo en Chrome o Safari, no dentro de otra app.' : 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir viajes con la app cerrada.', b: null, alerta: true },
+        error:       { t: 'No se pudieron activar los avisos', s: ultimoErrorPush || 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
       };
       const x = textos[estado];
       if (!x) { caja.classList.add('oculto'); return; }
@@ -1909,6 +1979,11 @@
 
     async function iniciarPushConductor(pedirPermiso) {
       if (!usuarioActual || !esConductorSesion()) return;
+      if (esNavegadorInApp) {
+        pushSuscrito = false;
+        pintarAvisoPush('nosoportado');
+        return;
+      }
       if (esIOS && !esPWAInstalada()) {
         pushSuscrito = false;
         pintarAvisoPush('instalar');
@@ -1939,36 +2014,46 @@
       else pintarAvisoPush('error');
     }
 
-    btnActivarPush.addEventListener('click', async () => {
+    async function alPulsarActivarPush(esPasajero) {
       desbloquearAudio();
-      btnActivarPush.disabled = true;
-      await iniciarPushConductor(true);
-      btnActivarPush.disabled = false;
-      const permitido = ('Notification' in window) && Notification.permission === 'granted';
-      if (pushSuscrito || permitido) {
-        mostrarToast(pushSuscrito
-          ? 'Notificaciones activadas · Recibirás los viajes con la app cerrada'
-          : 'Notificaciones activadas en este dispositivo', '✓');
-        sonidoNuevoViaje(1);
-        notificarSistema('🔔 TOPDRIVE · Avisos activados', 'Así te llegarán las solicitudes de viaje.', { forzar: true, tag: 'topdrive-prueba' });
+      const btn = esPasajero ? btnActivarPushPas : btnActivarPush;
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Activando…';
       }
-    });
-
-    // Botón «Activar» del pasajero
-    btnActivarPushPas.addEventListener('click', async () => {
-      desbloquearAudio();
-      btnActivarPushPas.disabled = true;
-      await iniciarPushPasajero(true);
-      btnActivarPushPas.disabled = false;
-      const permitido = ('Notification' in window) && Notification.permission === 'granted';
-      if (pushSuscrito || permitido) {
-        mostrarToast(pushSuscrito
-          ? 'Notificaciones activadas · Te avisaremos de tu viaje aunque cierres la app'
-          : 'Notificaciones activadas en este dispositivo', '✓');
-        sonidoNuevoViaje(1);
-        notificarSistema('🔔 TOPDRIVE · Avisos activados', 'Así te llegarán los avisos de tu viaje.', { forzar: true, tag: 'topdrive-prueba' });
+      try {
+        if (esPasajero) await iniciarPushPasajero(true);
+        else await iniciarPushConductor(true);
+        const permitido = ('Notification' in window) && Notification.permission === 'granted';
+        if (pushSuscrito || permitido) {
+          pintarAvisoPush(null);
+          mostrarToast(pushSuscrito
+            ? (esPasajero
+              ? 'Notificaciones activadas · Te avisaremos de tu viaje aunque cierres la app'
+              : 'Notificaciones activadas · Recibirás los viajes con la app cerrada')
+            : 'Notificaciones activadas en este dispositivo', '✓');
+          sonidoNuevoViaje(1);
+          try {
+            await notificarSistema(
+              '🔔 TOPDRIVE · Avisos activados',
+              esPasajero ? 'Así te llegarán los avisos de tu viaje.' : 'Así te llegarán las solicitudes de viaje.',
+              { forzar: true, tag: 'topdrive-prueba' }
+            );
+          } catch (e) {}
+        }
+      } catch (e) {
+        ultimoErrorPush = (e && e.message) || 'Error al activar avisos';
+        pintarAvisoPush('error');
+        mostrarToast(ultimoErrorPush, '!');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          if (!pushSuscrito) btn.textContent = 'Activar';
+        }
       }
-    });
+    }
+    btnActivarPush.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); alPulsarActivarPush(false); });
+    btnActivarPushPas.addEventListener('click', (ev) => { ev.preventDefault(); ev.stopPropagation(); alPulsarActivarPush(true); });
 
     /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO Y CONDUCTOR) ============================ */
     function aplicarColorEstadoAlerta(clase) {
