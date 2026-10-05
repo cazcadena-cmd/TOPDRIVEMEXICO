@@ -310,11 +310,9 @@
     .pwa-logo-inner{background:#ffffff!important;padding:8px;border-radius:20px;display:inline-flex;align-items:center;justify-content:center;
       box-shadow:0 8px 24px rgba(0,0,0,.35);border:1px solid rgba(254,215,0,.45)}
     .pwa-logo-inner img{width:64px;height:64px;border-radius:14px;object-fit:contain;display:block;background:#ffffff}
-    .pwa-caja{text-align:left;background:rgba(254,215,0,.10);padding:12px 14px;border-radius:14px;margin-bottom:14px;font-size:.8rem;
-      color:var(--text-color)!important;border:1px solid rgba(254,215,0,.32)}
-    .pwa-caja p{font-weight:700;margin-bottom:6px;color:var(--primary-color)!important}
-    .pwa-caja ol{padding-left:18px;line-height:1.55}
-    .pwa-caja strong{color:var(--primary-color)!important}
+    .pwa-logo-fallback{display:none;width:64px;height:64px;border-radius:14px;place-items:center;
+      font-family:"Space Grotesk","Inter",sans-serif;font-size:1.5rem;font-weight:800;color:#1d1d1d;
+      background:linear-gradient(145deg,#fed700,#ffe14d);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
 
     /* ============================================================
        POLÍTICAS DE PROTECCIÓN DE DATOS (LEGAL)
@@ -716,22 +714,18 @@
     </form>
   </div>
 
-  <!-- ================= MODAL DE INSTALACIÓN ================= -->
+  <!-- ================= MODAL DE INSTALACIÓN (solo logo + 2 botones) ================= -->
   <div id="modal-instalar-pwa" class="oculto" role="dialog" aria-modal="true" aria-labelledby="pwa-titulo">
     <div class="pwa-logo-box">
       <div class="pwa-logo-inner">
-        <img src="icon-192.png" alt="TOPDRIVE" onerror="this.style.display='none'">
+        <img id="pwa-logo-img" src="" alt="TOPDRIVE" style="display:none">
+        <div id="pwa-logo-fallback" class="pwa-logo-fallback">TD</div>
       </div>
     </div>
     <h3 id="pwa-titulo" class="panel-title">Instalar TOPDRIVE</h3>
-    <p id="pwa-instalar-texto" class="panel-subtitle">Instala la aplicación en tu dispositivo</p>
+    <p id="pwa-instalar-texto" class="panel-subtitle">Instala la app en tu dispositivo</p>
 
-    <div id="pwa-caja-manual" class="pwa-caja oculto">
-      <p id="pwa-manual-titulo">Instalación manual:</p>
-      <ol id="pwa-manual-pasos"></ol>
-    </div>
-
-    <button type="button" id="btn-instalar-pwa" class="btn-main">Instalar aplicación</button>
+    <button type="button" id="btn-instalar-pwa" class="btn-main">Instalar</button>
     <button type="button" id="btn-cerrar-instalar-pwa" class="btn-secondary" style="margin-top:8px">Ahora no</button>
   </div>
 
@@ -1331,60 +1325,92 @@
     })();
 
     /* ============================================================
-       INSTALACIÓN PWA
-       Android (Chrome/Edge/Samsung): aparece el botón y al pulsarlo
-       se abre el diálogo nativo "Instalar aplicación".
-       Otros navegadores: se muestran instrucciones manuales.
+       1) LOGO REAL DE LA APP
+       Se toma de manifest.json (icons → el más grande) y, si falla,
+       se prueban rutas comunes. Si nada carga, se muestra "TD".
+       ============================================================ */
+    (function logoApp() {
+      const img = $('pwa-logo-img');
+      const fallback = $('pwa-logo-fallback');
+      if (!img) return;
+
+      const RUTAS = [
+        'icon-512.png', 'icon-192.png', './icon-512.png', './icon-192.png',
+        'icons/icon-512.png', 'icons/icon-192.png',
+        'images/icon-512.png', 'images/icon-192.png',
+        'assets/icon-192.png', 'logo.png', 'logo-192.png',
+        'favicon-192.png', 'favicon.png', 'apple-touch-icon.png'
+      ];
+      let candidatos = [];
+      let i = 0;
+
+      function probar() {
+        if (!candidatos.length) return;
+        if (i >= candidatos.length) {
+          img.style.display = 'none';
+          if (fallback) fallback.style.display = 'grid';
+          console.warn('[PWA] Ningún icono cargó. Verifica que icon-192.png / icon-512.png estén en la raíz del repo.');
+          return;
+        }
+        const url = candidatos[i++];
+        const test = new Image();
+        test.onload = function () {
+          img.style.display = 'block';
+          img.src = url;
+          if (fallback) fallback.style.display = 'none';
+          console.log('[PWA] Logo de la app cargado:', url);
+        };
+        test.onerror = function () { probar(); };
+        test.src = url;
+      }
+
+      (async function () {
+        const desdeManifest = [];
+        try {
+          const link = document.querySelector('link[rel="manifest"]');
+          if (link) {
+            const res = await fetch(link.href, { cache: 'no-store' });
+            if (res.ok) {
+              const manifest = await res.json();
+              (manifest.icons || [])
+                .slice()
+                .sort((a, b) => {
+                  const pa = parseInt((a.sizes || '0').split('x')[0]) || 0;
+                  const pb = parseInt((b.sizes || '0').split('x')[0]) || 0;
+                  return pb - pa;
+                })
+                .forEach((ic) => {
+                  if (ic.src) desdeManifest.push(new URL(ic.src, link.href).href);
+                });
+            }
+          }
+        } catch (e) { console.warn('[PWA] No se pudo leer manifest.json:', e.message); }
+
+        candidatos = [...new Set([
+          ...desdeManifest,
+          ...RUTAS.map((p) => new URL(p, location.href).href)
+        ])];
+        probar();
+      })();
+    })();
+
+    /* ============================================================
+       2) INSTALACIÓN PWA · SOLO DOS BOTONES: "Instalar" / "Ahora no"
        ============================================================ */
     (function pwa() {
       const modal = $('modal-instalar-pwa');
       const btnInstalar = $('btn-instalar-pwa');
       const btnCerrar = $('btn-cerrar-instalar-pwa');
       const btnChip = $('btn-abrir-instalar-pwa');
-      const cajaManual = $('pwa-caja-manual');
-      const manualTitulo = $('pwa-manual-titulo');
-      const manualPasos = $('pwa-manual-pasos');
-      const texto = $('pwa-instalar-texto');
-      if (!modal) return;
+      if (!modal || !btnInstalar || !btnCerrar) return;
 
       let promptEvent = window.__tdPrompt || null;
 
-      const esStandalone = window.matchMedia('(display-mode: standalone)').matches
+      const yaInstalada = window.matchMedia('(display-mode: standalone)').matches
         || window.matchMedia('(display-mode: minimal-ui)').matches
+        || window.matchMedia('(display-mode: fullscreen)').matches
         || window.navigator.standalone === true
         || window.__tdInstalada === true;
-
-      const esIos = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
-      const esAndroid = /Android/i.test(navigator.userAgent);
-      const esEscritorio = !esIos && !esAndroid;
-
-      function instrucciones() {
-        if (esIos) {
-          manualTitulo.innerText = "Para instalar en iPhone / iPad:";
-          manualPasos.innerHTML = `<li>Presiona el botón <strong>Compartir</strong> abajo.</li><li>Elige <strong>"Agregar al inicio"</strong>.</li><li>Toca <strong>Agregar</strong>.</li>`;
-        } else if (esAndroid) {
-          manualTitulo.innerText = "Instalación manual en Android:";
-          manualPasos.innerHTML = `<li>Abre el menú del navegador <strong>⋮</strong> (arriba a la derecha).</li><li>Toca <strong>"Instalar aplicación"</strong> o <strong>"Agregar a pantalla de inicio"</strong>.</li><li>Confirma con <strong>Instalar</strong>.</li>`;
-        } else {
-          manualTitulo.innerText = "Instalación en computadora:";
-          manualPasos.innerHTML = `<li>Busca el icono <strong>⊕ Instalar</strong> en la barra de direcciones.</li><li>O abre el menú <strong>⋮</strong> → <strong>Instalar TOPDRIVE</strong>.</li>`;
-        }
-        cajaManual.classList.remove('oculto');
-      }
-
-      function refrescar() {
-        const nativo = !!promptEvent;
-        btnInstalar.classList.toggle('oculto', !nativo);
-        if (nativo) {
-          cajaManual.classList.add('oculto');
-          texto.innerText = "Instala TOPDRIVE en tu pantalla de inicio y ábrela como una app.";
-        } else {
-          instrucciones();
-          texto.innerText = esIos
-            ? "Agrega TOPDRIVE a tu pantalla de inicio en 3 pasos."
-            : "Tu navegador no mostró el aviso automático. Hazlo en 3 pasos:";
-        }
-      }
 
       function forzarVisible() {
         modal.style.setProperty('display', 'block', 'important');
@@ -1398,34 +1424,29 @@
       }
 
       function abrir() {
-        if (esStandalone) { if (btnChip) btnChip.classList.add('oculto'); return; }
-        refrescar();
+        if (yaInstalada) { if (btnChip) btnChip.classList.add('oculto'); return; }
         modal.classList.remove('oculto');
         forzarVisible();
         if (btnChip) btnChip.classList.add('oculto');
       }
       function cerrar() {
         modal.classList.add('oculto');
-        if (btnChip && !esStandalone) btnChip.classList.remove('oculto');
+        if (btnChip && !yaInstalada) btnChip.classList.remove('oculto');
       }
-
       window.topdriveInstalar = abrir;
 
-      /* Mostrar al cargar (espera breve para que el SW/manifest estén listos) */
-      setTimeout(() => { if (!esStandalone) { refrescar(); abrir(); } }, 900);
+      /* Mostrar automáticamente al entrar */
+      setTimeout(abrir, 900);
 
-      /* El navegador ya avisó que se puede instalar → botón nativo */
+      /* El navegador habilitó la instalación nativa */
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         promptEvent = e;
         window.__tdPrompt = e;
-        btnInstalar.classList.remove('oculto');
-        cajaManual.classList.add('oculto');
-        texto.innerText = "Instala TOPDRIVE en tu pantalla de inicio y ábrela como una app.";
-        if (!esStandalone) { modal.classList.remove('oculto'); forzarVisible(); if (btnChip) btnChip.classList.add('oculto'); }
+        if (!yaInstalada) abrir();
       });
 
-      /* Instalación completada */
+      /* Instalación terminada */
       window.addEventListener('appinstalled', () => {
         window.__tdInstalada = true;
         promptEvent = null;
@@ -1434,27 +1455,33 @@
         mostrarAlerta("¡TOPDRIVE se instaló correctamente!", "exito");
       });
 
-      /* Botón principal */
+      /* BOTÓN "Instalar" */
       btnInstalar.addEventListener('click', async () => {
-        if (!promptEvent) { refrescar(); return; }
-        btnInstalar.innerText = "Abriendo...";
+        if (!promptEvent) {
+          cerrar();
+          mostrarAlerta('Usa el menú del navegador y elige "Instalar aplicación".', 'info');
+          return;
+        }
+        btnInstalar.innerText = "Instalando...";
+        btnInstalar.disabled = true;
         try {
           promptEvent.prompt();
           const r = await promptEvent.userChoice;
-          console.log('[PWA] Resultado instalación:', r && r.outcome);
+          console.log('[PWA] Resultado:', r && r.outcome);
           promptEvent = null;
-        } catch (err) { console.warn('[PWA] Error instalador:', err); }
-        btnInstalar.innerText = "Instalar aplicación";
+        } catch (err) { console.warn('[PWA] Error en el instalador:', err); }
+        btnInstalar.innerText = "Instalar";
+        btnInstalar.disabled = false;
         cerrar();
       });
 
+      /* BOTÓN "Ahora no" */
       btnCerrar.addEventListener('click', cerrar);
+
       if (btnChip) {
         btnChip.addEventListener('click', abrir);
-        if (esStandalone) btnChip.classList.add('oculto');
+        if (yaInstalada) btnChip.classList.add('oculto');
       }
-
-      console.log('[PWA] standalone:', esStandalone, '| Android:', esAndroid, '| iOS:', esIos);
     })();
   </script>
 </body>
