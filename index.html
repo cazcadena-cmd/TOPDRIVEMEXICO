@@ -12,17 +12,17 @@
   <style>
     /* ============================================================
        TOPDRIVE · PARTE 1/2 · AUTENTICACIÓN
-       Paleta: #FED700 · #1d1d1d · #52A6C8 · #f2f4f7 · #ffffff · #262626
+       Paleta: #FED700 · #1d1d1d · #fed700 · #f2f4f7 · #ffffff · #262626
        ============================================================ */
     :root{
       --bg-color:#f2f4f7; --card-bg:#ffffff; --text-color:#1d1d1d; --primary-color:#fed700;
-      --primary-hover:#e5c200; --border-color:#e2e5ea; --deep-blue:#52a6c8; --muted-text:#6b7280;
+      --primary-hover:#e5c200; --border-color:#e2e5ea; --deep-blue:#fed700; --muted-text:#6b7280;
       --on-primary:#1d1d1d;
       --glass-bg:rgba(255,255,255,.82); --glass-bg-strong:rgba(255,255,255,.96);
       --glass-border:rgba(29,29,29,.10); --glass-highlight:rgba(255,255,255,.95);
       --field-bg:rgba(255,255,255,.92); --field-border:rgba(29,29,29,.13);
       --glow:rgba(254,215,0,.26); --glow-strong:rgba(254,215,0,.45);
-      --shadow:0 24px 60px rgba(29,29,29,.16); --grid-line:rgba(82,166,200,.16);
+      --shadow:0 24px 60px rgba(29,29,29,.16); --grid-line:rgba(254,215,0,.16);
       --modal-box-bg:rgba(255,255,255,.93);
       --modal-box-title:#1d1d1d;
       --legal-box-bg:rgba(244,246,248,.95);
@@ -70,7 +70,7 @@
     .pantalla-inicio{position:absolute;inset:0;z-index:2500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
       padding:24px 20px;text-align:center;overflow-x:hidden;overflow-y:auto;isolation:isolate;
       background:radial-gradient(900px 520px at 15% -10%,var(--glow),transparent 60%),
-                 radial-gradient(800px 520px at 110% 110%,rgba(82,166,200,.32),transparent 60%),
+                 radial-gradient(800px 520px at 110% 110%,rgba(254,215,0,.32),transparent 60%),
                  linear-gradient(180deg,rgba(18,18,18,.55),rgba(18,18,18,.82)),
                  url("images/topdrive-hero.jpg") center/cover no-repeat;
       animation:fadeIn .6s ease both}
@@ -106,7 +106,7 @@
     .tarjeta-rol:hover::after{transform:translateX(4px) rotate(45deg)}
     .tarjeta-rol:active{transform:translateY(0) scale(.99)}
     .rol-icon{display:grid;place-items:center;width:40px;height:40px;flex-shrink:0;border-radius:12px;
-      background:linear-gradient(145deg,rgba(254,215,0,.22),rgba(82,166,200,.16));border:1px solid rgba(254,215,0,.38);
+      background:linear-gradient(145deg,rgba(254,215,0,.22),rgba(254,215,0,.16));border:1px solid rgba(254,215,0,.38);
       box-shadow:inset 0 1px 0 rgba(255,255,255,.12);color:var(--primary-color)}
     .rol-icon svg{width:22px;height:22px;stroke:var(--primary-color);fill:none}
     .rol-text{display:flex;flex-direction:column;gap:1px;min-width:0}
@@ -153,15 +153,15 @@
     .btn-toggle-eye:active{transform:translateY(-50%) scale(.95)}
     .btn-toggle-eye svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
-    #reg-nombre{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E")}
-    #reg-telefono{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z'/%3E%3C/svg%3E")}
-    #reg-email{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E")}
-    #reg-password,#reg-password-confirm,#login-password{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E")}
-    #reg-num-doc,#login-dni{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Ccircle cx='9' cy='10' r='2'/%3E%3Cpath d='M15 8h2m-2 4h2M7 16h10'/%3E%3C/svg%3E")}
-    #reg-vehiculo{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2'/%3E%3Ccircle cx='7' cy='17' r='2'/%3E%3Cpath d='M9 17h6'/%3E%3Ccircle cx='17' cy='17' r='2'/%3E%3C/svg%3E")}
-    #reg-placa{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 12h.01M10 12h4M18 12h.01'/%3E%3C/svg%3E")}
-    #reg-comercio-nombre{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l1.5-5h15L21 9'/%3E%3Cpath d='M3 9v11h18V9'/%3E%3Cpath d='M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0'/%3E%3Cpath d='M9 20v-6h6v6'/%3E%3C/svg%3E")}
-    #reg-comercio-categoria{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%2352a6c8'/%3E%3C/svg%3E")}
+    #reg-nombre{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='12' cy='7' r='4'/%3E%3C/svg%3E")}
+    #reg-telefono{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z'/%3E%3C/svg%3E")}
+    #reg-email{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E")}
+    #reg-password,#reg-password-confirm,#login-password{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E")}
+    #reg-num-doc,#login-dni{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='2'/%3E%3Ccircle cx='9' cy='10' r='2'/%3E%3Cpath d='M15 8h2m-2 4h2M7 16h10'/%3E%3C/svg%3E")}
+    #reg-vehiculo{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2'/%3E%3Ccircle cx='7' cy='17' r='2'/%3E%3Cpath d='M9 17h6'/%3E%3Ccircle cx='17' cy='17' r='2'/%3E%3C/svg%3E")}
+    #reg-placa{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='6' width='20' height='12' rx='2'/%3E%3Cpath d='M6 12h.01M10 12h4M18 12h.01'/%3E%3C/svg%3E")}
+    #reg-comercio-nombre{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l1.5-5h15L21 9'/%3E%3Cpath d='M3 9v11h18V9'/%3E%3Cpath d='M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0'/%3E%3Cpath d='M9 20v-6h6v6'/%3E%3C/svg%3E")}
+    #reg-comercio-categoria{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%23fed700'/%3E%3C/svg%3E")}
 
     /* BOTONES */
     .btn-secondary{width:100%;padding:12px 16px;background:var(--glass-bg-strong);color:var(--text-color);border:1px solid var(--border-color);
@@ -183,7 +183,7 @@
 
     /* FOTO */
     .foto-group{position:relative;margin-top:4px}
-    .label-foto{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;border:1px dashed rgba(82,166,200,.60);
+    .label-foto{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:14px;border:1px dashed rgba(254,215,0,.60);
       background:var(--field-bg);color:var(--text-color);font-size:.9rem;font-weight:600;cursor:pointer;text-align:left;
       transition:border-color .2s,box-shadow .2s,background .2s}
     .foto-group:hover .label-foto,.foto-group:focus-within .label-foto{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(254,215,0,.18),0 0 26px rgba(254,215,0,.15)}
@@ -234,12 +234,12 @@
     .doc-seccion:not(:first-child){margin-top:18px}
     .doc-nota{margin:-4px 4px 12px;font-size:.72rem;line-height:1.4;color:var(--muted-text)}
     #doc-tipo-servicio{padding:0 44px 0 50px;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3Cpath d='M3 12h6.5M14.5 12H21M12 14.5V21'/%3E%3C/svg%3E"),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Ccircle cx='12' cy='12' r='2.5'/%3E%3Cpath d='M3 12h6.5M14.5 12H21M12 14.5V21'/%3E%3C/svg%3E"),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
       background-position:16px center,right 16px center;background-size:20px 20px,18px 18px}
-    #doc-marca{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%2352a6c8'/%3E%3C/svg%3E")}
-    #doc-anio{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2352a6c8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
-    .btn-documentacion{display:flex;align-items:center;gap:10px;width:100%;padding:14px 16px;border-radius:14px;border:1px dashed rgba(82,166,200,.60);
+    #doc-marca{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z'/%3E%3Ccircle cx='7.5' cy='7.5' r='1' fill='%23fed700'/%3E%3C/svg%3E")}
+    #doc-anio{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fed700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cpath d='M16 2v4M8 2v4M3 10h18'/%3E%3C/svg%3E")}
+    .btn-documentacion{display:flex;align-items:center;gap:10px;width:100%;padding:14px 16px;border-radius:14px;border:1px dashed rgba(254,215,0,.60);
       background:var(--field-bg);color:var(--text-color);font-size:.9rem;font-weight:600;cursor:pointer;text-align:left;
       transition:border-color .2s,box-shadow .2s,background .2s,transform .2s}
     .btn-documentacion:hover,.btn-documentacion:focus-visible{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(254,215,0,.18),0 0 26px rgba(254,215,0,.15)}
@@ -253,7 +253,7 @@
     .btn-documentacion.completa .doc-estado{background:rgba(46,204,113,.15);color:#2ecc71;border-color:rgba(46,204,113,.40)}
     .doc-item{margin-bottom:14px}
     .doc-label{display:block;margin:0 0 6px 4px;font-size:.78rem;font-weight:600;color:var(--text-color)}
-    .doc-drop{position:relative;display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:14px;border:1px dashed rgba(82,166,200,.60);
+    .doc-drop{position:relative;display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:14px;border:1px dashed rgba(254,215,0,.60);
       background:var(--field-bg);color:var(--text-color);font-size:.88rem;font-weight:600;cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s}
     .doc-drop:hover,.doc-drop:focus-within{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(254,215,0,.18),0 0 26px rgba(254,215,0,.15)}
     .doc-drop svg{flex-shrink:0}
@@ -292,7 +292,7 @@
 
     /* CHECKBOX DE POLÍTICAS */
     .politicas-check-wrapper{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:12px;
-      background:rgba(82,166,200,.10);border:1px solid rgba(82,166,200,.28);cursor:pointer;user-select:none;transition:all .25s}
+      background:rgba(254,215,0,.10);border:1px solid rgba(254,215,0,.28);cursor:pointer;user-select:none;transition:all .25s}
     .politicas-check-wrapper:hover{background:rgba(254,215,0,.14);border-color:var(--primary-color)}
     .politicas-check-wrapper.aceptado{background:rgba(46,204,113,.12);border-color:rgba(46,204,113,.50)}
     .politicas-check-wrapper input[type="checkbox"]{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
@@ -340,7 +340,7 @@
     /* CHECK DENTRO DEL MODAL */
     .politicas-modal-actions{margin-top:12px;display:flex;flex-direction:column;gap:8px}
     .politicas-modal-check{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;
-      background:rgba(82,166,200,.14);border:1px solid rgba(82,166,200,.32);cursor:pointer;user-select:none}
+      background:rgba(254,215,0,.14);border:1px solid rgba(254,215,0,.32);cursor:pointer;user-select:none}
     .politicas-modal-check input[type="checkbox"]{width:18px;height:18px;accent-color:var(--primary-color);cursor:pointer}
     .politicas-modal-check span{font-size:.8rem;font-weight:600;color:var(--text-color)}
 
@@ -366,6 +366,24 @@
     .bikar-alerta-icono.icono-exito{background:rgba(46,204,113,.15);border-color:rgba(46,204,113,.4);color:#2ecc71}
     .bikar-alerta-icono svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
     .bikar-alerta-mensaje{color:var(--text-color);word-break:break-word}
+
+    /* ============================================================
+       ACENTO AMARILLO · En modo oscuro todo el acento es #FED700 puro.
+       En modo claro, el texto de acento usa un ámbar profundo de la misma
+       familia para mantener contraste legible sobre fondo blanco.
+       ============================================================ */
+    body:not(.dark-mode) .panel-title::before,
+    body:not(.dark-mode) .doc-seccion,
+    body:not(.dark-mode) .politicas-check-texto strong,
+    body:not(.dark-mode) .politicas-contenedor-texto h4,
+    body:not(.dark-mode) .doc-estado{color:#b8860b}
+    body.dark-mode .panel-title::before,
+    body.dark-mode .doc-seccion,
+    body.dark-mode .politicas-check-texto strong,
+    body.dark-mode .politicas-contenedor-texto h4,
+    body.dark-mode .btn-toggle-eye,
+    body.dark-mode .bikar-alerta-icono,
+    body.dark-mode .politicas-flecha{color:#fed700}
   </style>
 </head>
 <body class="dark-mode">
@@ -467,7 +485,7 @@
       <!-- FOTO / SELFIE O LOGO DE COMERCIO -->
       <div class="input-group foto-group">
         <label for="reg-foto" class="label-foto" id="label-reg-foto">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           <span id="texto-label-foto">toma una selfie</span>
         </label>
         <input type="file" id="reg-foto" accept="image/*" capture="user" required>
@@ -477,7 +495,7 @@
       <!-- Botón "Documentación para el vehículo" (solo visible para CONDUCTOR) -->
       <div id="bloque-documentacion" class="input-group oculto">
         <button type="button" id="btn-documentacion-vehiculo" class="btn-documentacion" aria-haspopup="dialog" aria-controls="modal-documentacion">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
           <span class="doc-btn-text">Documentación para el vehículo</span>
           <span id="doc-estado" class="doc-estado">Pendiente</span>
         </button>
@@ -509,7 +527,7 @@
       <button type="submit" id="btn-guardar-registro" class="btn-main" disabled>Guardar y Continuar</button>
       <button type="button" id="btn-cancelar-registro" class="btn-secondary" style="margin-top:8px">Volver</button>
       <p class="form-note">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         Tus datos se guardan de forma segura
       </p>
     </form>
@@ -633,7 +651,7 @@
       <div class="doc-item" data-doc="dni_ce">
         <span class="doc-label">DNI o CE</span>
         <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
           <span class="doc-drop-text">Subir foto o PDF</span>
           <input type="file" id="doc-dni" accept="image/*,application/pdf,.pdf">
         </label>
@@ -648,7 +666,7 @@
       <div class="doc-item" data-doc="antecedente_policial">
         <span class="doc-label">Antecedentes policiales</span>
         <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
           <span class="doc-drop-text">Subir foto o PDF</span>
           <input type="file" id="doc-antecedentes" accept="image/*,application/pdf,.pdf">
         </label>
@@ -673,7 +691,7 @@
     >
   </div>
         <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
           <span class="doc-drop-text">Subir foto o PDF</span>
           <input type="file" id="doc-brevete" accept="image/*,application/pdf,.pdf">
         </label>
@@ -688,7 +706,7 @@
       <div class="doc-item" data-doc="foto_vehiculo">
         <span class="doc-label">Foto del vehículo</span>
         <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           <span class="doc-drop-text">Tomar / Subir foto</span>
           <input type="file" id="doc-foto-vehiculo" accept="image/*">
         </label>
@@ -703,7 +721,7 @@
       <div class="doc-item" data-doc="tarjeta_propiedad">
         <span class="doc-label">Tarjeta de propiedad</span>
         <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
           <span class="doc-drop-text">Subir foto o PDF</span>
           <input type="file" id="doc-tarjeta" accept="image/*,application/pdf,.pdf">
         </label>
@@ -719,7 +737,7 @@
       <div id="doc-item-revision" class="doc-item oculto" data-doc="revision_tecnica">
         <span class="doc-label">Revisión técnica (vehículo con más de 3 años)</span>
         <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
           <span class="doc-drop-text">Subir foto o PDF</span>
           <input type="file" id="doc-revision" accept="image/*,application/pdf,.pdf">
         </label>
@@ -734,7 +752,7 @@
       <button type="submit" id="btn-guardar-documentacion" class="btn-main">Guardar documentación</button>
       <button type="button" id="btn-cancelar-documentacion" class="btn-secondary" style="margin-top:8px">Volver</button>
       <p class="form-note">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#52a6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fed700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         Tus documentos se guardan de forma segura
       </p>
     </form>
