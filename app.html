@@ -9,26 +9,27 @@
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="BIKAR">
+  <meta name="apple-mobile-web-app-title" content="TOPDRIVE">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <title>BIKAR · Viajes</title>
+  <title>TOPDRIVE · Viajes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://maps.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     /* ============================================================
-       BIKAR · Mapa, viajes y tiempo real (Google Maps + Supabase)
-       Paleta: #4785A7 · #366986 · #134989 · #f8f9fa · #ffffff · #121212 · #1e1e1e
+       TOPDRIVE · Mapa, viajes y tiempo real (Google Maps + Supabase)
+       Paleta: #FED700 · #f8f9fa · #ffffff · #121212 · #1e1e1e
        ============================================================ */
     :root{
-      --bg-color:#f8f9fa; --card-bg:#ffffff; --text-color:#1a232c; --primary-color:#4785A7;
-      --primary-hover:#366986; --border-color:#ccc; --deep-blue:#134989; --muted-text:#64748b;
+      --bg-color:#f8f9fa; --card-bg:#ffffff; --text-color:#1a232c; --primary-color:#FED700;
+      --primary-hover:#FED700; --border-color:#ccc; --deep-blue:#FED700; --muted-text:#64748b;
       --glass-bg:rgba(255,255,255,.78); --glass-bg-strong:rgba(255,255,255,.92);
-      --glass-border:rgba(19,73,137,.14); --glass-highlight:rgba(255,255,255,.95);
-      --field-bg:rgba(255,255,255,.85); --field-border:rgba(19,73,137,.16);
-      --glow:rgba(71,133,167,.32); --glow-strong:rgba(71,133,167,.55);
-      --shadow:0 24px 60px rgba(19,73,137,.16); --grid-line:rgba(71,133,167,.12);
+      --glass-border:rgba(254,215,0,.14); --glass-highlight:rgba(255,255,255,.95);
+      --field-bg:rgba(255,255,255,.85); --field-border:rgba(254,215,0,.16);
+      --glow:rgba(254,215,0,.32); --glow-strong:rgba(254,215,0,.55);
+      --shadow:0 24px 60px rgba(254,215,0,.16); --grid-line:rgba(254,215,0,.12);
       --radar-green:#10b981; --radar-red:#ef4444;
     }
     body.dark-mode{
@@ -37,8 +38,8 @@
       --glass-bg:rgba(30,30,30,.65); --glass-bg-strong:rgba(30,30,30,.88);
       --glass-border:rgba(255,255,255,.09); --glass-highlight:rgba(255,255,255,.10);
       --field-bg:rgba(18,18,18,.65); --field-border:rgba(255,255,255,.09);
-      --glow:rgba(71,133,167,.42); --glow-strong:rgba(71,133,167,.65);
-      --shadow:0 30px 70px rgba(0,0,0,.55); --grid-line:rgba(71,133,167,.10);
+      --glow:rgba(254,215,0,.42); --glow-strong:rgba(254,215,0,.65);
+      --shadow:0 30px 70px rgba(0,0,0,.55); --grid-line:rgba(254,215,0,.10);
       --radar-green:#10b981; --radar-red:#ef4444;
     }
     *{box-sizing:border-box;margin:0;padding:0;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
@@ -49,7 +50,7 @@
     @keyframes panelIn{from{opacity:0;transform:translate(-50%,18px)}to{opacity:1;transform:translate(-50%,0)}}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
     @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(71,133,167,.65)}70%{box-shadow:0 0 0 9px rgba(71,133,167,0)}100%{box-shadow:0 0 0 0 rgba(71,133,167,0)}}
+    @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(254,215,0,.65)}70%{box-shadow:0 0 0 9px rgba(254,215,0,0)}100%{box-shadow:0 0 0 0 rgba(254,215,0,0)}}
     @keyframes pulseGreen{0%{box-shadow:0 0 0 0 rgba(16,185,129,.7);transform:scale(1)}50%{transform:scale(1.02)}70%{box-shadow:0 0 0 10px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0);transform:scale(1)}}
     @keyframes pulseRed{0%{box-shadow:0 0 0 0 rgba(239,68,68,.7);transform:scale(1)}50%{transform:scale(1.02)}70%{box-shadow:0 0 0 10px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0);transform:scale(1)}}
     @keyframes radarSweep{0%{box-shadow:0 0 0 0 rgba(239,68,68,.6)}70%{box-shadow:0 0 0 14px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
@@ -60,7 +61,7 @@
     @keyframes cardPop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
     @keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
     @keyframes tripEnter{0%{opacity:0;transform:translateY(-26px) scale(.93)}60%{opacity:1;transform:translateY(5px) scale(1.012)}100%{opacity:1;transform:translateY(0) scale(1)}}
-    @keyframes tripGlow{0%,100%{box-shadow:0 0 0 0 rgba(71,133,167,0)}50%{box-shadow:0 0 0 4px rgba(71,133,167,.38),0 18px 44px rgba(71,133,167,.38)}}
+    @keyframes tripGlow{0%,100%{box-shadow:0 0 0 0 rgba(254,215,0,0)}50%{box-shadow:0 0 0 4px rgba(254,215,0,.38),0 18px 44px rgba(254,215,0,.38)}}
     @keyframes tripSweep{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
     @keyframes radarPing{0%{transform:scale(.4);opacity:.8}100%{transform:scale(1.6);opacity:0}}
 
@@ -82,23 +83,23 @@
     .popup-origen-label{display:block;margin-bottom:4px;color:var(--primary-color);font-size:.62rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
     .popup-origen-address{display:block;color:var(--text-color);font-size:.82rem;line-height:1.32;font-weight:700}
     .popup-origen-sub{display:block;margin-top:3px;color:var(--muted-text);font-size:.68rem;line-height:1.3;font-weight:500}
-    .popup-origen-change{position:absolute;right:10px;top:50%;width:28px;height:28px;transform:translateY(-50%);border:1px solid rgba(71,133,167,.45);border-radius:9px;
+    .popup-origen-change{position:absolute;right:10px;top:50%;width:28px;height:28px;transform:translateY(-50%);border:1px solid rgba(254,215,0,.45);border-radius:9px;
       background:var(--field-bg);color:var(--primary-color);font-size:1.2rem;line-height:1;cursor:pointer;transition:background .2s,transform .2s;display:flex;align-items:center;justify-content:center}
-    .popup-origen-change:hover{background:rgba(71,133,167,.14);transform:translate(1px,-50%)}
+    .popup-origen-change:hover{background:rgba(254,215,0,.14);transform:translate(1px,-50%)}
 
     /* PERFIL HEADER */
     .perfil-superior{position:absolute;top:calc(16px + env(safe-area-inset-top));left:16px;z-index:3000;width:46px;height:46px;border-radius:50%;overflow:hidden;
       border:2px solid var(--primary-color);box-shadow:0 8px 24px rgba(0,0,0,.25);background-color:var(--card-bg);cursor:pointer;transition:transform .2s,box-shadow .2s}
     .perfil-superior:hover{transform:scale(1.05)}
-    .perfil-superior.activo{box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 5px rgba(71,133,167,.28)}
+    .perfil-superior.activo{box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 5px rgba(254,215,0,.28)}
     #foto-perfil-header{width:100%;height:100%;object-fit:cover;display:block}
 
     /* BOTÓN TEMA */
     .btn-theme-toggle{position:absolute;top:calc(16px + env(safe-area-inset-top));right:16px;z-index:3000;width:46px;height:46px;border-radius:50%;
       display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--glass-bg-strong);
-      border:1px solid rgba(71,133,167,.5);color:var(--text-color);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-      box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 4px rgba(71,133,167,.12);transition:transform .2s,box-shadow .2s,border-color .2s}
-    .btn-theme-toggle:hover{transform:translateY(-1px);border-color:var(--primary-color);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 0 6px rgba(71,133,167,.18)}
+      border:1px solid rgba(254,215,0,.5);color:var(--text-color);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+      box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 4px rgba(254,215,0,.12);transition:transform .2s,box-shadow .2s,border-color .2s}
+    .btn-theme-toggle:hover{transform:translateY(-1px);border-color:var(--primary-color);box-shadow:0 10px 28px rgba(0,0,0,.3),0 0 0 6px rgba(254,215,0,.18)}
     .btn-theme-toggle svg{width:20px;height:20px;transition:transform .4s ease}
     .btn-theme-toggle:hover svg{transform:rotate(-20deg) scale(1.08)}
 
@@ -130,19 +131,19 @@
 
     /* Colores dinámicos por estado del viaje */
     @keyframes radarSweepAmbar{0%{box-shadow:0 0 0 0 rgba(245,158,11,.65)}70%{box-shadow:0 0 0 14px rgba(245,158,11,0)}100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}}
-    @keyframes radarSweepAzul{0%{box-shadow:0 0 0 0 rgba(71,133,167,.65)}70%{box-shadow:0 0 0 14px rgba(71,133,167,0)}100%{box-shadow:0 0 0 0 rgba(71,133,167,0)}}
+    @keyframes radarSweepAzul{0%{box-shadow:0 0 0 0 rgba(254,215,0,.65)}70%{box-shadow:0 0 0 14px rgba(254,215,0,0)}100%{box-shadow:0 0 0 0 rgba(254,215,0,0)}}
     @keyframes radarSweepVerde{0%{box-shadow:0 0 0 0 rgba(16,185,129,.65)}70%{box-shadow:0 0 0 14px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
     #alerta-viaje-activo.estado-solicitado{background:linear-gradient(90deg,#f59e0b,#d97706);
       box-shadow:0 10px 28px rgba(245,158,11,.42);animation:radarSweepAmbar 1.8s infinite}
-    #alerta-viaje-activo.estado-aceptado{background:linear-gradient(90deg,#134989,#4785A7);
-      box-shadow:0 10px 28px rgba(71,133,167,.45);animation:radarSweepAzul 1.9s infinite}
+    #alerta-viaje-activo.estado-aceptado{background:linear-gradient(90deg,#FED700,#FED700);
+      box-shadow:0 10px 28px rgba(254,215,0,.45);animation:radarSweepAzul 1.9s infinite}
     #alerta-viaje-activo.estado-encurso{background:linear-gradient(90deg,#059669,#10b981);
       box-shadow:0 10px 28px rgba(16,185,129,.45);animation:radarSweepVerde 1.7s infinite}
 
     /* CHIP USUARIO */
     #mode-selector{position:absolute;top:calc(16px + env(safe-area-inset-top));left:70px;right:78px;z-index:2000;max-width:420px;animation:fadeIn .6s ease both}
     @media (min-width:620px){#mode-selector{left:50%;right:auto;width:420px;transform:translateX(-50%)}}
-    .btn-secondary{width:100%;padding:12px 16px;background:var(--glass-bg-strong);color:var(--primary-color);border:1px solid rgba(71,133,167,.45);
+    .btn-secondary{width:100%;padding:12px 16px;background:var(--glass-bg-strong);color:var(--primary-color);border:1px solid rgba(254,215,0,.45);
       border-radius:999px;font-weight:600;font-size:.86rem;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
       box-shadow:0 8px 24px rgba(0,0,0,.18),inset 0 1px 0 var(--glass-highlight)}
     #btn-cambiar-modo{position:relative;padding-left:36px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
@@ -159,13 +160,13 @@
       box-shadow:var(--shadow),inset 0 1px 0 var(--glass-highlight);color:var(--text-color);
       animation:panelIn .5s cubic-bezier(.2,.8,.2,1) both;
       overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
-      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.35) transparent}
+      scrollbar-width:thin;scrollbar-color:rgba(254,215,0,.35) transparent}
     .ui-panel::-webkit-scrollbar{width:6px}
-    .ui-panel::-webkit-scrollbar-thumb{background:rgba(71,133,167,.3);border-radius:3px}
+    .ui-panel::-webkit-scrollbar-thumb{background:rgba(254,215,0,.3);border-radius:3px}
     .ui-panel::before{content:"";position:sticky;display:block;top:0;left:14%;right:14%;height:2px;border-radius:2px;margin:-24px 14% 6px;
       background:linear-gradient(90deg,transparent,var(--primary-color),transparent);opacity:.9;pointer-events:none}
     .panel-title{color:var(--text-color);font-size:1.35rem;font-weight:700;margin-bottom:6px}
-    .panel-title::before{content:"BIKAR";display:block;font-size:.64rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+    .panel-title::before{content:"TOPDRIVE";display:block;font-size:.64rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
       color:var(--primary-color);margin-bottom:6px}
     .panel-subtitle,.status-text{color:var(--muted-text);font-size:.86rem;margin-bottom:18px}
     .status-text{line-height:1.4;margin:4px 0 14px}
@@ -182,9 +183,9 @@
     .viaje-bloqueo-box.estado-solicitado{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.45)}
     .viaje-bloqueo-box.estado-solicitado .viaje-bloqueo-tit{color:#f59e0b}
     .viaje-bloqueo-box.estado-solicitado .btn-ir-seguimiento{background:linear-gradient(90deg,#f59e0b,#d97706);box-shadow:0 8px 20px rgba(245,158,11,.35)}
-    .viaje-bloqueo-box.estado-aceptado{background:rgba(71,133,167,.12);border-color:rgba(71,133,167,.45)}
+    .viaje-bloqueo-box.estado-aceptado{background:rgba(254,215,0,.12);border-color:rgba(254,215,0,.45)}
     .viaje-bloqueo-box.estado-aceptado .viaje-bloqueo-tit{color:var(--primary-color)}
-    .viaje-bloqueo-box.estado-aceptado .btn-ir-seguimiento{background:linear-gradient(90deg,#134989,#4785A7);box-shadow:0 8px 20px rgba(71,133,167,.35)}
+    .viaje-bloqueo-box.estado-aceptado .btn-ir-seguimiento{background:linear-gradient(90deg,#FED700,#FED700);box-shadow:0 8px 20px rgba(254,215,0,.35)}
     .viaje-bloqueo-box.estado-encurso{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.45)}
     .viaje-bloqueo-box.estado-encurso .viaje-bloqueo-tit{color:#10b981}
     .viaje-bloqueo-box.estado-encurso .btn-ir-seguimiento{background:linear-gradient(90deg,#059669,#10b981);box-shadow:0 8px 20px rgba(16,185,129,.35)}
@@ -211,9 +212,9 @@
       border-radius:14px;color:var(--text-color);font-size:.95rem;outline:none;background-repeat:no-repeat;background-position:16px center;
       background-size:20px 20px;transition:border-color .2s,box-shadow .2s,background-color .2s}
     .input-group>input::placeholder{color:var(--muted-text)}
-    .input-group>input:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(71,133,167,.22),0 0 26px rgba(71,133,167,.18)}
-    #input-destino{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E")}
-    #input-origen-modal{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234785A7' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E")}
+    .input-group>input:focus{border-color:var(--primary-color);box-shadow:0 0 0 3px rgba(254,215,0,.22),0 0 26px rgba(254,215,0,.18)}
+    #input-destino{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FED700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E")}
+    #input-origen-modal{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FED700' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z'/%3E%3Ccircle cx='12' cy='10' r='3'/%3E%3C/svg%3E")}
 
     /* SUGERENCIAS */
     .lista-sugerencias{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--glass-bg-strong);border:1px solid var(--glass-border);
@@ -223,7 +224,7 @@
     .sugerencia-item{display:flex;align-items:flex-start;gap:10px;width:100%;padding:11px 14px;background:transparent;color:var(--text-color);cursor:pointer;
       border:0;border-bottom:1px solid var(--glass-border);text-align:left;transition:background .15s,color .15s}
     .sugerencia-item:last-child{border-bottom:none}
-    .sugerencia-item:hover{background-color:rgba(71,133,167,.14)}
+    .sugerencia-item:hover{background-color:rgba(254,215,0,.14)}
     .sugerencia-pin{flex-shrink:0;width:18px;height:18px;margin-top:1px;color:var(--primary-color)}
     .sugerencia-textos{flex:1;min-width:0}
     .sugerencia-principal{display:block;font-size:.84rem;font-weight:700;line-height:1.25;color:var(--text-color)}
@@ -233,12 +234,12 @@
 
     /* BOTÓN PRINCIPAL */
     .btn-main{position:relative;width:100%;padding:15px 46px 15px 20px;border:none;border-radius:14px;color:#fff;font-size:1rem;font-weight:600;
-      cursor:pointer;overflow:hidden;background:linear-gradient(90deg,#134989 0%,#366986 45%,#4785A7 100%);
-      box-shadow:0 10px 26px rgba(71,133,167,.35),inset 0 1px 0 rgba(255,255,255,.22);transition:transform .2s,box-shadow .2s,filter .2s}
+      cursor:pointer;overflow:hidden;background:linear-gradient(90deg,#FED700 0%,#FED700 45%,#FED700 100%);
+      box-shadow:0 10px 26px rgba(254,215,0,.35),inset 0 1px 0 rgba(255,255,255,.22);transition:transform .2s,box-shadow .2s,filter .2s}
     .btn-main::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.20) 50%,transparent 70%);
       transform:translateX(-100%);transition:transform .7s ease}
     .btn-main::after{content:"→";position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.15rem;line-height:1;transition:transform .25s}
-    .btn-main:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(71,133,167,.45),inset 0 1px 0 rgba(255,255,255,.25)}
+    .btn-main:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(254,215,0,.45),inset 0 1px 0 rgba(255,255,255,.25)}
     .btn-main:hover::before{transform:translateX(100%)}
     .btn-main:hover::after{transform:translate(4px,-50%)}
     .btn-main:active{transform:translateY(0);filter:brightness(.92)}
@@ -257,9 +258,9 @@
     .modal-origen-acciones{display:flex;justify-content:space-between;gap:8px;margin-top:5px}
     .btn-modal-secundario{padding:9px 13px;border:1px solid var(--field-border);border-radius:10px;background:var(--field-bg);color:var(--muted-text);font-size:.78rem;font-weight:600;cursor:pointer}
     .btn-modal-secundario:hover{border-color:var(--primary-color);color:var(--primary-color)}
-    .btn-modal-gps{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border:1px solid rgba(71,133,167,.45);border-radius:10px;
-      background:rgba(71,133,167,.10);color:var(--primary-color);font-size:.78rem;font-weight:700;cursor:pointer}
-    .btn-modal-gps:hover{background:rgba(71,133,167,.20)}
+    .btn-modal-gps{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border:1px solid rgba(254,215,0,.45);border-radius:10px;
+      background:rgba(254,215,0,.10);color:var(--primary-color);font-size:.78rem;font-weight:700;cursor:pointer}
+    .btn-modal-gps:hover{background:rgba(254,215,0,.20)}
 
     /* PANEL DE SERVICIOS */
     #panel-servicios{position:fixed;top:0;right:0;bottom:0;width:min(440px,94vw);max-width:100vw;z-index:4500;
@@ -302,22 +303,22 @@
     .servicios-meta-valor{font-size:.92rem;font-weight:700}
 
     .servicios-lista{display:flex;flex-direction:column;gap:10px;overflow-y:auto;overflow-x:hidden;padding:4px 6px 4px 2px;flex:1;min-height:0;
-      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.4) transparent;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+      scrollbar-width:thin;scrollbar-color:rgba(254,215,0,.4) transparent;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
     .servicios-lista::-webkit-scrollbar{width:6px}
-    .servicios-lista::-webkit-scrollbar-thumb{background:rgba(71,133,167,.3);border-radius:3px}
+    .servicios-lista::-webkit-scrollbar-thumb{background:rgba(254,215,0,.3);border-radius:3px}
 
     .servicio-card{position:relative;display:flex;align-items:center;gap:14px;padding:14px;border:1.5px solid var(--field-border);
       border-radius:18px;background:var(--field-bg);cursor:pointer;transition:all .25s cubic-bezier(.2,.8,.2,1);width:100%;
       animation:serviceCardIn .45s cubic-bezier(.2,.8,.2,1) both;opacity:0}
     .servicio-card:nth-child(1){animation-delay:.08s}.servicio-card:nth-child(2){animation-delay:.16s}
     .servicio-card:nth-child(3){animation-delay:.24s}.servicio-card:nth-child(4){animation-delay:.32s}
-    .servicio-card:hover{border-color:var(--primary-color);transform:translateX(-3px);box-shadow:0 10px 28px rgba(71,133,167,.22),0 0 0 3px rgba(71,133,167,.08)}
-    .servicio-card.seleccionado{border-color:var(--primary-color);background:linear-gradient(135deg,rgba(71,133,167,.10),rgba(19,73,137,.06));
-      box-shadow:0 8px 24px rgba(71,133,167,.25),0 0 0 3px rgba(71,133,167,.18)}
+    .servicio-card:hover{border-color:var(--primary-color);transform:translateX(-3px);box-shadow:0 10px 28px rgba(254,215,0,.22),0 0 0 3px rgba(254,215,0,.08)}
+    .servicio-card.seleccionado{border-color:var(--primary-color);background:linear-gradient(135deg,rgba(254,215,0,.10),rgba(254,215,0,.06));
+      box-shadow:0 8px 24px rgba(254,215,0,.25),0 0 0 3px rgba(254,215,0,.18)}
     .servicio-card.seleccionado::before{content:"✓";position:absolute;top:10px;right:12px;width:22px;height:22px;border-radius:50%;
       background:var(--primary-color);color:#fff;font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;animation:checkPop .3s ease both}
     .servicio-icono{flex-shrink:0;width:54px;height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;box-shadow:0 6px 16px rgba(71,133,167,.35)}
+      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;box-shadow:0 6px 16px rgba(254,215,0,.35)}
     .servicio-icono svg{width:30px;height:30px}
     .servicio-info{flex:1;min-width:0;text-align:left}
     .servicio-nombre{font-size:.98rem;font-weight:700;color:var(--text-color);margin-bottom:2px}
@@ -343,11 +344,11 @@
     .tarjeta-viaje.entrada.nuevo{animation:tripEnter .6s cubic-bezier(.2,.8,.2,1) var(--d,0s) both,tripGlow 1.6s ease-in-out .6s 3}
     .tarjeta-viaje.nuevo{border-color:rgba(16,185,129,.55)}
     .tarjeta-viaje::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:4px;border-radius:4px;
-      background:linear-gradient(180deg,var(--primary-color),#134989);box-shadow:0 0 12px var(--glow-strong)}
-    .tarjeta-viaje.nuevo::before{background:linear-gradient(180deg,#10b981,#134989)}
+      background:linear-gradient(180deg,var(--primary-color),#FED700);box-shadow:0 0 12px var(--glow-strong)}
+    .tarjeta-viaje.nuevo::before{background:linear-gradient(180deg,#10b981,#FED700)}
     .tarjeta-viaje.nuevo::after{content:"";position:absolute;top:0;left:0;width:45%;height:2px;
       background:linear-gradient(90deg,transparent,#10b981,transparent);animation:tripSweep 1.8s ease-in-out infinite}
-    .tarjeta-viaje:hover{transform:translateY(-2px);border-color:var(--primary-color);box-shadow:0 14px 32px rgba(71,133,167,.22)}
+    .tarjeta-viaje:hover{transform:translateY(-2px);border-color:var(--primary-color);box-shadow:0 14px 32px rgba(254,215,0,.22)}
     .tarjeta-viaje.saliendo{opacity:0;transform:translateX(-70px) scale(.94);max-height:0!important;padding-top:0;padding-bottom:0;
       margin-bottom:-12px;border-width:0;pointer-events:none;
       transition:transform .35s ease,opacity .3s ease,max-height .4s ease .1s,padding .4s ease .1s,margin .4s ease .1s,border-width .4s ease .1s}
@@ -355,7 +356,7 @@
     .viaje-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
     .viaje-header-izq{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
     .viaje-tipo-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;
-      background:linear-gradient(135deg,rgba(71,133,167,.18),rgba(19,73,137,.12));border:1px solid rgba(71,133,167,.35);
+      background:linear-gradient(135deg,rgba(254,215,0,.18),rgba(254,215,0,.12));border:1px solid rgba(254,215,0,.35);
       font-size:.66rem;font-weight:700;letter-spacing:.06em;color:var(--primary-color);text-transform:uppercase}
     .viaje-tipo-badge svg{width:13px;height:13px}
     .viaje-nuevo-chip{padding:3px 8px;border-radius:999px;background:linear-gradient(90deg,#10b981,#059669);color:#fff;
@@ -377,20 +378,20 @@
 
     /* RECUADRO TIEMPO Y DISTANCIA EN TARJETA CONDUCTOR */
     .viaje-metricas{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 10px;margin-bottom:12px;
-      border-radius:12px;background:rgba(71,133,167,.08);border:1px solid rgba(71,133,167,.18)}
+      border-radius:12px;background:rgba(254,215,0,.08);border:1px solid rgba(254,215,0,.18)}
     .viaje-metrica-item{display:flex;align-items:center;gap:6px;font-size:.74rem;font-weight:700;color:var(--text-color)}
     .viaje-metrica-item svg{width:14px;height:14px;color:var(--primary-color);flex-shrink:0}
     .viaje-metrica-sub{display:block;font-size:.6rem;font-weight:500;color:var(--muted-text)}
 
     /* TARJETA DEL PASAJERO QUE SOLICITA (VISTA CONDUCTOR) */
     .viaje-pasajero{position:relative;display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:11px 12px;border-radius:16px;
-      background:linear-gradient(135deg,rgba(71,133,167,.12),rgba(19,73,137,.06));border:1px solid rgba(71,133,167,.28);
+      background:linear-gradient(135deg,rgba(254,215,0,.12),rgba(254,215,0,.06));border:1px solid rgba(254,215,0,.28);
       box-shadow:inset 0 1px 0 var(--glass-highlight);animation:cardPop .42s cubic-bezier(.2,.8,.2,1) both;overflow:hidden}
     .viaje-pasajero::after{content:"";position:absolute;inset:0;pointer-events:none;
       background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.10) 50%,transparent 65%)}
     .vp-foto-wrap{position:relative;flex-shrink:0;width:48px;height:48px}
     .vp-foto{width:48px;height:48px;border-radius:50%;object-fit:cover;display:block;background:var(--field-bg);
-      border:2px solid var(--primary-color);box-shadow:0 6px 16px rgba(71,133,167,.35)}
+      border:2px solid var(--primary-color);box-shadow:0 6px 16px rgba(254,215,0,.35)}
     .vp-verificado{position:absolute;right:-2px;bottom:-2px;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center;
       background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:.6rem;font-weight:900;border:2px solid var(--card-bg)}
     .vp-info{flex:1;min-width:0}
@@ -402,11 +403,11 @@
     .vp-estrellas .vp-nota{margin-left:6px;font-size:.7rem;font-weight:800;color:var(--text-color)}
     .vp-estrellas .vp-conteo{margin-left:4px;font-size:.62rem;font-weight:600;color:var(--muted-text)}
     .vp-score{flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:52px;padding:7px 8px;border-radius:13px;
-      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;box-shadow:0 6px 16px rgba(71,133,167,.32)}
+      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;box-shadow:0 6px 16px rgba(254,215,0,.32)}
     .vp-score b{font-size:.98rem;font-weight:900;line-height:1}
     .vp-score span{font-size:.5rem;font-weight:800;letter-spacing:.12em;margin-top:2px;opacity:.9}
     .vp-cargando{display:flex;align-items:center;gap:10px;font-size:.72rem;font-weight:600;color:var(--muted-text)}
-    .vp-skeleton{width:48px;height:48px;border-radius:50%;background:linear-gradient(90deg,rgba(71,133,167,.14),rgba(71,133,167,.28),rgba(71,133,167,.14));
+    .vp-skeleton{width:48px;height:48px;border-radius:50%;background:linear-gradient(90deg,rgba(254,215,0,.14),rgba(254,215,0,.28),rgba(254,215,0,.14));
       background-size:200% 100%;animation:vpShimmer 1.2s linear infinite}
     @keyframes vpShimmer{0%{background-position:0% 0}100%{background-position:-200% 0}}
 
@@ -428,7 +429,7 @@
     .conductor-inactivo-tit{font-size:.95rem;font-weight:800;color:#ef4444;margin-bottom:4px}
     .conductor-inactivo-sub{font-size:.78rem;color:var(--muted-text);line-height:1.45}
 
-    .comercio-info{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--field-bg);border:1px dashed rgba(71,133,167,.5);
+    .comercio-info{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--field-bg);border:1px dashed rgba(254,215,0,.5);
       color:var(--muted-text);font-size:.78rem;line-height:1.45;text-align:left}
     .comercio-info b{color:var(--primary-color)}
 
@@ -467,7 +468,7 @@
     #menu-perfil .menu-perfil-item:nth-child(4){animation-delay:.14s}
     #menu-perfil .menu-perfil-item:nth-child(5){animation-delay:.18s}
     .menu-perfil-item:hover{transform:translateX(3px);border-color:var(--primary-color);
-      box-shadow:0 10px 26px rgba(71,133,167,.28),0 0 0 3px rgba(71,133,167,.12)}
+      box-shadow:0 10px 26px rgba(254,215,0,.28),0 0 0 3px rgba(254,215,0,.12)}
     .menu-perfil-item:active{transform:scale(.97)}
     .menu-perfil-item .mi-ico{flex-shrink:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
       background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff}
@@ -479,8 +480,8 @@
     /* Color del acceso "Mis viajes" según el estado actual del viaje */
     .menu-perfil-item.resaltado.estado-solicitado{border-color:rgba(245,158,11,.55);background:rgba(245,158,11,.10)}
     .menu-perfil-item.resaltado.estado-solicitado .mi-ico{background:linear-gradient(135deg,#f59e0b,#d97706)}
-    .menu-perfil-item.resaltado.estado-aceptado{border-color:rgba(71,133,167,.55);background:rgba(71,133,167,.12)}
-    .menu-perfil-item.resaltado.estado-aceptado .mi-ico{background:linear-gradient(135deg,#134989,#4785A7)}
+    .menu-perfil-item.resaltado.estado-aceptado{border-color:rgba(254,215,0,.55);background:rgba(254,215,0,.12)}
+    .menu-perfil-item.resaltado.estado-aceptado .mi-ico{background:linear-gradient(135deg,#FED700,#FED700)}
     .menu-perfil-item.resaltado.estado-encurso{border-color:rgba(16,185,129,.55);background:rgba(16,185,129,.10)}
     .menu-perfil-item.resaltado.estado-encurso .mi-ico{background:linear-gradient(135deg,#059669,#10b981)}
 
@@ -498,9 +499,9 @@
       display:flex;align-items:center;justify-content:center;transition:all .2s}
     .modal-bikar-cerrar:hover{color:var(--primary-color);border-color:var(--primary-color);transform:rotate(90deg)}
     .modal-bikar-scroll{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-right:4px;
-      scrollbar-width:thin;scrollbar-color:rgba(71,133,167,.35) transparent}
+      scrollbar-width:thin;scrollbar-color:rgba(254,215,0,.35) transparent}
     .modal-bikar-scroll::-webkit-scrollbar{width:6px}
-    .modal-bikar-scroll::-webkit-scrollbar-thumb{background:rgba(71,133,167,.3);border-radius:3px}
+    .modal-bikar-scroll::-webkit-scrollbar-thumb{background:rgba(254,215,0,.3);border-radius:3px}
     .modal-kicker{display:block;font-size:.6rem;font-weight:800;letter-spacing:.28em;text-transform:uppercase;color:var(--primary-color);margin-bottom:4px}
     .modal-titulo{font-size:1.15rem;font-weight:800;letter-spacing:-.01em;margin-bottom:2px}
 
@@ -515,12 +516,12 @@
     /* PERFIL */
     .perfil-hero{display:flex;align-items:center;gap:14px;margin:6px 0 16px}
     .perfil-hero-foto{width:74px;height:74px;border-radius:24px;object-fit:cover;flex-shrink:0;background:var(--field-bg);
-      border:2px solid var(--primary-color);box-shadow:0 10px 26px rgba(71,133,167,.32)}
+      border:2px solid var(--primary-color);box-shadow:0 10px 26px rgba(254,215,0,.32)}
     .perfil-hero-txt{min-width:0}
     .perfil-hero-nombre{font-size:1.12rem;font-weight:800;line-height:1.2;word-break:break-word}
     .perfil-rol{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:4px 10px;border-radius:999px;
       font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color);
-      background:linear-gradient(135deg,rgba(71,133,167,.18),rgba(19,73,137,.10));border:1px solid rgba(71,133,167,.35)}
+      background:linear-gradient(135deg,rgba(254,215,0,.18),rgba(254,215,0,.10));border:1px solid rgba(254,215,0,.35)}
     .perfil-datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px}
     .perfil-dato{padding:10px 12px;border-radius:14px;background:var(--field-bg);border:1px solid var(--field-border);min-width:0;
       animation:cardPop .38s cubic-bezier(.2,.8,.2,1) both}
@@ -530,13 +531,13 @@
     .perfil-vacio{padding:18px;text-align:center;font-size:.82rem;color:var(--muted-text)}
     .perfil-zona-acciones{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
     .btn-mini{display:inline-flex;align-items:center;gap:6px;padding:10px 13px;border-radius:12px;cursor:pointer;font-size:.74rem;font-weight:800;
-      color:var(--primary-color);background:rgba(71,133,167,.12);border:1px solid rgba(71,133,167,.45);transition:all .2s}
-    .btn-mini:hover{background:rgba(71,133,167,.22);transform:translateY(-1px)}
+      color:var(--primary-color);background:rgba(254,215,0,.12);border:1px solid rgba(254,215,0,.45);transition:all .2s}
+    .btn-mini:hover{background:rgba(254,215,0,.22);transform:translateY(-1px)}
     .btn-mini svg{width:14px;height:14px}
 
     /* MI VEHÍCULO */
     .vehiculo-foto-principal{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:18px;
-      border:1px solid var(--field-border);background:var(--field-bg);box-shadow:0 12px 30px rgba(71,133,167,.22);
+      border:1px solid var(--field-border);background:var(--field-bg);box-shadow:0 12px 30px rgba(254,215,0,.22);
       animation:cardPop .4s cubic-bezier(.2,.8,.2,1) both}
     .vehiculo-galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:8px}
     .vehiculo-galeria img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;cursor:pointer;
@@ -551,21 +552,21 @@
     .historial-tab{flex:1;padding:9px 10px;border-radius:12px;cursor:pointer;font-size:.76rem;font-weight:700;
       color:var(--muted-text);background:var(--field-bg);border:1px solid var(--field-border);transition:all .2s}
     .historial-tab:hover{color:var(--primary-color);border-color:var(--primary-color)}
-    .historial-tab.activo{color:#fff;border-color:transparent;background:linear-gradient(90deg,#134989,#4785A7);
-      box-shadow:0 8px 20px rgba(71,133,167,.32)}
+    .historial-tab.activo{color:#fff;border-color:transparent;background:linear-gradient(90deg,#FED700,#FED700);
+      box-shadow:0 8px 20px rgba(254,215,0,.32)}
     .historial-barra{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-shrink:0}
     .historial-select{flex:1;height:40px;padding:0 12px;border-radius:12px;font-size:.78rem;font-weight:600;cursor:pointer;
       color:var(--text-color);background:var(--field-bg);border:1px solid var(--field-border);outline:none}
     .historial-select:focus{border-color:var(--primary-color)}
     .historial-select option{background:var(--card-bg);color:var(--text-color)}
     .btn-descargar{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:12px;cursor:pointer;
-      font-size:.74rem;font-weight:800;color:var(--primary-color);background:rgba(71,133,167,.12);border:1px solid rgba(71,133,167,.45);transition:all .2s}
-    .btn-descargar:hover{background:rgba(71,133,167,.22);transform:translateY(-1px)}
+      font-size:.74rem;font-weight:800;color:var(--primary-color);background:rgba(254,215,0,.12);border:1px solid rgba(254,215,0,.45);transition:all .2s}
+    .btn-descargar:hover{background:rgba(254,215,0,.22);transform:translateY(-1px)}
     .btn-descargar svg{width:14px;height:14px}
     .historial-lista{display:flex;flex-direction:column;gap:10px;padding:2px 4px 6px 2px}
     .historial-card{position:relative;padding:13px 14px 13px 17px;border-radius:16px;background:var(--field-bg);border:1px solid var(--field-border);
       overflow:hidden;animation:cardPop .4s cubic-bezier(.2,.8,.2,1) both;transition:border-color .2s,transform .2s,box-shadow .2s;cursor:pointer}
-    .historial-card:hover{border-color:var(--primary-color);transform:translateY(-2px);box-shadow:0 12px 28px rgba(71,133,167,.18)}
+    .historial-card:hover{border-color:var(--primary-color);transform:translateY(-2px);box-shadow:0 12px 28px rgba(254,215,0,.18)}
     .historial-card::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:3px;
       background:linear-gradient(180deg,var(--primary-color),var(--deep-blue))}
     .historial-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
@@ -580,7 +581,7 @@
       border:1px solid var(--field-border);color:var(--muted-text);background:var(--glass-bg)}
     .estado-chip.solicitado{color:#d68b1f;border-color:rgba(214,139,31,.45);background:rgba(214,139,31,.12)}
     .estado-chip.aceptado,.estado-chip.en_camino{color:#10b981;border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.12)}
-    .estado-chip.finalizado,.estado-chip.completado{color:var(--primary-color);border-color:rgba(71,133,167,.45);background:rgba(71,133,167,.12)}
+    .estado-chip.finalizado,.estado-chip.completado{color:var(--primary-color);border-color:rgba(254,215,0,.45);background:rgba(254,215,0,.12)}
     .estado-chip.cancelado{color:#ef4444;border-color:rgba(239,68,68,.45);background:rgba(239,68,68,.12)}
 
     .pagos-resumen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
@@ -612,10 +613,10 @@
 
     /* AVISO DE NOTIFICACIONES PUSH (PANEL CONDUCTOR) */
     .aviso-push{display:flex;align-items:center;gap:11px;margin:2px 0 14px;padding:12px;border-radius:16px;text-align:left;
-      background:linear-gradient(135deg,rgba(71,133,167,.14),rgba(19,73,137,.07));border:1px solid rgba(71,133,167,.38);
+      background:linear-gradient(135deg,rgba(254,215,0,.14),rgba(254,215,0,.07));border:1px solid rgba(254,215,0,.38);
       box-shadow:inset 0 1px 0 var(--glass-highlight);animation:cardPop .4s cubic-bezier(.2,.8,.2,1) both}
     .aviso-push-icono{flex-shrink:0;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;box-shadow:0 6px 16px rgba(71,133,167,.35);
+      background:linear-gradient(135deg,var(--primary-color),var(--deep-blue));color:#fff;box-shadow:0 6px 16px rgba(254,215,0,.35);
       animation:pulseDot 2s ease-out infinite}
     .aviso-push-icono svg{width:19px;height:19px}
     .aviso-push-txt{flex:1;min-width:0}
@@ -658,7 +659,7 @@
     </button>
     <button type="button" class="menu-perfil-item" id="menu-item-ayuda">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
-      <span class="mi-txt">Ayuda BIKAR</span>
+      <span class="mi-txt">Ayuda TOPDRIVE</span>
     </button>
     <button type="button" class="menu-perfil-item peligro" id="menu-item-salir">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></span>
@@ -692,7 +693,7 @@
   </a>
 
   <div id="mode-selector">
-    <button id="btn-cambiar-modo" class="btn-secondary chip-usuario" type="button">BIKAR</button>
+    <button id="btn-cambiar-modo" class="btn-secondary chip-usuario" type="button">TOPDRIVE</button>
   </div>
 
   <div id="map"></div>
@@ -749,7 +750,7 @@
       </div>
       <div class="aviso-push-txt">
         <span class="aviso-push-tit" id="aviso-push-tit">Activa los avisos de viajes</span>
-        <span class="aviso-push-sub" id="aviso-push-sub">Recibe cada solicitud con el sonido BIKAR aunque tengas la app cerrada.</span>
+        <span class="aviso-push-sub" id="aviso-push-sub">Recibe cada solicitud con el sonido TOPDRIVE aunque tengas la app cerrada.</span>
       </div>
       <button type="button" class="btn-mini oculto" id="btn-activar-push">Activar</button>
     </div>
@@ -815,13 +816,13 @@
   <div id="modal-perfil" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="perfil-titulo">
     <div class="modal-bikar-dialog">
       <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-perfil" aria-label="Cerrar">×</button>
-      <span class="modal-kicker">BIKAR · Mi cuenta</span>
+      <span class="modal-kicker">TOPDRIVE · Mi cuenta</span>
       <h2 class="modal-titulo" id="perfil-titulo">Perfil</h2>
       <div class="modal-bikar-scroll" style="margin-top:6px">
         <div class="perfil-hero">
           <img id="perfil-foto-grande" class="perfil-hero-foto" src="" alt="Foto de perfil">
           <div class="perfil-hero-txt">
-            <div class="perfil-hero-nombre" id="perfil-nombre-grande">Usuario BIKAR</div>
+            <div class="perfil-hero-nombre" id="perfil-nombre-grande">Usuario TOPDRIVE</div>
             <span class="perfil-rol" id="perfil-rol-badge">Pasajero</span>
           </div>
         </div>
@@ -849,7 +850,7 @@
   <div id="modal-vehiculo" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="vehiculo-titulo">
     <div class="modal-bikar-dialog">
       <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-vehiculo" aria-label="Cerrar">×</button>
-      <span class="modal-kicker">BIKAR · Conductor</span>
+      <span class="modal-kicker">TOPDRIVE · Conductor</span>
       <h2 class="modal-titulo" id="vehiculo-titulo">Mi vehículo</h2>
       <div class="modal-bikar-scroll" style="margin-top:10px">
         <div id="vehiculo-fotos"></div>
@@ -863,7 +864,7 @@
   <div id="modal-historial" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="historial-titulo">
     <div class="modal-bikar-dialog" style="height:min(660px,100%)">
       <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-historial" aria-label="Cerrar">×</button>
-      <span class="modal-kicker">BIKAR · Actividad</span>
+      <span class="modal-kicker">TOPDRIVE · Actividad</span>
       <h2 class="modal-titulo" id="historial-titulo">Historial de servicios</h2>
 
       <div class="historial-tabs">
@@ -888,18 +889,18 @@
     </div>
   </div>
 
-  <!-- MODAL AYUDA BIKAR -->
+  <!-- MODAL AYUDA TOPDRIVE -->
   <div id="modal-ayuda" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="ayuda-titulo">
     <div class="modal-bikar-dialog modal-ayuda-dialog">
       <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-ayuda" aria-label="Cerrar">×</button>
-      <span class="modal-kicker">BIKAR · Soporte</span>
+      <span class="modal-kicker">TOPDRIVE · Soporte</span>
       <h2 class="modal-titulo" id="ayuda-titulo">Centro de Ayuda</h2>
       <div class="ayuda-iframe-container">
         <div id="ayuda-loader" class="ayuda-loading">
           <div class="loading-pulse"><span></span><span></span><span></span></div>
           <span style="margin-left:8px">Cargando centro de ayuda…</span>
         </div>
-        <iframe id="iframe-ayuda" class="ayuda-iframe" src="" title="Centro de Ayuda BIKAR" loading="lazy"></iframe>
+        <iframe id="iframe-ayuda" class="ayuda-iframe" src="" title="Centro de Ayuda TOPDRIVE" loading="lazy"></iframe>
       </div>
     </div>
   </div>
@@ -911,7 +912,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
       </div>
       <h3 class="confirmar-titulo" id="confirmar-titulo">Cerrar sesión</h3>
-      <p class="confirmar-mensaje" id="confirmar-mensaje">¿Estás seguro de que deseas cerrar tu sesión en BIKAR?</p>
+      <p class="confirmar-mensaje" id="confirmar-mensaje">¿Estás seguro de que deseas cerrar tu sesión en TOPDRIVE?</p>
       <div class="confirmar-acciones">
         <button type="button" class="btn-conf-cancelar" id="confirmar-cancelar">Cancelar</button>
         <button type="button" class="btn-conf-aceptar" id="confirmar-aceptar">Sí, cerrar sesión</button>
@@ -928,11 +929,12 @@
 
     /* ============================ CONFIG ============================ */
     const GOOGLE_MAPS_API_KEY = "AIzaSyAjIECrPNcpw4rEJhsPqqa1zxv-qYGOgRM";
-    const SUPABASE_URL = "https://idswjzbrpneordatkqan.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlkc3dqemJycG5lb3JkYXRrcWFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg3OTM2MjMsImV4cCI6MjEwNDM2OTYyM30.GmPqlWn3_EZTy23Oziw_N4DuoKDVAhqr6YHnlKBB2Gw";
+    const SUPABASE_URL = "https://qwxegdvvcsmwemyrzvis.supabase.co";
+    const SUPABASE_REST_URL = "https://qwxegdvvcsmwemyrzvis.supabase.co/rest/v1/";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3eGVnZHZ2Y3Ntd2VteXJ6dmlzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEwMDQ4ODQsImV4cCI6MjEwNjU4MDg4NH0.Xc--jnccpdXJtFPzI28QGv8t29P030ghRrWK0QU5NT0";
     const db = (window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null);
 
-    const URL_AYUDA = "https://whitecarappcelphone-sys.github.io/AYUDA-BIKAR/";
+    const URL_AYUDA = "https://whitecarappcelphone-sys.github.io/AYUDA-TOPDRIVE/";
 
     /* ---- Notificaciones push (Web Push) ----
        1) Genera las llaves con:  npx web-push generate-vapid-keys
@@ -948,15 +950,15 @@
     const PASAJERO_ID_PRUEBA = "5";
     const CONDUCTOR_ID_PRUEBA = "10";
     const MAX_FILAS = 500;
-    const VENTANA_ACTIVO_MS = 10 * 60 * 1000; // Un conductor cuenta como activo si reportó conexión en los últimos 10 min (o si tiene notificaciones push activas)
+    const VENTANA_ACTIVO_MS = 10 * 60 * 1000;
     const LATIDO_CONDUCTOR_MS = 20000;
 
-    /* ============================ TARIFAS REALES PERÚ (SOLES S/) ============================
-       Ajustadas equivalentes al mercado de Uber/inDrive en Perú (Lima/provincias) con tarifas justas:
-       - Moto Taxi:     Base S/ 2.50 + S/ 0.90/km (Mínimo S/ 3.50)
-       - Moto Delivery: Base S/ 3.20 + S/ 1.10/km (Mínimo S/ 4.50)
-       - Taxi Auto:     Base S/ 4.50 + S/ 1.40/km (Mínimo S/ 6.50)
-       - Taxi Carga:    Base S/ 16.00 + S/ 2.80/km (Mínimo S/ 20.00)
+    /* ============================ TARIFAS REALES MÉXICO (PESOS MXN) ============================
+       Tarifas base en pesos mexicanos:
+       - Moto Taxi:     Base $15.00 + $5.50/km (Mínimo $25.00)
+       - Moto Delivery: Base $18.00 + $6.50/km (Mínimo $30.00)
+       - Taxi Auto:     Base $25.00 + $8.50/km (Mínimo $40.00)
+       - Taxi Carga:    Base $90.00 + $18.00/km (Mínimo $120.00)
     ======================================================================================== */
     const ICONOS = {
       taxi_auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/><path d="M9 7V4h6v3"/></svg>',
@@ -967,10 +969,10 @@
     };
 
     const CATALOGO = [
-      { clave:'moto_taxi',     etiqueta:'Moto Taxi',     desc:'Económico y ágil · 1 pasajero',           base:2.50,  porKm:0.90, minTarifa:3.50,  espera:'2 min' },
-      { clave:'moto_delivery', etiqueta:'Moto Delivery', desc:'Envíos de paquetes, comida y documentos',  base:3.20,  porKm:1.10, minTarifa:4.50,  espera:'3 min' },
-      { clave:'taxi_auto',     etiqueta:'Taxi Auto',     desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:4.50,  porKm:1.40, minTarifa:6.50,  espera:'4 min' },
-      { clave:'taxi_carga',    etiqueta:'Taxi Carga',    desc:'Mudanzas, carga pesada y encomiendas',     base:16.00, porKm:2.80, minTarifa:20.00, espera:'8 min' }
+      { clave:'moto_taxi',     etiqueta:'Moto Taxi',     desc:'Económico y ágil · 1 pasajero',           base:15.00, porKm:5.50, minTarifa:25.00,  espera:'2 min' },
+      { clave:'moto_delivery', etiqueta:'Moto Delivery', desc:'Envíos de paquetes, comida y documentos',  base:18.00, porKm:6.50, minTarifa:30.00,  espera:'3 min' },
+      { clave:'taxi_auto',     etiqueta:'Taxi Auto',     desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:25.00, porKm:8.50, minTarifa:40.00,  espera:'4 min' },
+      { clave:'taxi_carga',    etiqueta:'Taxi Carga',    desc:'Mudanzas, carga pesada y encomiendas',     base:90.00, porKm:18.00, minTarifa:120.00, espera:'8 min' }
     ];
 
     /* Normaliza cualquier etiqueta a la clave canónica del catálogo */
@@ -998,8 +1000,8 @@
 
     function formatoMoneda(v) {
       let n = Number(v || 0);
-      if (n > 500) n = n / 1000; // Compatibilidad con registros antiguos en miles
-      return 'S/ ' + n.toFixed(2);
+      if (n > 500) n = n / 1000;
+      return 'MX$ ' + n.toFixed(2);
     }
 
     /* ============================ ESTADO ============================ */
@@ -1007,23 +1009,23 @@
     let origenNombre = 'Ubicación actual', origenDetalle = '', destinoNombre = '', destinoDetalle = '';
     let distanciaKm = 0, duracionMin = 0, servicioSeleccionado = null;
     let usuarioActual = null, claveServicioConductor = null, documentacionVehiculo = null;
-    let conductorActivo = true; // Estado online/offline del conductor
-    let viajeActivoPasajero = null; // Viaje en curso del pasajero
-    let viajeActivoConductor = null; // Viaje en curso del conductor
-    let huboViajeActivo = false; // Para detectar cuando un viaje termina o se cancela
-    let viajesIdsVistos = null; // IDs de viajes ya mostrados al conductor (null = primera carga)
+    let conductorActivo = true;
+    let viajeActivoPasajero = null;
+    let viajeActivoConductor = null;
+    let huboViajeActivo = false;
+    let viajesIdsVistos = null;
     let seqViajes = 0;
     let sesionYaVerificada = false, vistaHistorial = 'servicios', historialViajes = [], historialCargando = false;
 
     // Notificaciones push y sonido
-    let swRegistro = null, swListenerOk = false; // Service Worker
-    let pushSuscrito = false;                    // true cuando este dispositivo quedó registrado para recibir push
-    let audioCtx = null;                         // Contexto de audio para el sonido BIKAR
-    const viajesNotificados = new Set();         // Viajes ya mostrados como notificación del sistema
-    const estadosViajeVistos = new Map();        // id de viaje → último estado visto (para detectar cambios)
-    const avisosEstado = new Set();              // "idViaje-estado" ya avisados con sonido (evita duplicados)
-    let promesaPushPasajero = null;              // Alta de notificaciones del pasajero en curso
-    const viajesAvisados = new Set();            // Viajes ya avisados con sonido (evita sonidos duplicados)
+    let swRegistro = null, swListenerOk = false;
+    let pushSuscrito = false;
+    let audioCtx = null;
+    const viajesNotificados = new Set();
+    const estadosViajeVistos = new Map();
+    const avisosEstado = new Set();
+    let promesaPushPasajero = null;
+    const viajesAvisados = new Set();
 
     let map, geocoder, autocompleteService, placesService, directionsService, directionsRenderer;
     let tokenOrigen = null, tokenDestino = null, marcadorOrigen = null, marcadorDestino = null, infoOrigen = null;
@@ -1092,7 +1094,7 @@
       {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#ffe9b8'}]},
       {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#f0d090'}]},
       {featureType:'transit.line',elementType:'geometry',stylers:[{color:'#e3e7ec'}]},
-      {featureType:'water',elementType:'geometry',stylers:[{color:'#bcdcf0'}]}
+      {featureType:'water',elementType:'geometry',stylers:[{color:'#FED700'}]}
     ];
     const ESTILO_OSCURO = [
       {elementType:'geometry',stylers:[{color:'#1b1b1b'}]},
@@ -1105,9 +1107,10 @@
       {featureType:'road',elementType:'geometry',stylers:[{color:'#2a2a2a'}]},
       {featureType:'road.arterial',elementType:'geometry',stylers:[{color:'#343434'}]},
       {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#3e4a52'}]},
-      {featureType:'water',elementType:'geometry',stylers:[{color:'#0e1c26'}]},
-      {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#4785A7'}]}
+      {featureType:'water',elementType:'geometry',stylers:[{color:'#FED700'}]},
+      {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#FED700'}]}
     ];
+
     const estiloActual = () => document.body.classList.contains('dark-mode') ? ESTILO_OSCURO : ESTILO_CLARO;
 
     function cargarGoogleMaps() {
@@ -1141,7 +1144,7 @@
       directionsService = new google.maps.DirectionsService();
       directionsRenderer = new google.maps.DirectionsRenderer({
         map, suppressMarkers: true, preserveViewport: true,
-        polylineOptions: { strokeColor:'#4785A7', strokeOpacity:.95, strokeWeight:6 }
+        polylineOptions: { strokeColor:'#FED700', strokeOpacity:.95, strokeWeight:6 }
       });
       infoOrigen = new google.maps.InfoWindow({ disableAutoPan: true, maxWidth: 280 });
 
@@ -1238,7 +1241,7 @@
       origenDetalle = detalle || '';
       if (!marcadorOrigen) {
         marcadorOrigen = new google.maps.Marker({
-          position: coords, map, icon: iconoMarcador('#4785A7'), zIndex: 20,
+          position: coords, map, icon: iconoMarcador('#FED700'), zIndex: 20,
           title: modoActual === 'conductor' ? 'Mi ubicación' : 'Punto de partida'
         });
         marcadorOrigen.addListener('click', mostrarPopupOrigen);
@@ -1257,13 +1260,13 @@
     }
 
     async function establecerDestino(coords, corta, detalle, centrar) {
-      if (modoActual === 'conductor') return; // Conductor no establece destino manual
+      if (modoActual === 'conductor') return;
       destino = coords;
       destinoNombre = corta || 'Buscando dirección…';
       destinoDetalle = detalle || '';
       if (!marcadorDestino) {
         marcadorDestino = new google.maps.Marker({
-          position: coords, map, icon: iconoMarcador('#134989'), zIndex: 21, title: 'Destino'
+          position: coords, map, icon: iconoMarcador('#FED700'), zIndex: 21, title: 'Destino'
         });
       } else marcadorDestino.setPosition(coords);
       if (centrar) map.panTo(coords);
@@ -1453,7 +1456,7 @@
     /* ============================ ESTADO CONDUCTOR ACTIVO / INACTIVO ============================ */
     function inicializarEstadoConductor() {
       const guardado = lsGet(K_ESTADO_CONDUCTOR);
-      conductorActivo = (guardado !== 'false'); // Por defecto activo
+      conductorActivo = (guardado !== 'false');
       actualizarBotonEstadoConductor();
     }
 
@@ -1482,8 +1485,8 @@
 
       if (conductorActivo) {
         mostrarToast('Estás ACTIVO · Recibiendo viajes', '✓');
-        desbloquearAudio();          // El toque del conductor habilita el sonido BIKAR
-        iniciarPushConductor(true);  // Pide permiso de notificaciones si aún no lo dio
+        desbloquearAudio();
+        iniciarPushConductor(true);
         await cargarViajesSolicitados();
       } else {
         mostrarToast('Estás INACTIVO · No recibirás viajes', '!');
@@ -1509,7 +1512,7 @@
           columnasActividadOk = false;
           console.warn('No se pudo sincronizar el estado del conductor (¿ejecutaste el SQL?):', res.error.message);
         } else if (!res.data || !res.data.length) {
-          console.warn('El estado del conductor no se actualizó: revisa las políticas RLS de la tabla usuarios (SQL de BIKAR).');
+          console.warn('El estado del conductor no se actualizó: revisa las políticas RLS de la tabla usuarios (SQL de TOPDRIVE).');
         }
       } catch (e) { console.warn('Estado conductor:', e); }
     }
@@ -1529,10 +1532,10 @@
         '</div>';
     }
 
-    /* ============================ NOTIFICACIONES PUSH Y SONIDO BIKAR (CONDUCTOR) ============================
+    /* ============================ NOTIFICACIONES PUSH Y SONIDO TOPDRIVE (CONDUCTOR) ============================
        - Service Worker (sw.js): recibe los push aunque la app esté cerrada o en segundo plano.
        - Suscripción Web Push guardada en Supabase (tabla push_suscripciones, vía RPC).
-       - Sonido BIKAR sintetizado con Web Audio cuando la app está abierta (primer plano o segundo plano).
+       - Sonido TOPDRIVE sintetizado con Web Audio cuando la app está abierta (primer plano o segundo plano).
        - Un conductor con push activo sigue contando como ACTIVO aunque cierre la app.
     ============================================================================================ */
     const PUSH_SOPORTADO = ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
@@ -1541,9 +1544,8 @@
     const esConductorSesion = () => !!usuarioActual && String(usuarioActual.tipo_usuario || '').toLowerCase() === 'conductor';
     const vapidListo = () => !!VAPID_PUBLIC_KEY && !/^PEGA/i.test(VAPID_PUBLIC_KEY) && VAPID_PUBLIC_KEY.length > 40;
 
-    /* ---------- Sonido BIKAR ---------- */
-    // Melodía característica: [frecuencia Hz, inicio s, duración s]
-    const MELODIA_BIKAR = [
+    /* ---------- Sonido TOPDRIVE ---------- */
+    const MELODIA_TOPDRIVE = [
       [659.25, 0.00, 0.35], [880.00, 0.14, 0.35], [1108.73, 0.28, 0.35], [1318.51, 0.42, 0.75],
       [1108.73, 0.95, 0.35], [1318.51, 1.09, 0.35], [1760.00, 1.23, 1.10]
     ];
@@ -1587,11 +1589,10 @@
       if (!ctx) return;
       const pedido = Date.now();
       const reproducir = () => {
-        // Si no se pudo activar el audio a tiempo, no se reproduce un sonido atrasado
         if (ctx.state !== 'running' || Date.now() - pedido > 5000) return;
         const t0 = ctx.currentTime + 0.05;
         for (let r = 0; r < (repeticiones || 2); r++) {
-          MELODIA_BIKAR.forEach((n) => tonoCampana(ctx, n[0], t0 + r * 2.6 + n[1], n[2], 0.3));
+          MELODIA_TOPDRIVE.forEach((n) => tonoCampana(ctx, n[0], t0 + r * 2.6 + n[1], n[2], 0.3));
         }
       };
       if (ctx.state === 'running') reproducir();
@@ -1633,13 +1634,11 @@
       const d = ev && ev.data;
       if (!d || typeof d !== 'object') return;
       if (d.tipo === 'push-viaje') {
-        // Llegó un push de viaje nuevo con la app abierta (o en segundo plano): suena el tono BIKAR y se actualiza la lista
         if (modoActual === 'conductor' && conductorActivo) {
           avisarViajesNuevos([d.viaje_id]);
           cargarViajesSolicitados();
         }
       } else if (d.tipo === 'push-estado') {
-        // Llegó un aviso de cambio de estado del viaje (conductor asignado, en curso, finalizado, cancelado)
         anunciarEstadoViaje(d.viaje_id, d.estado, null, true);
         verificarViajeEnProgresoUsuario();
       } else if (d.tipo === 'abrir-viaje') {
@@ -1669,10 +1668,9 @@
 
     async function suscribirPush(pedirPermiso) {
       if (!db || !usuarioActual || usuarioActual.id == null || !PUSH_SOPORTADO) return false;
-      const rolPush = esConductorSesion() ? 'conductor' : 'pasajero'; // el pasajero también recibe avisos de su viaje
+      const rolPush = esConductorSesion() ? 'conductor' : 'pasajero';
       if (!vapidListo()) { console.warn('Push: falta pegar VAPID_PUBLIC_KEY en la sección CONFIG del código.'); return false; }
       try {
-        // El permiso se pide primero, mientras el toque del usuario sigue siendo válido
         let permiso = Notification.permission;
         if (permiso === 'default' && pedirPermiso) {
           try { permiso = await Notification.requestPermission(); } catch (e) { permiso = Notification.permission; }
@@ -1684,7 +1682,6 @@
         await navigator.serviceWorker.ready;
 
         let sub = await reg.pushManager.getSubscription();
-        // Si la llave VAPID cambió, se renueva la suscripción
         if (sub && sub.options && sub.options.applicationServerKey &&
             bufferABase64Url(sub.options.applicationServerKey) !== VAPID_PUBLIC_KEY) {
           try { await sub.unsubscribe(); } catch (e) {}
@@ -1746,15 +1743,13 @@
       op = op || {};
       try {
         if (!('Notification' in window) || Notification.permission !== 'granted') return false;
-        // Con la app a la vista no hace falta: ya se ve la tarjeta, el aviso y suena el tono
         const enPrimerPlano = !document.hidden && document.hasFocus();
         if (enPrimerPlano && !op.forzar) return false;
 
         const icono = new URL('icon-192.png', location.href).href;
         const opciones = {
-          body: cuerpo || '', icon: icono, tag: op.tag || 'bikar-aviso',
-          renotify: false,          // el mismo tag (p. ej. el push del servidor) reemplaza sin sonar dos veces
-          silent: false, requireInteraction: !!op.persistente,
+          body: cuerpo || '', icon: icono, tag: op.tag || 'topdrive-aviso',
+          renotify: false, silent: false, requireInteraction: !!op.persistente,
           vibrate: op.vibrar || [250, 100, 250, 100, 400], timestamp: Date.now(),
           data: { url: op.url || urlAppBase(), viaje_id: op.viaje_id || null, tipo: op.tipo || null }
         };
@@ -1789,13 +1784,12 @@
           '🚖 Nueva solicitud · ' + (v.tipo_servicio || v.nombre_servicio || 'Servicio'),
           formatoMoneda(v.tarifa) + (dist ? ' · ' + dist.toFixed(1) + ' km' : '') +
             '\nA: ' + (v.origen_nombre || 'Origen') + '\nB: ' + (v.destino_nombre || 'Destino'),
-          { tag: 'bikar-viaje-' + k, viaje_id: v.id, tipo: 'nuevo_viaje', persistente: true, vibrar: [350, 120, 350, 120, 700, 200, 350, 120, 350] }
+          { tag: 'topdrive-viaje-' + k, viaje_id: v.id, tipo: 'nuevo_viaje', persistente: true, vibrar: [350, 120, 350, 120, 700, 200, 350, 120, 350] }
         );
       });
     }
 
-    // Pasajero: pide el permiso (con un toque suyo) y registra este dispositivo para recibir los avisos de su viaje:
-    // conductor asignado, viaje en curso, finalizado o cancelado — aunque la app esté cerrada.
+    // Pasajero: pide el permiso y registra este dispositivo para recibir los avisos de su viaje
     async function iniciarPushPasajero(pedirPermiso) {
       if (!usuarioActual || esConductorSesion()) return false;
       if (!PUSH_SOPORTADO) {
@@ -1821,7 +1815,7 @@
       return ok;
     }
 
-    /* ---------- Cambios de estado del viaje: sonido BIKAR + aviso (pasajero y conductor) ---------- */
+    /* ---------- Cambios de estado del viaje: sonido TOPDRIVE + aviso (pasajero y conductor) ---------- */
     function grupoEstadoViaje(est) {
       const e = String(est || '').toLowerCase().trim().replace(/[\s\-]+/g, '_');
       if (/cancel|rechaz|anul/.test(e)) return 'cancelado';
@@ -1832,25 +1826,22 @@
       return '';
     }
 
-    // textos: [título de la notificación, cuerpo, mensaje corto del aviso en pantalla, icono del aviso]
     const TEXTOS_ESTADO_PASAJERO = {
       aceptado:   ['✅ ¡Conductor asignado!', 'Tu conductor aceptó el servicio y va hacia tu dirección de partida. Prepárate para abordar.', '¡Conductor asignado! Va hacia tu dirección', '✓'],
       encurso:    ['🚖 Viaje en curso', 'Vas rumbo a tu destino. ¡Buen viaje!', 'Viaje en curso · Vas rumbo a tu destino', '✓'],
-      finalizado: ['🏁 Viaje finalizado', 'Gracias por viajar con BIKAR. Toca para ver tu viaje y calificar.', 'Viaje finalizado', '✓'],
+      finalizado: ['🏁 Viaje finalizado', 'Gracias por viajar con TOPDRIVE. Toca para ver tu viaje y calificar.', 'Viaje finalizado', '✓'],
       cancelado:  ['❌ Viaje cancelado', 'Tu viaje fue cancelado. Puedes solicitar otro cuando quieras.', 'Tu viaje fue cancelado', '!']
     };
     const TEXTOS_ESTADO_CONDUCTOR = {
       cancelado:  ['❌ Viaje cancelado', 'El pasajero canceló el viaje.', 'El pasajero canceló el viaje', '!']
     };
 
-    // Suena el tono BIKAR (y muestra la notificación del sistema si la app no está a la vista) UNA sola vez por cambio de estado
     function anunciarEstadoViaje(idViaje, estado, viaje, desdePush) {
       if (!usuarioActual || idViaje === null || idViaje === undefined) return;
       const esCond = esConductorSesion();
       const grupo = grupoEstadoViaje(estado);
       const t = (esCond ? TEXTOS_ESTADO_CONDUCTOR : TEXTOS_ESTADO_PASAJERO)[grupo];
       if (!t) return;
-      // Si el propio pasajero canceló, no se le avisa de lo que acaba de hacer
       if (!esCond && grupo === 'cancelado' && viaje && String(viaje.cancelado_por || '').toLowerCase() === 'pasajero') return;
 
       const k = String(idViaje) + '-' + grupo;
@@ -1862,9 +1853,8 @@
       mostrarToast(t[2], t[3]);
       try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
       if (!desdePush) {
-        // El service worker ya muestra su propia notificación cuando llega el push; esta es el respaldo local
         notificarSistema(t[0], t[1], {
-          tag: 'bikar-estado-' + idViaje + '-' + grupo, viaje_id: idViaje, tipo: 'estado_viaje',
+          tag: 'topdrive-estado-' + idViaje + '-' + grupo, viaje_id: idViaje, tipo: 'estado_viaje',
           url: new URL('viaje.html?id=' + idViaje + '&rol=' + (esCond ? 'conductor' : 'pasajero'), location.href).href
         });
       }
@@ -1872,7 +1862,6 @@
 
     /* ---------- Aviso visual para el conductor ---------- */
     function pintarAvisoPush(estado) {
-      // Mismo recuadro para los dos roles: el del conductor (panel de viajes) o el del pasajero (panel de solicitar viaje)
       const pas = !esConductorSesion();
       const caja = pas ? avisoPushPas : avisoPush;
       const tit = pas ? avisoPushPasTit : avisoPushTit;
@@ -1881,14 +1870,14 @@
       if (!caja) return;
       const textos = pas ? {
         activar:     { t: 'Activa los avisos de tu viaje', s: 'Te avisaremos cuando un conductor acepte tu viaje, llegue o lo cancele, aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
-        bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de BIKAR en los ajustes del navegador o del sitio para recibir los avisos de tu viaje.', b: null, alerta: true },
-        instalar:    { t: 'Instala BIKAR en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre BIKAR desde su icono y activa los avisos.', b: null, alerta: false },
+        bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de TOPDRIVE en los ajustes del navegador o del sitio para recibir los avisos de tu viaje.', b: null, alerta: true },
+        instalar:    { t: 'Instala TOPDRIVE en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre TOPDRIVE desde su icono y activa los avisos.', b: null, alerta: false },
         nosoportado: { t: 'Avisos push no disponibles', s: 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir los avisos de tu viaje.', b: null, alerta: true },
         error:       { t: 'No se pudieron activar los avisos', s: 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
       } : {
-        activar:     { t: 'Activa los avisos de viajes', s: 'Recibe cada solicitud con el sonido BIKAR aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
-        bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de BIKAR en los ajustes del navegador o del sitio para recibir viajes con la app cerrada.', b: null, alerta: true },
-        instalar:    { t: 'Instala BIKAR en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre BIKAR desde su icono y activa los avisos.', b: null, alerta: false },
+        activar:     { t: 'Activa los avisos de viajes', s: 'Recibe cada solicitud con el sonido TOPDRIVE aunque tengas la app cerrada o en segundo plano.', b: 'Activar', alerta: false },
+        bloqueado:   { t: 'Notificaciones bloqueadas', s: 'Permite las notificaciones de TOPDRIVE en los ajustes del navegador o del sitio para recibir viajes con la app cerrada.', b: null, alerta: true },
+        instalar:    { t: 'Instala TOPDRIVE en tu iPhone', s: 'Toca Compartir y elige «Añadir a pantalla de inicio»; luego abre TOPDRIVE desde su icono y activa los avisos.', b: null, alerta: false },
         nosoportado: { t: 'Avisos push no disponibles', s: 'Este navegador no admite notificaciones push. Usa Chrome, Edge o Safari actualizado para recibir viajes con la app cerrada.', b: null, alerta: true },
         error:       { t: 'No se pudieron activar los avisos', s: 'Revisa tu conexión e inténtalo de nuevo.', b: 'Reintentar', alerta: true }
       };
@@ -1912,7 +1901,6 @@
       if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return; }
       if (Notification.permission === 'default' && !pedirPermiso) { pintarAvisoPush('activar'); return; }
       if (Notification.permission === 'default') {
-        // El permiso se pide aquí (dentro del toque del usuario) y NO depende de la llave VAPID
         try { await Notification.requestPermission(); } catch (e) {}
         if (Notification.permission === 'denied') { pintarAvisoPush('bloqueado'); return; }
         if (Notification.permission !== 'granted') { pintarAvisoPush('activar'); return; }
@@ -1940,9 +1928,8 @@
         mostrarToast(pushSuscrito
           ? 'Notificaciones activadas · Recibirás los viajes con la app cerrada'
           : 'Notificaciones activadas en este dispositivo', '✓');
-        sonidoNuevoViaje(1); // Vista previa del sonido BIKAR
-        // Notificación de prueba en la barra del móvil: confirma que el dispositivo muestra los avisos de BIKAR
-        notificarSistema('🔔 BIKAR · Avisos activados', 'Así te llegarán las solicitudes de viaje.', { forzar: true, tag: 'bikar-prueba' });
+        sonidoNuevoViaje(1);
+        notificarSistema('🔔 TOPDRIVE · Avisos activados', 'Así te llegarán las solicitudes de viaje.', { forzar: true, tag: 'topdrive-prueba' });
       }
     });
 
@@ -1957,13 +1944,12 @@
         mostrarToast(pushSuscrito
           ? 'Notificaciones activadas · Te avisaremos de tu viaje aunque cierres la app'
           : 'Notificaciones activadas en este dispositivo', '✓');
-        sonidoNuevoViaje(1); // Vista previa del sonido BIKAR
-        notificarSistema('🔔 BIKAR · Avisos activados', 'Así te llegarán los avisos de tu viaje.', { forzar: true, tag: 'bikar-prueba' });
+        sonidoNuevoViaje(1);
+        notificarSistema('🔔 TOPDRIVE · Avisos activados', 'Así te llegarán los avisos de tu viaje.', { forzar: true, tag: 'topdrive-prueba' });
       }
     });
 
     /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO Y CONDUCTOR) ============================ */
-    /* Aplica el color correspondiente al estado del viaje en la alerta, el bloqueo y el acceso del menú */
     function aplicarColorEstadoAlerta(clase) {
       const clases = ['estado-solicitado', 'estado-aceptado', 'estado-encurso'];
       alertaViajeActivo.classList.remove.apply(alertaViajeActivo.classList, clases);
@@ -2000,20 +1986,15 @@
           const est = String(viaje.estado || '').toLowerCase().trim().replace(/[\s\-]+/g, '_');
           ultimoEstado = est;
 
-          // Si el estado cambió desde la última lectura (no en la primera carga de la página): suena el tono BIKAR
           const grupoPrevio = estadosViajeVistos.get(String(viaje.id));
           const grupoActual = grupoEstadoViaje(est);
           estadosViajeVistos.set(String(viaje.id), grupoActual);
           if (grupoPrevio !== undefined && grupoPrevio !== grupoActual) anunciarEstadoViaje(viaje.id, grupoActual, viaje, false);
 
-          // Estados finalizados o cancelados (Paso 4): cualquier variante de cancelado/finalizado
           const esFinalizado = /finaliz|complet|termin|conclu|cancel|rechaz|anul/.test(est);
-
-          // Estados activos (Pasos 1, 2 y 3)
           const esPaso1 = ['solicitado', 'buscando', 'pendiente'].includes(est);
           const esPaso2 = ['aceptado', 'asignado'].includes(est);
           const esPaso3 = ['en_camino', 'en_curso', 'en_progreso', 'en_viaje', 'iniciado'].includes(est);
-
           const esActivo = !esFinalizado && (esPaso1 || esPaso2 || esPaso3);
 
           if (esActivo) {
@@ -2031,7 +2012,6 @@
             const txtBloqueoTit = $('txt-bloqueo-tit');
             const txtBloqueoSub = $('txt-bloqueo-sub');
 
-            // Actualización dinámica del texto y del color según el paso en el que se encuentra el viaje
             if (esPaso1) {
               aplicarColorEstadoAlerta('estado-solicitado');
               if (txtAlerta) txtAlerta.textContent = esConductor
@@ -2066,20 +2046,17 @@
 
             if (esConductor) {
               viajeActivoConductor = viaje;
-              // Para el conductor no se bloquea la recepción de solicitudes en su categoría
             } else {
               viajeActivoPasajero = viaje;
               bloqueoViajeActivo.classList.remove('oculto');
               seccionSolicitarPasajero.classList.add('oculto');
               btnIrViajeActivo.onclick = () => { window.location.href = url; };
-              // Cancelar solo mientras el viaje no esté en curso hacia el destino
               btnCancelarViaje.classList.toggle('oculto', esPaso3);
             }
             return;
           }
         }
 
-        // Si no hay viaje o si el último viaje fue FINALIZADO / COMPLETADO / CANCELADO (Paso 4):
         alertaViajeActivo.classList.add('oculto');
         menuItemMisViajes.classList.add('oculto');
         aplicarColorEstadoAlerta(null);
@@ -2088,7 +2065,6 @@
         bloqueoViajeActivo.classList.add('oculto');
         seccionSolicitarPasajero.classList.remove('oculto');
 
-        // Si hasta hace un instante había un viaje activo y ahora terminó/canceló: liberar la interfaz de inmediato
         if (huboViajeActivo) {
           huboViajeActivo = false;
           if (/cancel|rechaz|anul/.test(ultimoEstado)) mostrarToast('El viaje fue cancelado', '!');
@@ -2114,7 +2090,7 @@
       btnCancelarViaje.disabled = false;
       if (error) { mostrarToast('No se pudo cancelar: ' + error.message, '!'); return; }
       mostrarToast('Viaje cancelado', '✓');
-      estadosViajeVistos.set(String(v.id), 'cancelado'); // cancelación propia: no se anuncia con sonido
+      estadosViajeVistos.set(String(v.id), 'cancelado');
       huboViajeActivo = false;
       viajeActivoPasajero = null;
       await verificarViajeEnProgresoUsuario();
@@ -2123,15 +2099,15 @@
 
     /* ============================ USUARIO / SESIÓN ============================ */
     function nombreUsuario(u) {
-      if (!u) return 'Usuario BIKAR';
+      if (!u) return 'Usuario TOPDRIVE';
       const n = [u.nombre || u.nombres, u.apellido || u.apellidos].filter(Boolean).join(' ').trim();
-      return n || u.nombre_comercio || u.nombre_establecimiento || u.usuario || u.correo || u.email || 'Usuario BIKAR';
+      return n || u.nombre_comercio || u.nombre_establecimiento || u.usuario || u.correo || u.email || 'Usuario TOPDRIVE';
     }
 
     function avatarPorDefecto(nombre) {
-      const letra = (String(nombre || 'B').trim().charAt(0) || 'B').toUpperCase();
+      const letra = (String(nombre || 'T').trim().charAt(0) || 'T').toUpperCase();
       const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
-        '<stop offset="0" stop-color="#134989"/><stop offset="1" stop-color="#4785A7"/></linearGradient></defs>' +
+        '<stop offset="0" stop-color="#FED700"/><stop offset="1" stop-color="#FED700"/></linearGradient></defs>' +
         '<rect width="100" height="100" fill="url(#g)"/><text x="50" y="50" dy=".36em" text-anchor="middle" ' +
         'font-family="Inter,Arial" font-size="46" font-weight="800" fill="#ffffff">' + letra + '</text></svg>';
       return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
@@ -2180,7 +2156,7 @@
         try {
           const { data, error } = await db.from(tabla).select(cols).eq(col, val).limit(20);
           if (!error) return data || [];
-        } catch (e) { /* reintenta con todas las columnas */ }
+        } catch (e) {}
       }
       return [];
     }
@@ -2231,7 +2207,6 @@
       if (filaBD && filaBD.id != null && mezcla.id == null) mezcla.id = filaBD.id;
       mezcla.foto = u.foto || u.foto_url || (filaBD && (filaBD.foto || filaBD.foto_url)) || '';
       if (esConductor) {
-        // Limpia restos de documentos de sesiones anteriores; los datos del vehículo vienen siempre de Supabase
         CLAVES_DOC_ARCHIVO.concat(['marca', 'modelo', 'anio', 'placa']).forEach((k) => { delete mezcla[k]; });
         if (vehiculo && vehiculo.tipo_servicio) mezcla.tipo_servicio = vehiculo.tipo_servicio;
       }
@@ -2264,7 +2239,6 @@
       fotoHeader.src = fotoDeUsuario(usuario);
       perfilSuperior.classList.remove('oculto');
 
-      // El rol se define directamente por su perfil
       if (usuario.tipo_usuario === 'conductor') {
         modoActual = 'conductor';
         uiPasajero.classList.add('oculto');
@@ -2272,7 +2246,7 @@
         inicializarEstadoConductor();
         sincronizarEstadoConductorDB();
         await resolverServicioDelConductor();
-        iniciarPushConductor(false); // Registra / renueva las notificaciones push de este dispositivo
+        iniciarPushConductor(false);
         if (conductorActivo) {
           cargarViajesSolicitados();
         } else {
@@ -2284,7 +2258,7 @@
         uiConductor.classList.add('oculto');
         uiPasajero.classList.remove('oculto');
         btnConductorEstado.classList.add('oculto');
-        iniciarPushPasajero(false); // Si ya dio el permiso, registra / renueva los avisos de su viaje en este dispositivo
+        iniciarPushPasajero(false);
         if (usuario.tipo_usuario === 'comercio' && !uiPasajero.querySelector('.comercio-info')) {
           uiPasajero.insertAdjacentHTML('afterbegin',
             '<div class="comercio-info"><b>Comercio activo:</b> ' +
@@ -2299,7 +2273,7 @@
     /* ============================ MENÚ DE PERFIL ============================ */
     function actualizarChipUsuario() {
       btnCambiarModo.textContent = nombreUsuario(usuarioActual);
-      btnCambiarModo.title = 'Sesión activa: ' + (usuarioActual && usuarioActual.tipo_usuario ? usuarioActual.tipo_usuario.toUpperCase() : 'BIKAR');
+      btnCambiarModo.title = 'Sesión activa: ' + (usuarioActual && usuarioActual.tipo_usuario ? usuarioActual.tipo_usuario.toUpperCase() : 'TOPDRIVE');
     }
 
     function abrirMenuPerfil() {
@@ -2331,17 +2305,15 @@
     $('menu-item-ayuda').addEventListener('click', () => { cerrarMenuPerfil(); abrirModalAyuda(); });
     $('menu-item-salir').addEventListener('click', async () => {
       cerrarMenuPerfil();
-      if (await confirmarBikar('Cerrar sesión', '¿Estás seguro de que deseas cerrar tu sesión en BIKAR?', 'Sí, cerrar sesión')) cerrarSesion();
+      if (await confirmarBikar('Cerrar sesión', '¿Estás seguro de que deseas cerrar tu sesión en TOPDRIVE?', 'Sí, cerrar sesión')) cerrarSesion();
     });
 
     async function cerrarSesion() {
-      // Un conductor que cierra sesión deja de contarse como activo
       try {
         if (db && usuarioActual && String(usuarioActual.tipo_usuario || '').toLowerCase() === 'conductor' && usuarioActual.id != null) {
           await db.from('usuarios').update({ conductor_activo: false }).eq('id', usuarioActual.id);
         }
       } catch (e) {}
-      // Y este dispositivo deja de recibir notificaciones push de esa cuenta
       try { await desactivarPush(); } catch (e) {}
       try { localStorage.removeItem(K_SESION); } catch (e) {}
       usuarioActual = null;
@@ -2407,14 +2379,13 @@
     ];
 
     function valorLegible(clave, valor) {
-      // Las políticas/términos son requisito obligatorio del registro: siempre figuran como aceptadas
       if (/^(politicas?_aceptadas?|acepto_politicas|acepta_politicas|terminos_aceptados|acepto_terminos)$/i.test(String(clave))) return 'Sí';
       if (valor === null || valor === undefined || valor === '' || typeof valor === 'object') return null;
       if (typeof valor === 'boolean') return valor ? 'Sí' : 'No';
       const txt = String(valor);
       if (/^\d{4}-\d{2}-\d{2}T/.test(txt)) {
         const f = new Date(txt);
-        if (!isNaN(f)) return f.toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' });
+        if (!isNaN(f)) return f.toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' });
       }
       return txt;
     }
@@ -2462,7 +2433,6 @@
       }
       $('perfil-rol-badge').textContent = textoRol;
 
-      // Conductor: botón "Mi vehículo" en lugar de "Cambiar tema"
       const esCond = rol === 'conductor';
       $('btn-perfil-vehiculo').classList.toggle('oculto', !esCond);
       $('btn-perfil-tema').classList.toggle('oculto', esCond);
@@ -2508,12 +2478,8 @@
     $('perfil-foto-grande').addEventListener('error', function () { this.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
 
     /* ============================ MI VEHÍCULO (CONDUCTOR) ============================ */
-    // Solo se muestran datos del vehículo (servicio, marca, modelo, año, placa) y su foto; nunca documentos personales
-
-    /* ---- Foto y datos reales del vehículo desde Supabase ---- */
     const tsDeNombre = (n) => { const m = String(n).match(/_(\d{10,})_/); return m ? Number(m[1]) : 0; };
 
-    // Convierte el valor guardado (URL pública, Base64 o ruta de Storage) en una URL utilizable
     function imagenDesdeValor(valor) {
       if (typeof valor !== 'string') return null;
       const t = valor.trim();
@@ -2526,7 +2492,6 @@
       } catch (e) { return null; }
     }
 
-    // Respaldo: busca en Storage la última foto del vehículo que subió este conductor
     async function fotoVehiculoDesdeStorage(cid) {
       if (!db || cid === null || cid === undefined) return null;
       try {
@@ -2550,10 +2515,8 @@
       modalPerfil.classList.add('oculto');
       modalVehiculo.classList.remove('oculto');
 
-      // Datos reales: usuarios → conductores (conductor_id) → vehiculos y documentos_conductor
       const { cid, veh, doc } = await datosVehiculoDB(u, true);
 
-      // Foto del vehículo (columna foto_vehiculo; respaldo: última foto en Storage)
       let foto = imagenDesdeValor(doc && doc.foto_vehiculo);
       if (!foto) foto = await fotoVehiculoDesdeStorage(cid);
       contFotos.innerHTML = '';
@@ -2568,7 +2531,6 @@
         contFotos.innerHTML = '<div class="vehiculo-sin-foto">No hay foto del vehículo registrada.</div>';
       }
 
-      // Datos del vehículo: servicio, marca, modelo, año y placa
       const valorDe = (k) => {
         const fuentes = [veh, doc];
         for (let n = 0; n < fuentes.length; n++) {
@@ -2593,7 +2555,7 @@
       });
       if (!i) {
         cont.innerHTML = '<div class="perfil-vacio">No hay datos del vehículo registrados.</div>';
-        console.warn('Mi vehículo: sin filas en vehiculos/documentos_conductor para usuario', u.id, '(conductor_id:', cid, '). Ejecuta el SQL de BIKAR y revisa la consulta de diagnóstico.');
+        console.warn('Mi vehículo: sin filas en vehiculos/documentos_conductor para usuario', u.id, '(conductor_id:', cid, '). Ejecuta el SQL de TOPDRIVE y revisa la consulta de diagnóstico.');
       }
     }
 
@@ -2610,8 +2572,8 @@
     }
 
     const textoFecha = (d) => !d ? 'Sin fecha' :
-      d.toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' }) + ' · ' +
-      d.toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' });
+      d.toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' }) + ' · ' +
+      d.toLocaleTimeString('es-MX', { hour:'2-digit', minute:'2-digit' });
 
     function dentroDePeriodo(d, periodo) {
       if (periodo === 'todo' || !d) return true;
@@ -2729,7 +2691,7 @@
     function descargarHistorial() {
       const lista = viajesFiltrados();
       if (!lista.length) { mostrarToast('No hay datos para descargar', '!'); return; }
-      const cab = ['id','tipo_servicio','origen_nombre','destino_nombre','distancia_km','tarifa_soles','estado','fecha'];
+      const cab = ['id','tipo_servicio','origen_nombre','destino_nombre','distancia_km','tarifa_pesos','estado','fecha'];
       const filas = lista.map((v) => [
         v.id ?? '', v.tipo_servicio || v.nombre_servicio || '', v.origen_nombre || '', v.destino_nombre || '',
         v.distancia_km ?? '', (v.tarifa ? Number(v.tarifa > 500 ? v.tarifa/1000 : v.tarifa).toFixed(2) : '0.00'), v.estado || '', textoFecha(fechaDeViaje(v))
@@ -2739,7 +2701,7 @@
       const url = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8;' }));
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'bikar_' + vistaHistorial + '_' + filtroPeriodo.value + '_' + new Date().toISOString().slice(0,10) + '.csv';
+      a.download = 'topdrive_' + vistaHistorial + '_' + filtroPeriodo.value + '_' + new Date().toISOString().slice(0,10) + '.csv';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 1200);
       mostrarToast('Archivo descargado');
@@ -2770,7 +2732,6 @@
     async function resolverServicioDelConductor() {
       claveServicioConductor = null;
       const u = usuarioActual || {};
-      // El servicio real del conductor está en 'vehiculos' / 'documentos_conductor' (no en 'usuarios')
       const resumen = (documentacionVehiculo && documentacionVehiculo.tipo_servicio) ? documentacionVehiculo : await resumenVehiculoDB(u);
       const bruto = (resumen && resumen.tipo_servicio) || u.tipo_servicio || u.servicio || null;
 
@@ -2792,7 +2753,7 @@
         mostrarToast('Selecciona origen y destino', '!');
         return;
       }
-      promesaPushPasajero = iniciarPushPasajero(true); // Pide el permiso de notificaciones (dentro del toque del usuario)
+      promesaPushPasajero = iniciarPushPasajero(true);
       abrirPanelServicios();
     });
 
@@ -2828,7 +2789,6 @@
     backdrop.addEventListener('click', cerrarPanelServicios);
 
     /* Cuenta REAL de conductores activos por tipo de servicio desde Supabase */
-    // Lee una tabla probando listas de columnas (de más a menos completa); nivel = índice que funcionó
     async function leerTabla(tabla, intentos, filtro) {
       for (let i = 0; i < intentos.length; i++) {
         try {
@@ -2836,7 +2796,7 @@
           if (filtro) q = q.eq(filtro[0], filtro[1]);
           const r = await q;
           if (!r.error) return { filas: r.data || [], nivel: i };
-        } catch (e) { /* prueba con menos columnas */ }
+        } catch (e) {}
       }
       return { filas: [], nivel: -1 };
     }
@@ -2858,10 +2818,8 @@
       ]);
       const ru = res[0], rc = res[1], rv = res[2], rd = res[3];
 
-      // usuarios.id → conductores.id
       const condDeUsuario = new Map();
       rc.filas.forEach((c) => { if (c.usuario_id !== null && c.usuario_id !== undefined) condDeUsuario.set(String(c.usuario_id), c.id); });
-      // Servicio registrado: vehiculos (por conductor_id) y documentos_conductor (por usuario_id / conductor_id)
       const servVeh = new Map(), servDocUsuario = new Map(), servDocCond = new Map();
       rv.filas.forEach((v) => {
         const k = normalizarClaveServicio(v.tipo_servicio);
@@ -2874,16 +2832,13 @@
         if (d.conductor_id !== null && d.conductor_id !== undefined) servDocCond.set(String(d.conductor_id), k);
       });
 
-      // Estricto: existe la columna conductor_activo (niveles 0, 1 y 2) y, en los niveles 0 y 1, ultima_conexion
       const estricto = ru.nivel >= 0 && ru.nivel <= 2;
-      if (!estricto) console.warn('usuarios.conductor_activo no existe: ejecuta el SQL de BIKAR para contar solo conductores activos.');
+      if (!estricto) console.warn('usuarios.conductor_activo no existe: ejecuta el SQL de TOPDRIVE para contar solo conductores activos.');
       const ahora = Date.now();
 
       ru.filas.forEach((u) => {
         if (estricto) {
           if (u.conductor_activo !== true) return;
-          // Un conductor con notificaciones push activas (recibe_push) sigue ACTIVO aunque tenga la app cerrada:
-          // solo se le exige conexión reciente cuando NO puede recibir push.
           if (ru.nivel <= 1 && u.ultima_conexion && u.recibe_push !== true) {
             const t = new Date(u.ultima_conexion).getTime();
             if (!isNaN(t) && (ahora - t) > VENTANA_ACTIVO_MS) return;
@@ -2950,7 +2905,6 @@
       if (!servicioSeleccionado) return;
       btnConfirmarServicio.disabled = true;
       btnConfirmarServicio.textContent = 'Solicitando…';
-      // Antes de pasar al seguimiento se termina de registrar este dispositivo para los avisos (máx. 6 s)
       if (promesaPushPasajero) {
         try { await Promise.race([promesaPushPasajero, new Promise((r) => setTimeout(r, 6000))]); } catch (e) {}
       }
@@ -2995,7 +2949,6 @@
       ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id)
       : CONDUCTOR_ID_PRUEBA;
 
-    // Viajes que ESTE conductor rechazó (siguen visibles para los demás conductores)
     function rechazadosDelConductor() {
       const todo = lsJSON(K_RECHAZADOS);
       const lista = todo && typeof todo === 'object' ? todo[String(idConductorActual())] : null;
@@ -3034,8 +2987,6 @@
       return { promedio: nums.reduce((a, b) => a + b, 0) / nums.length, total: nums.length };
     }
 
-    // Detecta qué columnas tiene realmente la tabla 'calificaciones' (una sola vez) para no pedir columnas
-    // que no existen: PostgREST responde 400 y el navegador lo muestra como error rojo en la consola.
     let esquemaCalifPromesa = null, esquemaCalifTs = 0, esquemaCalifFijo = false;
     function esquemaCalificaciones() {
       if (esquemaCalifPromesa && (esquemaCalifFijo || Date.now() - esquemaCalifTs < 60000)) return esquemaCalifPromesa;
@@ -3045,16 +2996,14 @@
         try {
           const r = await db.from('calificaciones').select('*').limit(1);
           if (!r.error && r.data && r.data.length) columnas = Object.keys(r.data[0]);
-        } catch (e) { /* tabla no accesible: se omite */ }
-        esquemaCalifFijo = columnas.length > 0; // si la tabla está vacía se vuelve a revisar al minuto
+        } catch (e) {}
+        esquemaCalifFijo = columnas.length > 0;
         return columnas;
       })();
       return esquemaCalifPromesa;
     }
 
-    // Busca la calificación del pasajero (la que se registra en viaje.html)
     async function calificacionDePasajero(id, filaUsuario) {
-      // 1) Columna directa en la tabla usuarios
       if (filaUsuario) {
         const directas = ['calificacion', 'calificacion_pasajero', 'rating', 'puntuacion', 'estrellas', 'promedio_calificacion'];
         for (let i = 0; i < directas.length; i++) {
@@ -3062,7 +3011,6 @@
           if (!isNaN(v) && v > 0) return { promedio: v, total: Number(filaUsuario.total_calificaciones || filaUsuario.num_calificaciones || 0) };
         }
       }
-      // 2) Tabla de calificaciones: solo se consultan las columnas que existen de verdad
       const columnasTabla = await esquemaCalificaciones();
       if (columnasTabla.length) {
         const columnasId = ['pasajero_id', 'usuario_id', 'calificado_id'].filter((c) => columnasTabla.includes(c));
@@ -3073,10 +3021,9 @@
             const vals = r.data.map((f) => f.calificacion ?? f.estrellas ?? f.puntuacion ?? f.rating ?? f.valor ?? f.puntaje);
             const p = promedioCalificaciones(vals);
             if (p) return p;
-          } catch (e) { /* siguiente columna */ }
+          } catch (e) {}
         }
       }
-      // 3) Calificaciones guardadas dentro de la tabla viajes
       try {
         const r = await db.from('viajes').select('*').eq('pasajero_id', id).limit(200);
         if (!r.error && r.data && r.data.length) {
@@ -3100,7 +3047,7 @@
         } catch (e) {}
         const cal = await calificacionDePasajero(id, fila);
         return {
-          nombre: fila ? nombreUsuario(fila) : 'Pasajero BIKAR',
+          nombre: fila ? nombreUsuario(fila) : 'Pasajero TOPDRIVE',
           foto: fila ? fotoDeUsuario(fila) : avatarPorDefecto('P'),
           verificado: !!(fila && (fila.verificado === true || String(fila.estado || '').toLowerCase() === 'verificado')),
           calificacion: cal ? cal.promedio : null,
@@ -3187,7 +3134,6 @@
       card.querySelector('.btn-aceptar-viaje').addEventListener('click', () => aceptarViaje(viaje));
       card.querySelector('.btn-rechazar').addEventListener('click', () => rechazarViaje(viaje, card));
 
-      // Carga asíncrona de la foto, el nombre y la calificación del pasajero
       const cajaPasajero = card.querySelector('.viaje-pasajero');
       Promise.resolve(obtenerPasajero(viaje.pasajero_id))
         .then((info) => pintarPasajeroEnTarjeta(cajaPasajero, info))
@@ -3222,7 +3168,6 @@
       }
     }
 
-    // Avisa al conductor que el pasajero canceló la solicitud que tenía en su lista
     function marcarViajeCancelado(el) {
       if (!el || el.classList.contains('cancelada')) return;
       el.classList.remove('nuevo');
@@ -3235,7 +3180,7 @@
       banner.innerHTML = SVG_RECHAZAR + ' Viaje cancelado';
       el.insertBefore(banner, el.firstChild);
       mostrarToast('Viaje cancelado por el pasajero', '!');
-      notificarSistema('❌ Viaje cancelado', 'El pasajero canceló la solicitud.', { tag: 'bikar-cancelado-' + el.dataset.id });
+      notificarSistema('❌ Viaje cancelado', 'El pasajero canceló la solicitud.', { tag: 'topdrive-cancelado-' + el.dataset.id });
       try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
       pintarEstadoLista();
       setTimeout(() => {
@@ -3260,7 +3205,6 @@
     async function cargarViajesSolicitados() {
       if (modoActual !== 'conductor' || !db) return;
 
-      // Si el conductor está inactivo, no debe cargar ni recibir nada
       if (!conductorActivo) {
         renderizarConductorInactivo();
         return;
@@ -3278,7 +3222,7 @@
       const { data, error } = await db.from('viajes').select('*')
         .eq('estado', 'solicitado').order('id', { ascending:false });
 
-      if (miSeq !== seqViajes || !conductorActivo) return; // llegó una respuesta más nueva
+      if (miSeq !== seqViajes || !conductorActivo) return;
 
       if (error) {
         statusConductor.textContent = 'Error al cargar viajes: ' + error.message;
@@ -3288,12 +3232,10 @@
 
       let viajes = data || [];
 
-      // Filtrado estricto: El conductor SOLO recibe los viajes que correspondan a su servicio inscrito
       if (claveServicioConductor) {
         viajes = viajes.filter(v => normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === claveServicioConductor);
       }
 
-      // Excluir los viajes que este conductor ya rechazó (los demás conductores los siguen viendo)
       const rechazados = new Set(rechazadosDelConductor());
       viajes = viajes.filter(v => !rechazados.has(String(v.id)));
 
@@ -3302,12 +3244,10 @@
       const idsNuevos = new Set(nuevos.map(v => String(v.id)));
       viajesIdsVistos = ids;
 
-      // Actualización sin parpadeo: se conservan tarjetas existentes y solo se animan las nuevas
       Array.from(contSolicitudes.children).forEach((el) => {
         if (!el.classList.contains('tarjeta-viaje')) el.remove();
       });
 
-      // Tarjetas que ya no están pendientes: si fueron canceladas por el pasajero, se notifica al conductor
       const perdidas = Array.from(contSolicitudes.querySelectorAll(':scope > .tarjeta-viaje')).filter((el) =>
         !el.classList.contains('saliendo') && !el.classList.contains('cancelada') && !ids.has(el.dataset.id));
       if (perdidas.length) {
@@ -3341,8 +3281,8 @@
       pintarEstadoLista();
 
       if (nuevos.length) {
-        avisarViajesNuevos(nuevos.map(v => v.id)); // Sonido BIKAR (una sola vez por viaje)
-        notificarViajesNuevosSistema(nuevos);      // Notificación en la barra del móvil si la app no está a la vista
+        avisarViajesNuevos(nuevos.map(v => v.id));
+        notificarViajesNuevosSistema(nuevos);
         mostrarToast(nuevos.length === 1 ? 'Nueva solicitud de viaje' : nuevos.length + ' nuevas solicitudes de viaje', '+');
         try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
       }
@@ -3374,11 +3314,10 @@
     document.addEventListener('DOMContentLoaded', () => {
       inicializarTema();
       cargarGoogleMaps();
-      registrarServiceWorker(); // Habilita notificaciones push y la instalación como app
+      registrarServiceWorker();
       suscribirRealtime();
       verificarSesionGuardada();
 
-      // Sincronización al regresar a la pestaña o ventana desde viaje.html
       window.addEventListener('focus', () => {
         verificarViajeEnProgresoUsuario();
         if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
@@ -3392,14 +3331,11 @@
         }
       });
 
-      // Al volver desde viaje.html con el botón "atrás" (página restaurada de caché): sincronizar al instante
-      // Al cerrar o salir de la página el conductor deja de contarse como activo (se reactiva solo al volver),
-      // EXCEPTO si tiene notificaciones push activas: entonces sigue ACTIVO y recibirá los viajes como notificación.
       window.addEventListener('pagehide', () => {
         if (!usuarioActual || modoActual !== 'conductor' || usuarioActual.id == null) return;
         if (pushSuscrito) return;
         try {
-          fetch(SUPABASE_URL + '/rest/v1/usuarios?id=eq.' + encodeURIComponent(usuarioActual.id), {
+          fetch(SUPABASE_REST_URL + 'usuarios?id=eq.' + encodeURIComponent(usuarioActual.id), {
             method: 'PATCH', keepalive: true,
             headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
             body: JSON.stringify({ conductor_activo: false })
@@ -3413,21 +3349,17 @@
         if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
       });
 
-      // Polling ligero en segundo plano para garantizar sincronización en tiempo real
       setInterval(() => {
         if (!document.hidden) {
           verificarViajeEnProgresoUsuario();
-          // Respaldo al tiempo real: el conductor ve nuevas solicitudes y cancelaciones sin recargar
           if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
         }
       }, 3500);
 
-      // Latido: informa a Supabase que el conductor sigue en línea
       setInterval(() => {
         if (modoActual === 'conductor' && conductorActivo) sincronizarEstadoConductorDB();
       }, LATIDO_CONDUCTOR_MS);
 
-      // Actualiza el "hace X min" de las tarjetas de viaje del conductor
       setInterval(() => {
         document.querySelectorAll('[data-ts]').forEach((el) => {
           el.textContent = tiempoRelativo(Number(el.dataset.ts));
