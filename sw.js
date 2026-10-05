@@ -1,6 +1,7 @@
 /* TOPDRIVE Web Push service worker. Vive junto a index.html, app.html y viaje.html. */
 const APP_SCOPE = (self.registration && self.registration.scope) || new URL('./', self.location.href).href;
 const URL_INICIO = new URL('index.html', APP_SCOPE).href;
+const ICONO = new URL('icono-192.png', APP_SCOPE).href;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(self.skipWaiting());
@@ -10,14 +11,14 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-/* El evento FETCH es obligatorio para que Android/Chrome permitan instalar la PWA */
+/* FETCH solo del mismo origen. Si intercepta Google/Supabase/FCM, Activar se rompe. */
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    fetch(event.request).catch((err) => {
-      console.warn('[SW] Red no disponible:', err);
-      return Response.error();
-    })
-  );
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  let origen = '';
+  try { origen = new URL(req.url).origin; } catch (e) { return; }
+  if (origen !== self.location.origin) return;
+  event.respondWith(fetch(req));
 });
 
 function leerDatosPush(event) {
@@ -53,8 +54,8 @@ function datosNotificacion(payload) {
     tipo,
     options: Object.assign({}, anidado, payload.options || {}, {
       body: payload.body || payload.message || anidado.body || data.body || 'Tienes una actualización en TOPDRIVE.',
-      icon: payload.icon || anidado.icon || new URL('icon-192.png', APP_SCOPE).href,
-      badge: payload.badge || anidado.badge || new URL('icon-192.png', APP_SCOPE).href,
+      icon: payload.icon || anidado.icon || ICONO,
+      badge: payload.badge || anidado.badge || ICONO,
       tag: payload.tag || anidado.tag || (viajeId ? 'topdrive-viaje-' + viajeId : 'topdrive-aviso'),
       renotify: false,
       data: Object.assign({}, data, { url, viaje_id: viajeId, tipo, estado })
@@ -91,7 +92,7 @@ self.addEventListener('notificationclick', (event) => {
           estado: data.estado || null
         });
         if (cliente.navigate) {
-          return cliente.focus().then(() => cliente.navigate(destino));
+          return cliente.focus().then(() => cliente.navigate(destino)).catch(() => cliente.focus());
         }
         return cliente.focus();
       }
