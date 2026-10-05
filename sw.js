@@ -1,5 +1,6 @@
-/* TOPDRIVE Web Push service worker. It must live beside index.html. */
+/* TOPDRIVE Web Push service worker. Vive junto a index.html, app.html y viaje.html. */
 const APP_SCOPE = (self.registration && self.registration.scope) || new URL('./', self.location.href).href;
+const URL_INICIO = new URL('index.html', APP_SCOPE).href;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(self.skipWaiting());
@@ -7,6 +8,16 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
+});
+
+/* El evento FETCH es obligatorio para que Android/Chrome permitan instalar la PWA */
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    fetch(event.request).catch((err) => {
+      console.warn('[SW] Red no disponible:', err);
+      return Response.error();
+    })
+  );
 });
 
 function leerDatosPush(event) {
@@ -32,7 +43,7 @@ function datosNotificacion(payload) {
   if (!url && viajeId) {
     url = new URL('viaje.html?id=' + encodeURIComponent(viajeId) + '&rol=' + encodeURIComponent(rol), APP_SCOPE).href;
   }
-  if (!url) url = new URL('app.html', APP_SCOPE).href;
+  if (!url) url = URL_INICIO;
 
   return {
     title: payload.title || anidado.title || 'TOPDRIVE',
@@ -69,7 +80,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const data = event.notification.data || {};
-  const destino = data.url || new URL('app.html', APP_SCOPE).href;
+  const destino = data.url || URL_INICIO;
 
   event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientes) => {
     for (const cliente of clientes) {
@@ -79,7 +90,10 @@ self.addEventListener('notificationclick', (event) => {
           viaje_id: data.viaje_id || null,
           estado: data.estado || null
         });
-        return cliente.focus().then(() => cliente.navigate(destino));
+        if (cliente.navigate) {
+          return cliente.focus().then(() => cliente.navigate(destino));
+        }
+        return cliente.focus();
       }
     }
     return self.clients.openWindow(destino);
