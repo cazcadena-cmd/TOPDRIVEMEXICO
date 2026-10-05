@@ -2787,6 +2787,8 @@
     }
 
     const viajesFiltrados = () => historialViajes.filter(v => dentroDePeriodo(fechaDeViaje(v), filtroPeriodo.value));
+    // Viajes terminados (finalizado / completado / terminado / concluido); excluye cancelados, rechazados y en curso
+    const viajesTerminados = (lista) => (lista || []).filter(v => grupoEstadoViaje(v.estado) === 'finalizado');
     const esConductorContexto = () => modoActual === 'conductor' || (usuarioActual && usuarioActual.tipo_usuario === 'conductor');
 
     async function cargarHistorial() {
@@ -2822,8 +2824,10 @@
       historialContenido.innerHTML = '';
 
       if (vistaHistorial === 'pagos') {
-        const total = lista.reduce((a, v) => a + Number(v.tarifa || 0), 0);
-        const n = lista.length;
+        // Solo los viajes TERMINADOS cuentan como pagos / ingresos (los cancelados o en curso no se suman)
+        const pagados = viajesTerminados(lista);
+        const total = pagados.reduce((a, v) => a + Number(v.tarifa || 0), 0);
+        const n = pagados.length;
         const promedio = n ? (total / n) : 0;
         const etiqueta = { hoy:'hoy', semana:'últimos 7 días', mes:'este mes', todo:'todo el historial' }[filtroPeriodo.value] || '';
         const wrap = document.createElement('div');
@@ -2835,11 +2839,11 @@
           '</div><p class="historial-fecha" style="margin:-4px 0 10px 2px">Mostrando ' + etiqueta + '</p>';
 
         if (!n) {
-          wrap.insertAdjacentHTML('beforeend', '<div class="perfil-vacio">Sin movimientos en el periodo seleccionado.</div>');
+          wrap.insertAdjacentHTML('beforeend', '<div class="perfil-vacio">Sin viajes terminados en el periodo seleccionado.</div>');
         } else {
           const filas = document.createElement('div');
           filas.className = 'historial-lista';
-          lista.forEach((v, i) => {
+          pagados.forEach((v, i) => {
             const fila = document.createElement('div');
             fila.className = 'pago-fila';
             fila.style.animationDelay = (i * 0.035) + 's';
@@ -2891,7 +2895,8 @@
     }
 
     function descargarHistorial() {
-      const lista = viajesFiltrados();
+      // En "Mis pagos / Mis ingresos" se descargan solo los viajes terminados (igual que lo que se suma en pantalla)
+      const lista = vistaHistorial === 'pagos' ? viajesTerminados(viajesFiltrados()) : viajesFiltrados();
       if (!lista.length) { mostrarToast('No hay datos para descargar', '!'); return; }
       const cab = ['id','tipo_servicio','origen_nombre','destino_nombre','distancia_km','tarifa_mxn','estado','fecha'];
       const filas = lista.map((v) => [
