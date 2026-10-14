@@ -669,6 +669,123 @@
     body:not(.dark-mode) .aviso-push .aviso-push-icono{background:rgba(255,255,255,.18);color:#fff;box-shadow:none;animation:none}
     body:not(.dark-mode) .aviso-push .btn-mini{color:#fff;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.75)}
     body:not(.dark-mode) .aviso-push .btn-mini:hover{background:rgba(255,255,255,.28)}
+
+    /* ================= OFERTAS Y CONTRAOFERTAS (ESTILO INDRIVER) ================= */
+    @keyframes ofertaPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+    @keyframes ofertaBarra{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+    @keyframes ofertaAlertaIn{from{opacity:0;transform:translate(-50%,-24px) scale(.96)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+    .oferta-box{margin-bottom:12px;padding:14px;border-radius:18px;background:var(--field-bg);border:1.5px solid rgba(254,215,0,.45);text-align:left;animation:cardPop .35s ease both}
+    .oferta-box-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+    .oferta-kicker{font-size:.6rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--primary-color)}
+    .oferta-sugerida{font-size:.7rem;font-weight:700;color:var(--muted-text);text-align:right}
+    .oferta-sugerida b{color:var(--text-color)}
+    .oferta-control{display:flex;align-items:center;gap:10px}
+    .oferta-btn-paso{flex-shrink:0;width:46px;height:46px;border-radius:14px;border:1px solid var(--field-border);background:var(--glass-bg-strong);
+      color:var(--text-color);font-size:1.4rem;font-weight:800;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .oferta-btn-paso:hover{border-color:var(--primary-color);color:var(--primary-color)}
+    .oferta-btn-paso:disabled{opacity:.4;cursor:not-allowed}
+    .oferta-monto-wrap{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:4px;height:54px;padding:0 10px;border-radius:14px;
+      background:var(--glass-bg-strong);border:1.5px solid var(--primary-color);cursor:text}
+    .oferta-monto-wrap span{font-size:1.2rem;font-weight:800;color:var(--text-color)}
+    .oferta-monto-wrap small{font-size:.62rem;font-weight:800;color:var(--muted-text)}
+    .oferta-monto-input{width:100%;min-width:0;max-width:130px;background:transparent;border:none;outline:none;font-size:1.5rem;font-weight:900;
+      color:var(--text-color);text-align:center;letter-spacing:-.02em;-moz-appearance:textfield;appearance:textfield}
+    .oferta-monto-input::-webkit-outer-spin-button,.oferta-monto-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+    .oferta-chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .oferta-chips::-webkit-scrollbar{display:none}
+    .oferta-chip{flex-shrink:0;padding:7px 11px;border-radius:999px;border:1px solid var(--field-border);background:var(--glass-bg-strong);color:var(--text-color);
+      font-size:.72rem;font-weight:800;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .oferta-chip small{font-weight:700;opacity:.7;margin-left:4px;font-size:.62rem}
+    .oferta-chip:hover{border-color:var(--primary-color)}
+    .oferta-chip.activo{background:var(--primary-color);color:#121212;border-color:var(--primary-color)}
+    .oferta-nivel{margin-top:8px;font-size:.7rem;font-weight:700;line-height:1.35}
+    .oferta-nivel.bajo{color:#f59e0b}
+    .oferta-nivel.justo,.oferta-nivel.alto{color:#10b981}
+
+    .viaje-oferta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;padding:10px 12px;border-radius:14px;
+      background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(16,185,129,.05));border:1px solid rgba(16,185,129,.4)}
+    .viaje-oferta.baja{background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(245,158,11,.05));border-color:rgba(245,158,11,.45)}
+    .viaje-oferta.subio{animation:ofertaPulse .5s ease 3}
+    .viaje-oferta-lbl{display:block;font-size:.56rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-text)}
+    .viaje-oferta-monto{font-size:1.25rem;font-weight:900;color:var(--text-color);letter-spacing:-.02em}
+    .viaje-oferta-dif{flex-shrink:0;text-align:right;font-size:.66rem;font-weight:700;color:var(--muted-text);line-height:1.5}
+    .viaje-oferta-dif b{display:inline-block;padding:2px 7px;border-radius:999px;font-size:.62rem;background:rgba(16,185,129,.18);color:#10b981}
+    .viaje-oferta.baja .viaje-oferta-dif b{background:rgba(245,158,11,.18);color:#f59e0b}
+    .btn-contraofertar{width:100%;margin-top:8px;padding:11px 16px;border-radius:12px;border:1px solid rgba(254,215,0,.55);background:rgba(254,215,0,.10);
+      color:var(--primary-color);font-size:.84rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
+    .btn-contraofertar svg{width:15px;height:15px}
+    .btn-contraofertar:hover{background:rgba(254,215,0,.2);transform:translateY(-1px)}
+    .contraoferta-panel{margin-top:10px}
+    .contraoferta-panel .oferta-box{margin-bottom:0}
+    .contraoferta-panel .btn-main{margin-top:12px;padding:12px 36px 12px 16px;font-size:.86rem;border-radius:12px}
+    .contraoferta-estado{margin-top:8px;padding:9px 11px;border-radius:12px;font-size:.74rem;font-weight:700;line-height:1.35;display:flex;align-items:center;gap:8px;
+      background:rgba(254,215,0,.10);border:1px dashed rgba(254,215,0,.5);color:var(--text-color)}
+    .contraoferta-estado.rechazada{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.5)}
+    .contraoferta-estado .loading-pulse{flex-shrink:0}
+    .contraoferta-estado .loading-pulse span{width:5px;height:5px}
+
+    #alerta-oferta{position:fixed;top:calc(118px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:4200;width:min(92vw,400px);
+      padding:14px 14px 16px;border-radius:20px;background:var(--glass-bg-strong);border:1.5px solid #10b981;color:var(--text-color);text-align:left;
+      box-shadow:0 18px 44px rgba(0,0,0,.4),0 0 0 4px rgba(16,185,129,.18);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+      animation:ofertaAlertaIn .4s cubic-bezier(.2,.8,.2,1) both;overflow:hidden}
+    .ao-cerrar{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:8px;border:1px solid var(--field-border);background:var(--field-bg);
+      color:var(--muted-text);cursor:pointer;font-size:.95rem;line-height:1}
+    .ao-kicker{font-size:.62rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#10b981;margin-bottom:4px;padding-right:30px}
+    .ao-fila{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+    .ao-monto{font-size:1.5rem;font-weight:900;letter-spacing:-.02em}
+    .ao-dif{padding:3px 8px;border-radius:999px;font-size:.62rem;font-weight:800;background:rgba(16,185,129,.18);color:#10b981}
+    .ao-dif.baja{background:rgba(245,158,11,.18);color:#f59e0b}
+    .ao-ruta{font-size:.74rem;font-weight:600;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ao-ruta b{display:inline-flex;width:17px;height:17px;border-radius:50%;align-items:center;justify-content:center;font-size:.58rem;margin-right:4px;
+      background:var(--primary-color);color:#121212}
+    .alerta-oferta-acciones{display:flex;gap:8px;margin-top:10px}
+    .alerta-oferta-acciones button{flex:1;padding:11px 10px;border-radius:12px;font-size:.8rem;font-weight:800;cursor:pointer;border:none;transition:transform .2s}
+    .alerta-oferta-acciones button:hover{transform:translateY(-1px)}
+    .ao-aceptar{background:linear-gradient(90deg,#059669,#10b981);color:#fff;box-shadow:0 8px 20px rgba(16,185,129,.35)}
+    .ao-contra{background:rgba(254,215,0,.14);color:var(--primary-color);border:1px solid rgba(254,215,0,.5)!important}
+    .alerta-oferta-barra{position:absolute;left:0;bottom:0;height:4px;width:100%;background:#10b981;transform-origin:left;animation:ofertaBarra linear forwards}
+
+    .nego-box{margin-bottom:14px;padding:14px;border-radius:18px;background:var(--field-bg);border:1px solid var(--field-border);text-align:left;animation:cardPop .35s ease both}
+    .nego-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+    .nego-tit{font-size:.9rem;font-weight:800;color:var(--text-color)}
+    .nego-sub{font-size:.7rem;color:var(--muted-text);margin-top:2px}
+    .nego-actual{text-align:right;flex-shrink:0}
+    .nego-actual small{display:block;font-size:.56rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--primary-color)}
+    .nego-actual b{display:block;font-size:1.15rem;font-weight:900;color:var(--text-color)}
+    .nego-lista{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+    .nego-vacio{padding:12px;border-radius:14px;border:1px dashed var(--field-border);font-size:.74rem;color:var(--muted-text);display:flex;align-items:center;gap:10px;line-height:1.35}
+    .nego-vacio .loading-pulse{flex-shrink:0}
+    .contra-card{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:var(--glass-bg-strong);border:1.5px solid rgba(16,185,129,.5);
+      animation:tripEnter .5s cubic-bezier(.2,.8,.2,1) both}
+    .contra-card.sin-anim{animation:none}
+    .contra-foto{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-color);flex-shrink:0;background:var(--field-bg)}
+    .contra-info{flex:1;min-width:0}
+    .contra-nombre{font-size:.82rem;font-weight:800;color:var(--text-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .contra-veh{font-size:.64rem;color:var(--muted-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .contra-monto{font-size:1.08rem;font-weight:900;color:var(--text-color);margin-top:2px}
+    .contra-monto small{font-size:.62rem;font-weight:800;color:#f59e0b;margin-left:5px}
+    .contra-acciones{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+    .contra-acciones button{padding:8px 12px;border-radius:10px;font-size:.72rem;font-weight:800;cursor:pointer;border:none}
+    .contra-acciones button:disabled{opacity:.6;cursor:not-allowed}
+    .contra-aceptar{background:linear-gradient(90deg,#059669,#10b981);color:#fff}
+    .contra-rechazar{background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.5)!important}
+    .nego-reofertar-tit{font-size:.62rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-text);margin:4px 0 8px}
+    .btn-reofertar{width:100%;margin-top:10px;padding:12px;border-radius:12px;border:none;font-size:.84rem;font-weight:800;cursor:pointer;
+      color:#121212;background:var(--primary-color);box-shadow:0 8px 20px rgba(254,215,0,.3);transition:transform .2s,opacity .2s}
+    .btn-reofertar:hover{transform:translateY(-1px)}
+    .btn-reofertar:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+    body:not(.dark-mode) .oferta-chip.activo{background:#121212;color:#fff;border-color:#121212}
+    body:not(.dark-mode) .oferta-nivel,
+    body:not(.dark-mode) .viaje-oferta-lbl,
+    body:not(.dark-mode) .viaje-oferta-dif{color:#121212}
+    body:not(.dark-mode) .oferta-monto-wrap{border-color:#121212}
+    body:not(.dark-mode) .oferta-monto-wrap small,
+    body:not(.dark-mode) .oferta-sugerida{color:#121212}
+    body:not(.dark-mode) .btn-reofertar{background:#121212;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+    body:not(.dark-mode) .ao-ruta b{background:#121212;color:#fff}
+    body:not(.dark-mode) .btn-contraofertar,
+    body:not(.dark-mode) .ao-contra{color:#121212;border-color:#121212!important;background:rgba(0,0,0,.06)}
   </style>
   <script>
     (function(){
@@ -735,6 +852,9 @@
     <span id="txt-alerta-viaje">Viaje en curso · Toca para ver</span>
   </a>
 
+  <!-- ALERTA EN VIVO DE OFERTAS (CONDUCTOR) -->
+  <div id="alerta-oferta" class="oculto" role="alert" aria-live="assertive"></div>
+
   <div id="mode-selector">
     <button id="btn-cambiar-modo" class="btn-secondary chip-usuario" type="button">TOPDRIVE</button>
   </div>
@@ -769,6 +889,9 @@
         </button>
       </div>
     </div>
+
+    <!-- NEGOCIACIÓN DE TARIFA EN VIVO (PASAJERO: CONTRAOFERTAS DE LOS CONDUCTORES) -->
+    <div id="negociacion-pasajero" class="oculto"></div>
 
     <div id="seccion-solicitar-pasajero">
       <h3 class="panel-title">Solicitar Viaje</h3>
@@ -850,6 +973,8 @@
     <div id="servicios-lista" class="servicios-lista"></div>
 
     <div class="servicios-footer">
+      <!-- OFERTA DEL PASAJERO (ESTILO INDRIVER) -->
+      <div id="oferta-pasajero-box" class="oferta-box oculto"></div>
       <button id="btn-confirmar-servicio" class="btn-main" disabled>Selecciona un servicio</button>
       <p class="servicios-leyenda">Solo se muestran los servicios que cuentan con conductores activos en este momento.</p>
     </div>
@@ -1204,7 +1329,6 @@
         zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_CENTER },
         clickableIcons: false, gestureHandling: 'greedy', styles: estiloActual()
       });
-
       geocoder = new google.maps.Geocoder();
       autocompleteService = new google.maps.places.AutocompleteService();
       placesService = new google.maps.places.PlacesService(map);
@@ -2234,6 +2358,8 @@
               btnIrViajeActivo.onclick = () => { window.location.href = url; };
               // Cancelar solo mientras el viaje no esté en curso hacia el destino
               btnCancelarViaje.classList.toggle('oculto', esPaso3);
+              // Negociación de tarifa en vivo (contraofertas) mientras se busca conductor
+              renderNegociacionPasajero(esPaso1 ? viaje : null);
             }
             return;
           }
@@ -2247,6 +2373,7 @@
         viajeActivoPasajero = null;
         bloqueoViajeActivo.classList.add('oculto');
         seccionSolicitarPasajero.classList.remove('oculto');
+        renderNegociacionPasajero(null);
 
         // Si hasta hace un instante había un viaje activo y ahora terminó/canceló: liberar la interfaz de inmediato
         if (huboViajeActivo) {
@@ -2993,6 +3120,7 @@
       panelServicios.setAttribute('aria-hidden', 'true');
       setTimeout(() => panelServicios.classList.remove('cerrando'), 420);
       servicioSeleccionado = null;
+      cerrarOfertaPasajero();
       btnConfirmarServicio.disabled = true;
       btnConfirmarServicio.textContent = 'Selecciona un servicio';
     }
@@ -3075,6 +3203,7 @@
     /* Muestra solo los servicios que tienen conductores realmente activos */
     async function cargarServiciosDisponibles() {
       serviciosLista.innerHTML = '<div class="cargando"><div class="loading-pulse"><span></span><span></span><span></span></div>Buscando conductores activos…</div>';
+      cerrarOfertaPasajero();
 
       const conteoActivos = await obtenerConductoresActivos();
       const disponibles = CATALOGO.filter((s) => conteoActivos[s.clave] > 0);
@@ -3110,9 +3239,10 @@
         card.addEventListener('click', () => {
           serviciosLista.querySelectorAll('.servicio-card').forEach(c => c.classList.remove('seleccionado'));
           card.classList.add('seleccionado');
-          servicioSeleccionado = Object.assign({}, s, { tarifa });
+          servicioSeleccionado = Object.assign({}, s, { tarifa, oferta: tarifa });
           btnConfirmarServicio.disabled = false;
           btnConfirmarServicio.textContent = 'Confirmar ' + s.etiqueta + ' · ' + formatoMoneda(tarifa);
+          abrirOfertaPasajero(servicioSeleccionado); // El pasajero puede proponer su propio precio
         });
         serviciosLista.appendChild(card);
       });
@@ -3131,6 +3261,8 @@
 
     /* ============================ SOLICITAR VIAJE ============================ */
     async function solicitarViaje(servicio) {
+      // Precio ofertado por el pasajero (por defecto, la tarifa sugerida)
+      const ofertaFinal = redondearOferta(servicio.oferta || servicio.tarifa);
       const registro = {
         pasajero_id: usuarioActual ? (usuarioActual.id || usuarioActual.Id) : PASAJERO_ID_PRUEBA,
         origen_lat: origen.lat, origen_lon: origen.lng,
@@ -3139,25 +3271,38 @@
         destino_nombre: [destinoNombre, destinoDetalle].filter(Boolean).join(', '),
         tipo_servicio: servicio.etiqueta,
         nombre_servicio: servicio.etiqueta,
-        tarifa: servicio.tarifa,
+        tarifa: ofertaFinal,
         distancia_km: Math.round(distanciaKm * 10) / 10,
         duracion_min: duracionMin || Math.max(3, Math.round(distanciaKm * 2.5)),
         estado: 'solicitado'
       };
+      // Datos de la negociación (columnas de topdrive_ofertas.sql); si aún no existen se guarda el viaje sin ellas
+      const datosOferta = {
+        tarifa_sugerida: servicio.tarifa,
+        oferta_pasajero: ofertaFinal,
+        negociacion_estado: 'oferta_pasajero',
+        ofertas_ronda: 1,
+        oferta_actualizada_en: new Date().toISOString()
+      };
 
-      const { data, error } = await db.from('viajes').insert([registro]).select();
+      let { data, error } = await db.from('viajes').insert([Object.assign({}, registro, datosOferta)]).select();
+      if (error && errorDeColumna(error)) {
+        console.warn('Ofertas: faltan columnas en viajes (ejecuta topdrive_ofertas.sql). Se guarda el viaje sin datos de negociación.');
+        ({ data, error } = await db.from('viajes').insert([registro]).select());
+      }
 
       if (error) {
         mostrarToast('Error: ' + error.message, '!');
         btnConfirmarServicio.disabled = false;
-        btnConfirmarServicio.textContent = 'Confirmar ' + servicio.etiqueta + ' · ' + formatoMoneda(servicio.tarifa);
+        btnConfirmarServicio.textContent = 'Ofertar ' + fmtMXN(ofertaFinal) + ' · ' + servicio.etiqueta;
         return;
       }
 
-      mostrarToast(servicio.etiqueta + ' solicitado con éxito');
+      mostrarToast(servicio.etiqueta + ' solicitado · Oferta de ' + fmtMXN(ofertaFinal));
       cerrarPanelServicios();
       if (data && data.length) {
         viajeActivoPasajero = data[0];
+        await registrarOfertaHistorial(data[0].id, ofertaFinal, servicio.tarifa, registro.pasajero_id);
         window.location.href = 'viaje.html?id=' + data[0].id + '&rol=pasajero';
       }
     }
@@ -3196,6 +3341,7 @@
     const SVG_DISTANCIA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>';
     const SVG_RELOJ = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
     const SVG_RECHAZAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    const SVG_CONTRAOFERTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17V7"/><path d="M4 10l3-3 3 3"/><path d="M17 7v10"/><path d="M14 14l3 3 3-3"/></svg>';
 
     /* ---------- DATOS DEL PASAJERO QUE SOLICITA (FOTO, NOMBRE Y CALIFICACIÓN) ---------- */
     const cachePasajeros = new Map();
@@ -3350,14 +3496,21 @@
             '<div><span>~' + duracionEst + ' min</span><span class="viaje-metrica-sub">Tiempo de recorrido</span></div>' +
           '</div>' +
         '</div>' +
+        htmlOfertaTarjeta(viaje) +
         '<div class="viaje-pasajero"><div class="vp-skeleton"></div><div class="vp-cargando">Cargando datos del pasajero…</div></div>' +
         '<div class="viaje-footer">' +
-          '<div class="viaje-cta"><button type="button" class="btn-main btn-aceptar-viaje">Aceptar Viaje</button></div>' +
+          '<div class="viaje-cta"><button type="button" class="btn-main btn-aceptar-viaje">Aceptar por ' + fmtMXN(ofertaDeViaje(viaje)) + '</button></div>' +
+          '<button type="button" class="btn-contraofertar">' + SVG_CONTRAOFERTA + ' Contraofertar</button>' +
+          '<div class="contraoferta-panel oculto"></div>' +
+          '<div class="contraoferta-estado oculto"></div>' +
           '<button type="button" class="btn-rechazar">' + SVG_RECHAZAR + ' Rechazar viaje</button>' +
         '</div>';
 
+      card._viaje = viaje;
       card.querySelector('.btn-aceptar-viaje').addEventListener('click', () => aceptarViaje(viaje));
+      card.querySelector('.btn-contraofertar').addEventListener('click', () => abrirContraoferta(card));
       card.querySelector('.btn-rechazar').addEventListener('click', () => rechazarViaje(viaje, card));
+      pintarEstadoContraoferta(card);
 
       // Carga asíncrona de la foto, el nombre y la calificación del pasajero
       const cajaPasajero = card.querySelector('.viaje-pasajero');
@@ -3506,29 +3659,621 @@
         const id = String(viaje.id);
         let el = existentes.get(id);
         if (!el) el = crearTarjetaViaje(viaje, idsNuevos.has(id), primera ? i : 0);
+        else actualizarOfertaTarjeta(el, viaje); // Si el pasajero cambió su oferta, la tarjeta se actualiza en vivo
         if (el === ref) ref = ref.nextElementSibling;
         else contSolicitudes.insertBefore(el, ref);
       });
 
       pintarEstadoLista();
+      refrescarMisContraofertas();
 
       if (nuevos.length) {
         avisarViajesNuevos(nuevos.map(v => v.id)); // Sonido TOPDRIVE (una sola vez por viaje)
         notificarViajesNuevosSistema(nuevos);      // Notificación en la barra del móvil si la app no está a la vista
         mostrarToast(nuevos.length === 1 ? 'Nueva solicitud de viaje' : nuevos.length + ' nuevas solicitudes de viaje', '+');
+        mostrarAlertaOferta(nuevos[0], 'nueva');   // Alerta en vivo con la oferta del pasajero
         try { if (navigator.vibrate) navigator.vibrate([120, 60, 120]); } catch (e) {}
       }
     }
 
     async function aceptarViaje(viaje) {
       const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
-      const { error } = await db.from('viajes')
-        .update({ estado:'aceptado', conductor_id: conductorId }).eq('id', viaje.id);
+      // Solo se acepta si el viaje sigue pendiente (evita pisar un viaje que el pasajero ya acordó con otro conductor)
+      const { data, error } = await db.from('viajes')
+        .update({ estado:'aceptado', conductor_id: conductorId }).eq('id', viaje.id).eq('estado', 'solicitado').select('id');
 
       if (error) { mostrarToast('Error al aceptar viaje: ' + error.message, '!'); return; }
+      if (!data || !data.length) {
+        mostrarToast('Este viaje ya no está disponible', '!');
+        cargarViajesSolicitados();
+        return;
+      }
       mostrarToast('¡Viaje aceptado con éxito!');
       window.location.href = 'viaje.html?id=' + viaje.id + '&rol=conductor';
     }
+
+    /* ============================ OFERTAS Y CONTRAOFERTAS (ESTILO INDRIVER) ============================
+       - El pasajero propone su precio sobre la tarifa sugerida (botones subir / bajar y valores rápidos por rango).
+       - El conductor ve la oferta en vivo (alerta + tarjeta) y puede aceptarla o enviar una contraoferta.
+       - El pasajero ve las contraofertas en vivo y puede aceptarlas, rechazarlas o volver a ofertar.
+       - Supabase: columnas nuevas en 'viajes' + tabla 'ofertas_viaje' (ver topdrive_ofertas.sql).
+    ============================================================================================ */
+    const OFERTA_MIN_FACTOR = 0.7;   // El pasajero puede ofertar hasta un 30 % por debajo de la tarifa sugerida
+    const OFERTA_MAX_FACTOR = 3;     // Tope: 3 veces la tarifa sugerida
+    const K_CONTRAOFERTAS = 'topdrive_mis_contraofertas';
+    let tablaOfertasOk = true;       // false si aún no se ejecutó topdrive_ofertas.sql
+    let ctrlOfertaPasajero = null;
+    let alertaOfertaTimer = null;
+    let redirigiendoContraoferta = false;
+    const misContraofertas = new Map(); // viaje_id → { id, monto, estado } (contraofertas de ESTE conductor)
+
+    const fmtMXN = (v) => '$' + Number(v || 0).toFixed(2) + ' MXN';
+    const redondearOferta = (v) => Math.round(Number(v || 0) * 100) / 100;
+    const textoError = (e) => String((e && e.message) || '') + ' ' + String((e && e.code) || '');
+    const errorDeColumna = (e) => !!e && /column|schema cache|PGRST204|42703/i.test(textoError(e));
+    const errorDeTabla = (e) => !!e && /does not exist|could not find the table|relation|PGRST205|42P01/i.test(textoError(e));
+
+    // Paso de subida / bajada según el rango de precio
+    function pasoOferta(base) {
+      const b = Number(base || 0);
+      if (b < 50) return 5;
+      if (b < 150) return 10;
+      if (b < 400) return 20;
+      return 50;
+    }
+    function limitesOferta(sugerida) {
+      const s = Number(sugerida || 0);
+      return { min: Math.max(1, Math.ceil(s * OFERTA_MIN_FACTOR)), max: Math.max(10, Math.round(s * OFERTA_MAX_FACTOR)) };
+    }
+    const sugeridaDeViaje = (v) => { const s = Number(v && v.tarifa_sugerida); return s > 0 ? s : Number((v && v.tarifa) || 0); };
+    const ofertaDeViaje = (v) => { const t = Number(v && v.tarifa); return t > 0 ? t : Number((v && v.oferta_pasajero) || 0); };
+
+    // Valores rápidos del pasajero: rangos alrededor de la tarifa sugerida
+    function chipsPasajero(sug, lim) {
+      const vistos = new Set(), chips = [];
+      [0.8, 0.9, 1, 1.1, 1.2, 1.35].forEach((f) => {
+        let v = f === 1 ? redondearOferta(sug) : Math.round(sug * f);
+        v = Math.min(lim.max, Math.max(lim.min, v));
+        if (vistos.has(v)) return;
+        vistos.add(v);
+        const pct = sug ? Math.round((v - sug) / sug * 100) : 0;
+        chips.push({ valor: v, etiqueta: '$' + v, sub: f === 1 ? 'Sugerida' : ((pct > 0 ? '+' : '') + pct + '%') });
+      });
+      return chips;
+    }
+    // Valores rápidos del conductor: subidas sobre la oferta del pasajero
+    function chipsConductor(oferta, sug, lim) {
+      const paso = pasoOferta(oferta), vistos = new Set(), chips = [];
+      const candidatos = [1, 2, 3, 4].map((n) => ({ v: Math.round(oferta + paso * n), sub: null }));
+      if (sug > oferta) candidatos.push({ v: redondearOferta(sug), sub: 'Sugerida' });
+      candidatos.sort((a, b) => a.v - b.v).forEach((c) => {
+        const v = Math.min(lim.max, Math.max(lim.min, c.v));
+        if (vistos.has(v)) return;
+        vistos.add(v);
+        chips.push({ valor: v, etiqueta: '$' + v, sub: c.sub || ('+$' + Math.round(v - oferta)) });
+      });
+      return chips;
+    }
+
+    // Control reutilizable: [−] [$ monto] [+] + valores rápidos + nivel de la oferta
+    function crearControlOferta(op) {
+      const wrap = document.createElement('div');
+      wrap.innerHTML =
+        '<div class="oferta-control">' +
+          '<button type="button" class="oferta-btn-paso" data-d="-1" aria-label="Bajar valor">−</button>' +
+          '<label class="oferta-monto-wrap"><span>$</span><input type="number" inputmode="decimal" min="0" step="1" class="oferta-monto-input" aria-label="Valor ofertado"><small>MXN</small></label>' +
+          '<button type="button" class="oferta-btn-paso" data-d="1" aria-label="Subir valor">+</button>' +
+        '</div>' +
+        '<div class="oferta-chips"></div>' +
+        (op.sugerida ? '<div class="oferta-nivel"></div>' : '');
+      const input = wrap.querySelector('.oferta-monto-input');
+      const chips = wrap.querySelector('.oferta-chips');
+      const nivel = wrap.querySelector('.oferta-nivel');
+      const btnMenos = wrap.querySelector('[data-d="-1"]'), btnMas = wrap.querySelector('[data-d="1"]');
+      let valor = redondearOferta(op.valor);
+
+      function pintarNivel(v) {
+        if (!nivel) return;
+        const s = Number(op.sugerida);
+        nivel.className = 'oferta-nivel';
+        if (v < op.min) { nivel.classList.add('bajo'); nivel.textContent = 'El valor mínimo permitido es ' + fmtMXN(op.min) + '.'; return; }
+        if (v > op.max) { nivel.classList.add('bajo'); nivel.textContent = 'El valor máximo permitido es ' + fmtMXN(op.max) + '.'; return; }
+        const pct = s ? Math.round((v - s) / s * 100) : 0;
+        if (pct < 0) { nivel.classList.add('bajo'); nivel.textContent = 'Oferta ' + Math.abs(pct) + '% por debajo de la sugerida: los conductores podrían contraofertar o tardar más en aceptar.'; }
+        else if (pct === 0) { nivel.classList.add('justo'); nivel.textContent = 'Tarifa sugerida: aceptación más rápida.'; }
+        else { nivel.classList.add('alto'); nivel.textContent = '+' + pct + '% sobre la sugerida: los conductores la aceptarán más rápido.'; }
+      }
+
+      const ctrl = {
+        el: wrap,
+        get valor() { return valor; },
+        valido() { return valor >= op.min && valor <= op.max; },
+        fijar(v, desdeInput) {
+          v = redondearOferta(v);
+          if (!desdeInput) { v = Math.min(op.max, Math.max(op.min, v)); input.value = String(v); }
+          valor = v;
+          btnMenos.disabled = v <= op.min;
+          btnMas.disabled = v >= op.max;
+          wrap.querySelectorAll('.oferta-chip').forEach((c) => c.classList.toggle('activo', Number(c.dataset.v) === v));
+          pintarNivel(v);
+          if (op.alCambiar) op.alCambiar(ctrl.valido() ? v : null);
+        }
+      };
+
+      (op.chips || []).forEach((c) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'oferta-chip'; b.dataset.v = String(c.valor);
+        b.innerHTML = esc(c.etiqueta) + (c.sub ? '<small>' + esc(c.sub) + '</small>' : '');
+        b.addEventListener('click', () => ctrl.fijar(c.valor));
+        chips.appendChild(b);
+      });
+      if (!chips.children.length) chips.remove();
+
+      btnMenos.addEventListener('click', () => ctrl.fijar(valor - pasoOferta(valor)));
+      btnMas.addEventListener('click', () => ctrl.fijar(valor + pasoOferta(valor)));
+      input.addEventListener('input', () => ctrl.fijar(parseFloat(String(input.value).replace(',', '.')) || 0, true));
+      input.addEventListener('blur', () => ctrl.fijar(valor));
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
+      return ctrl;
+    }
+
+    /* ---------- PASAJERO: oferta inicial en el panel de servicios ---------- */
+    function abrirOfertaPasajero(servicio) {
+      const box = $('oferta-pasajero-box');
+      if (!box || !servicio) return;
+      const sug = Number(servicio.tarifa || 0);
+      const lim = limitesOferta(sug);
+      box.innerHTML = '<div class="oferta-box-top"><span class="oferta-kicker">Ofrece tu tarifa</span>' +
+        '<span class="oferta-sugerida">Sugerida: <b>' + fmtMXN(sug) + '</b></span></div>';
+      ctrlOfertaPasajero = crearControlOferta({
+        sugerida: sug, min: lim.min, max: lim.max, valor: sug, chips: chipsPasajero(sug, lim),
+        alCambiar: (v) => {
+          if (!servicioSeleccionado) return;
+          if (v === null) {
+            btnConfirmarServicio.disabled = true;
+            btnConfirmarServicio.textContent = 'Ajusta tu oferta';
+            return;
+          }
+          servicioSeleccionado.oferta = v;
+          btnConfirmarServicio.disabled = false;
+          btnConfirmarServicio.textContent = 'Ofertar ' + fmtMXN(v) + ' · ' + servicioSeleccionado.etiqueta;
+        }
+      });
+      box.appendChild(ctrlOfertaPasajero.el);
+      box.classList.remove('oculto');
+      ctrlOfertaPasajero.fijar(sug);
+    }
+
+    function cerrarOfertaPasajero() {
+      const box = $('oferta-pasajero-box');
+      if (box) { box.classList.add('oculto'); box.innerHTML = ''; }
+      ctrlOfertaPasajero = null;
+    }
+
+    // Guarda cada oferta del pasajero en el historial de la negociación
+    async function registrarOfertaHistorial(viajeId, monto, sugerida, pasajeroId) {
+      if (!db || !tablaOfertasOk || viajeId === null || viajeId === undefined) return;
+      try {
+        const { error } = await db.from('ofertas_viaje').insert([{
+          viaje_id: String(viajeId), autor: 'pasajero',
+          pasajero_id: pasajeroId !== null && pasajeroId !== undefined ? String(pasajeroId) : null,
+          monto: Number(monto), tarifa_sugerida: Number(sugerida) || null, estado: 'pendiente'
+        }]);
+        if (error && errorDeTabla(error)) { tablaOfertasOk = false; console.warn('Ofertas: falta la tabla ofertas_viaje (ejecuta topdrive_ofertas.sql).'); }
+      } catch (e) {}
+    }
+
+    /* ---------- CONDUCTOR: oferta en la tarjeta, contraoferta y alerta en vivo ---------- */
+    function htmlOfertaTarjeta(viaje) {
+      const of = ofertaDeViaje(viaje), sug = sugeridaDeViaje(viaje);
+      const tieneSug = Number(viaje.tarifa_sugerida) > 0;
+      const dif = sug > 0 ? Math.round((of - sug) / sug * 100) : 0;
+      return '<div class="viaje-oferta' + (tieneSug && dif < 0 ? ' baja' : '') + '" data-oferta="' + of + '">' +
+        '<div><span class="viaje-oferta-lbl">Oferta del pasajero</span><div class="viaje-oferta-monto">' + fmtMXN(of) + '</div></div>' +
+        '<div class="viaje-oferta-dif">' + (tieneSug
+          ? 'Sugerida ' + fmtMXN(sug) + '<br><b>' + (dif > 0 ? '+' : '') + dif + '%</b>'
+          : '<b>Precio ofertado</b>') + '</div></div>';
+    }
+
+    function actualizarOfertaTarjeta(el, viaje) {
+      if (!el || !viaje) return;
+      el._viaje = viaje;
+      const bloque = el.querySelector('.viaje-oferta');
+      const nueva = ofertaDeViaje(viaje);
+      const previa = bloque ? Number(bloque.dataset.oferta) : nueva;
+      if (!bloque || previa === nueva) return;
+      bloque.outerHTML = htmlOfertaTarjeta(viaje);
+      const badge = el.querySelector('.viaje-precio-badge');
+      if (badge && badge.firstChild) badge.firstChild.nodeValue = formatoMoneda(viaje.tarifa || 0);
+      const btnA = el.querySelector('.btn-aceptar-viaje');
+      if (btnA) btnA.textContent = 'Aceptar por ' + fmtMXN(nueva);
+      const panel = el.querySelector('.contraoferta-panel');
+      if (panel && !panel.classList.contains('oculto')) { panel.classList.add('oculto'); panel.innerHTML = ''; }
+      const nb = el.querySelector('.viaje-oferta');
+      if (nueva > previa) {
+        if (nb) nb.classList.add('subio');
+        sonidoNuevoViaje(1);
+        mostrarToast('El pasajero subió su oferta a ' + fmtMXN(nueva), '↑');
+        mostrarAlertaOferta(viaje, 'subio');
+        notificarSistema('💰 El pasajero subió su oferta', fmtMXN(nueva) + ' · ' + (viaje.tipo_servicio || 'Servicio'),
+          { forzar: false, tag: 'topdrive-oferta-' + viaje.id, viaje_id: viaje.id, tipo: 'oferta' });
+      } else {
+        mostrarToast('El pasajero actualizó su oferta a ' + fmtMXN(nueva), '!');
+      }
+      pintarEstadoContraoferta(el);
+    }
+
+    function mostrarAlertaOferta(viaje, tipo) {
+      const caja = $('alerta-oferta');
+      if (!caja || !viaje || modoActual !== 'conductor' || !conductorActivo) return;
+      const of = ofertaDeViaje(viaje), sug = sugeridaDeViaje(viaje);
+      const dif = sug > 0 ? Math.round((of - sug) / sug * 100) : 0;
+      const segundos = 20;
+      caja.innerHTML =
+        '<button type="button" class="ao-cerrar" aria-label="Cerrar">×</button>' +
+        '<div class="ao-kicker">' + (tipo === 'subio' ? '↑ El pasajero subió su oferta' : '● Nueva oferta en vivo · ' + esc(viaje.tipo_servicio || 'Servicio')) + '</div>' +
+        '<div class="ao-fila"><div class="ao-monto">' + fmtMXN(of) + '</div>' +
+          (Number(viaje.tarifa_sugerida) > 0 ? '<span class="ao-dif' + (dif < 0 ? ' baja' : '') + '">' + (dif > 0 ? '+' : '') + dif + '% vs sugerida</span>' : '') +
+        '</div>' +
+        '<div class="ao-ruta"><b>A</b>' + esc(viaje.origen_nombre || 'Origen') + '</div>' +
+        '<div class="ao-ruta"><b>B</b>' + esc(viaje.destino_nombre || 'Destino') + '</div>' +
+        '<div class="alerta-oferta-acciones">' +
+          '<button type="button" class="ao-aceptar">Aceptar ' + fmtMXN(of) + '</button>' +
+          '<button type="button" class="ao-contra">Contraofertar</button>' +
+        '</div>' +
+        '<div class="alerta-oferta-barra" style="animation-duration:' + segundos + 's"></div>';
+      caja.classList.remove('oculto');
+      caja.style.animation = 'none'; void caja.offsetWidth; caja.style.animation = '';
+      const cerrar = () => { clearTimeout(alertaOfertaTimer); caja.classList.add('oculto'); caja.innerHTML = ''; };
+      caja.querySelector('.ao-cerrar').addEventListener('click', cerrar);
+      caja.querySelector('.ao-aceptar').addEventListener('click', () => { cerrar(); aceptarViaje(viaje); });
+      caja.querySelector('.ao-contra').addEventListener('click', () => {
+        cerrar();
+        const card = Array.from(contSolicitudes.querySelectorAll(':scope > .tarjeta-viaje')).find((c) => c.dataset.id === String(viaje.id));
+        if (!card) return;
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const panel = card.querySelector('.contraoferta-panel');
+        if (panel && panel.classList.contains('oculto')) abrirContraoferta(card);
+      });
+      clearTimeout(alertaOfertaTimer);
+      alertaOfertaTimer = setTimeout(cerrar, segundos * 1000);
+    }
+
+    function abrirContraoferta(card) {
+      const viaje = card && card._viaje;
+      const panel = card && card.querySelector('.contraoferta-panel');
+      if (!viaje || !panel) return;
+      if (!panel.classList.contains('oculto')) { panel.classList.add('oculto'); panel.innerHTML = ''; return; }
+      if (!tablaOfertasOk) { mostrarToast('Falta ejecutar topdrive_ofertas.sql en Supabase para contraofertar', '!'); return; }
+      const of = ofertaDeViaje(viaje), sug = sugeridaDeViaje(viaje);
+      const lim = { min: redondearOferta(of + 1), max: Math.max(Math.round(sug * OFERTA_MAX_FACTOR), Math.round(of * OFERTA_MAX_FACTOR), Math.ceil(of + 10)) };
+      const chips = chipsConductor(of, sug, lim);
+      const box = document.createElement('div');
+      box.className = 'oferta-box';
+      box.innerHTML = '<div class="oferta-box-top"><span class="oferta-kicker">Tu contraoferta</span>' +
+        '<span class="oferta-sugerida">Pasajero: <b>' + fmtMXN(of) + '</b></span></div>';
+      const btnEnviar = document.createElement('button');
+      btnEnviar.type = 'button';
+      btnEnviar.className = 'btn-main';
+      const ctrl = crearControlOferta({
+        min: lim.min, max: lim.max, valor: chips.length ? chips[0].valor : lim.min, chips,
+        alCambiar: (v) => {
+          btnEnviar.disabled = v === null;
+          btnEnviar.textContent = v === null ? 'Ajusta el valor' : 'Enviar contraoferta · ' + fmtMXN(v);
+        }
+      });
+      box.appendChild(ctrl.el);
+      box.appendChild(btnEnviar);
+      btnEnviar.addEventListener('click', () => enviarContraoferta(card, ctrl.valor, btnEnviar));
+      panel.innerHTML = '';
+      panel.appendChild(box);
+      panel.classList.remove('oculto');
+      ctrl.fijar(ctrl.valor);
+    }
+
+    function guardarMisContraofertas() {
+      try { sessionStorage.setItem(K_CONTRAOFERTAS, JSON.stringify(Array.from(misContraofertas.entries()).slice(-50))); } catch (e) {}
+    }
+    (function cargarMisContraofertas() {
+      try {
+        const a = JSON.parse(sessionStorage.getItem(K_CONTRAOFERTAS) || '[]');
+        if (Array.isArray(a)) a.forEach((par) => { if (Array.isArray(par) && par.length === 2) misContraofertas.set(String(par[0]), par[1]); });
+      } catch (e) {}
+    })();
+
+    async function enviarContraoferta(card, monto, btn) {
+      const viaje = card && card._viaje;
+      if (!db || !viaje || !usuarioActual) return;
+      btn.disabled = true;
+      btn.textContent = 'Enviando…';
+      const cid = String(idConductorActual());
+      const ahora = new Date().toISOString();
+      // Una sola contraoferta vigente por conductor y viaje
+      try {
+        await db.from('ofertas_viaje').update({ estado: 'reemplazada' })
+          .eq('viaje_id', String(viaje.id)).eq('conductor_id', cid).eq('autor', 'conductor').eq('estado', 'pendiente');
+      } catch (e) {}
+      const doc = documentacionVehiculo || {};
+      const vehiculo = [doc.marca, doc.modelo, doc.anio].filter(Boolean).join(' ') + (doc.placa ? ' · ' + String(doc.placa).toUpperCase() : '');
+      const foto = usuarioActual.foto || usuarioActual.foto_url || '';
+      const { data, error } = await db.from('ofertas_viaje').insert([{
+        viaje_id: String(viaje.id), autor: 'conductor',
+        pasajero_id: viaje.pasajero_id !== null && viaje.pasajero_id !== undefined ? String(viaje.pasajero_id) : null,
+        conductor_id: cid,
+        conductor_nombre: nombreUsuario(usuarioActual),
+        conductor_foto: foto && !/^data:/i.test(foto) ? foto : null,
+        vehiculo_desc: vehiculo.trim() || (claveServicioConductor ? etiquetaServicio(claveServicioConductor) : null),
+        monto: Number(monto), tarifa_sugerida: sugeridaDeViaje(viaje), estado: 'pendiente'
+      }]).select();
+      if (error) {
+        if (errorDeTabla(error)) { tablaOfertasOk = false; mostrarToast('Falta ejecutar topdrive_ofertas.sql en Supabase', '!'); }
+        else mostrarToast('No se pudo enviar la contraoferta: ' + error.message, '!');
+        btn.disabled = false;
+        btn.textContent = 'Reintentar · ' + fmtMXN(monto);
+        return;
+      }
+      const fila = data && data[0];
+      misContraofertas.set(String(viaje.id), { id: fila ? fila.id : null, monto: Number(monto), estado: 'pendiente' });
+      guardarMisContraofertas();
+      // Marca el viaje con contraoferta: dispara el tiempo real de 'viajes' que ya escucha el pasajero
+      try {
+        db.from('viajes').update({ negociacion_estado: 'contraoferta', oferta_actualizada_en: ahora })
+          .eq('id', viaje.id).eq('estado', 'solicitado').then(() => {}, () => {});
+      } catch (e) {}
+      const panel = card.querySelector('.contraoferta-panel');
+      if (panel) { panel.classList.add('oculto'); panel.innerHTML = ''; }
+      pintarEstadoContraoferta(card);
+      mostrarToast('Contraoferta de ' + fmtMXN(monto) + ' enviada al pasajero');
+    }
+
+    function pintarEstadoContraoferta(card) {
+      if (!card) return;
+      const caja = card.querySelector('.contraoferta-estado');
+      if (!caja) return;
+      const info = misContraofertas.get(String(card.dataset.id));
+      if (!info || info.estado === 'aceptada') { caja.classList.add('oculto'); caja.innerHTML = ''; return; }
+      caja.className = 'contraoferta-estado' + (info.estado === 'rechazada' ? ' rechazada' : '');
+      if (info.estado === 'pendiente') {
+        caja.innerHTML = '<span class="loading-pulse"><span></span><span></span><span></span></span>' +
+          '<span>Contraoferta de <b>' + fmtMXN(info.monto) + '</b> enviada · esperando la respuesta del pasajero</span>';
+      } else if (info.estado === 'rechazada') {
+        caja.innerHTML = '<span>✕ El pasajero rechazó tu contraoferta de <b>' + fmtMXN(info.monto) + '</b>. Acepta su oferta o envía otra.</span>';
+      } else {
+        caja.innerHTML = '<span>El pasajero actualizó su oferta. Tu contraoferta de <b>' + fmtMXN(info.monto) + '</b> ya no aplica.</span>';
+      }
+    }
+
+    // Revisa en Supabase la respuesta del pasajero a las contraofertas de este conductor
+    async function refrescarMisContraofertas() {
+      if (!db || !tablaOfertasOk || modoActual !== 'conductor' || !usuarioActual || redirigiendoContraoferta) return;
+      const cid = String(idConductorActual());
+      let r;
+      try {
+        r = await db.from('ofertas_viaje').select('id,viaje_id,monto,estado')
+          .eq('conductor_id', cid).eq('autor', 'conductor').order('id', { ascending: false }).limit(40);
+      } catch (e) { return; }
+      if (r.error) { if (errorDeTabla(r.error)) tablaOfertasOk = false; return; }
+      const ultimas = new Map();
+      (r.data || []).forEach((o) => { const k = String(o.viaje_id); if (!ultimas.has(k)) ultimas.set(k, o); });
+      let cambio = false;
+      ultimas.forEach((o, k) => {
+        const prev = misContraofertas.get(k);
+        if (!prev) return; // solo las contraofertas enviadas desde este dispositivo en esta sesión
+        if (prev.estado === o.estado && Number(prev.id) === Number(o.id)) return;
+        cambio = true;
+        misContraofertas.set(k, { id: o.id, monto: Number(o.monto), estado: o.estado });
+        if (o.estado === 'aceptada' && prev.estado !== 'aceptada' && !redirigiendoContraoferta) {
+          redirigiendoContraoferta = true;
+          sonidoNuevoViaje(1);
+          mostrarToast('¡El pasajero aceptó tu contraoferta de ' + fmtMXN(o.monto) + '!', '✓');
+          notificarSistema('✅ Contraoferta aceptada', 'El pasajero aceptó ' + fmtMXN(o.monto) + '. Dirígete al punto de recojo.',
+            { forzar: true, tag: 'topdrive-contra-' + k, viaje_id: k, tipo: 'contraoferta',
+              url: new URL('viaje.html?id=' + k + '&rol=conductor', location.href).href });
+          setTimeout(() => { window.location.href = 'viaje.html?id=' + k + '&rol=conductor'; }, 1100);
+        } else if (o.estado === 'rechazada' && prev.estado === 'pendiente') {
+          mostrarToast('El pasajero rechazó tu contraoferta', '×');
+        }
+      });
+      if (cambio) {
+        guardarMisContraofertas();
+        contSolicitudes.querySelectorAll(':scope > .tarjeta-viaje').forEach(pintarEstadoContraoferta);
+      }
+    }
+
+    /* ---------- PASAJERO: negociación en vivo (contraofertas de los conductores) ---------- */
+    let negoViajeId = null, negoConsultando = false, ctrlReoferta = null, negoFirma = '', negoOfertaPintada = null, negoPrimera = true;
+    const contraofertasVistas = new Set();
+
+    function construirNegociacion(caja, viaje) {
+      const sug = sugeridaDeViaje(viaje), lim = limitesOferta(sug), actual = ofertaDeViaje(viaje);
+      caja.innerHTML =
+        '<div class="nego-box">' +
+          '<div class="nego-cab"><div><div class="nego-tit">Negociación de tarifa</div>' +
+            '<div class="nego-sub">Sugerida: ' + fmtMXN(sug) + '</div></div>' +
+            '<div class="nego-actual"><small>Tu oferta</small><b class="nego-actual-monto">' + fmtMXN(actual) + '</b></div></div>' +
+          '<div class="nego-lista"></div>' +
+          '<div class="nego-reofertar-tit">¿Nadie acepta? Ajusta tu oferta</div>' +
+          '<div class="nego-control"></div>' +
+          '<button type="button" class="btn-reofertar" disabled>Esta es tu oferta actual</button>' +
+        '</div>';
+      const btn = caja.querySelector('.btn-reofertar');
+      ctrlReoferta = crearControlOferta({
+        sugerida: sug, min: lim.min, max: lim.max, valor: actual, chips: chipsPasajero(sug, lim),
+        alCambiar: (v) => {
+          const vigente = ofertaDeViaje(viajeActivoPasajero || viaje);
+          btn.disabled = v === null || v === vigente;
+          btn.textContent = v === null ? 'Ajusta tu oferta'
+            : (v === vigente ? 'Esta es tu oferta actual' : (v > vigente ? 'Subir oferta a ' : 'Bajar oferta a ') + fmtMXN(v));
+        }
+      });
+      caja.querySelector('.nego-control').appendChild(ctrlReoferta.el);
+      ctrlReoferta.fijar(actual);
+      btn.addEventListener('click', () => reofertarPasajero(viajeActivoPasajero || viaje, ctrlReoferta.valor, btn));
+      negoFirma = '';
+      negoOfertaPintada = actual;
+      negoPrimera = true;
+    }
+
+    async function renderNegociacionPasajero(viaje) {
+      const caja = $('negociacion-pasajero');
+      if (!caja) return;
+      if (!viaje || modoActual !== 'pasajero') {
+        if (negoViajeId !== null || caja.innerHTML) { caja.classList.add('oculto'); caja.innerHTML = ''; }
+        negoViajeId = null; ctrlReoferta = null;
+        return;
+      }
+      const id = String(viaje.id);
+      if (negoViajeId !== id || !caja.firstChild) { construirNegociacion(caja, viaje); negoViajeId = id; }
+      // Cabecera: oferta vigente
+      const actual = ofertaDeViaje(viaje);
+      const m = caja.querySelector('.nego-actual-monto');
+      if (m) m.textContent = fmtMXN(actual);
+      if (negoOfertaPintada !== actual) {
+        negoOfertaPintada = actual;
+        const input = caja.querySelector('.oferta-monto-input');
+        if (ctrlReoferta && document.activeElement !== input) ctrlReoferta.fijar(actual);
+      }
+      caja.classList.remove('oculto');
+
+      const cont = caja.querySelector('.nego-lista');
+      if (!tablaOfertasOk || !db) {
+        if (cont && !cont.firstChild) cont.innerHTML = '<div class="nego-vacio">Tu oferta está visible para los conductores. (Para ver contraofertas ejecuta topdrive_ofertas.sql en Supabase).</div>';
+        return;
+      }
+      if (negoConsultando) return;
+      negoConsultando = true;
+      try {
+        const { data, error } = await db.from('ofertas_viaje').select('*')
+          .eq('viaje_id', id).eq('autor', 'conductor').eq('estado', 'pendiente').order('id', { ascending: false }).limit(30);
+        if (error) { if (errorDeTabla(error)) tablaOfertasOk = false; return; }
+        if (negoViajeId !== id) return;
+        pintarContraofertas(caja, viaje, data || []);
+      } catch (e) {
+        console.warn('Ofertas:', e);
+      } finally {
+        negoConsultando = false;
+      }
+    }
+
+    function pintarContraofertas(caja, viaje, filas) {
+      const cont = caja.querySelector('.nego-lista');
+      if (!cont) return;
+      const porConductor = new Map();
+      filas.forEach((o) => { const k = String(o.conductor_id); if (!porConductor.has(k)) porConductor.set(k, o); });
+      const lista = Array.from(porConductor.values()).sort((a, b) => Number(a.monto) - Number(b.monto));
+      const nuevas = lista.filter((o) => !contraofertasVistas.has(String(o.id)));
+      lista.forEach((o) => contraofertasVistas.add(String(o.id)));
+      const firma = lista.map((o) => o.id + ':' + o.monto).join('|') + '#' + ofertaDeViaje(viaje);
+      const eraPrimera = negoPrimera;
+      negoPrimera = false;
+      if (firma === negoFirma && cont.firstChild) return;
+      negoFirma = firma;
+
+      if (!lista.length) {
+        cont.innerHTML = '<div class="nego-vacio"><span class="loading-pulse"><span></span><span></span><span></span></span>' +
+          '<span>Tu oferta está visible para los conductores. Aquí verás sus contraofertas en vivo.</span></div>';
+        return;
+      }
+      cont.innerHTML = '';
+      const actual = ofertaDeViaje(viaje);
+      lista.forEach((o) => {
+        const monto = Number(o.monto || 0), dif = monto - actual;
+        const card = document.createElement('div');
+        card.className = 'contra-card' + (nuevas.includes(o) ? '' : ' sin-anim');
+        card.innerHTML =
+          '<img class="contra-foto" alt="Conductor" src="' + esc(o.conductor_foto || avatarPorDefecto(o.conductor_nombre || 'C')) + '">' +
+          '<div class="contra-info"><div class="contra-nombre">' + esc(o.conductor_nombre || 'Conductor TOPDRIVE') + '</div>' +
+            '<div class="contra-veh">' + esc(o.vehiculo_desc || 'Conductor TOPDRIVE') + '</div>' +
+            '<div class="contra-monto">' + fmtMXN(monto) + (dif > 0 ? '<small>+$' + dif.toFixed(2) + '</small>' : '') + '</div></div>' +
+          '<div class="contra-acciones">' +
+            '<button type="button" class="contra-aceptar">Aceptar</button>' +
+            '<button type="button" class="contra-rechazar">Rechazar</button>' +
+          '</div>';
+        const img = card.querySelector('.contra-foto');
+        img.addEventListener('error', function () { this.src = avatarPorDefecto(o.conductor_nombre || 'C'); });
+        card.querySelector('.contra-aceptar').addEventListener('click', (e) => aceptarContraoferta(o, viajeActivoPasajero || viaje, e.currentTarget));
+        card.querySelector('.contra-rechazar').addEventListener('click', (e) => rechazarContraoferta(o, card, e.currentTarget));
+        cont.appendChild(card);
+      });
+      if (nuevas.length && !eraPrimera) {
+        const o = nuevas[0];
+        sonidoNuevoViaje(1);
+        mostrarToast('Nueva contraoferta: ' + fmtMXN(o.monto), '$');
+        try { if (navigator.vibrate) navigator.vibrate([150, 60, 150]); } catch (e) {}
+        notificarSistema('💬 Nueva contraoferta', (o.conductor_nombre || 'Un conductor') + ' propone ' + fmtMXN(o.monto) + ' por tu viaje.',
+          { forzar: false, tag: 'topdrive-contra-' + o.id, viaje_id: viaje.id, tipo: 'contraoferta' });
+      }
+    }
+
+    async function reofertarPasajero(viaje, monto, btn) {
+      if (!db || !viaje) return;
+      monto = redondearOferta(monto);
+      btn.disabled = true;
+      btn.textContent = 'Enviando oferta…';
+      const ahora = new Date().toISOString();
+      const extras = { oferta_pasajero: monto, negociacion_estado: 'oferta_pasajero', ofertas_ronda: (Number(viaje.ofertas_ronda) || 1) + 1, oferta_actualizada_en: ahora };
+      let r = await db.from('viajes').update(Object.assign({ tarifa: monto }, extras)).eq('id', viaje.id).eq('estado', 'solicitado').select('*');
+      if (r.error && errorDeColumna(r.error)) r = await db.from('viajes').update({ tarifa: monto }).eq('id', viaje.id).eq('estado', 'solicitado').select('*');
+      if (r.error) { mostrarToast('No se pudo actualizar tu oferta: ' + r.error.message, '!'); btn.disabled = false; btn.textContent = 'Reintentar'; return; }
+      if (!r.data || !r.data.length) { mostrarToast('Tu viaje ya no está disponible para ofertar', '!'); await verificarViajeEnProgresoUsuario(); return; }
+      const actualizado = r.data[0];
+      if (viajeActivoPasajero && String(viajeActivoPasajero.id) === String(viaje.id)) Object.assign(viajeActivoPasajero, actualizado);
+      if (tablaOfertasOk) {
+        try {
+          await db.from('ofertas_viaje').update({ estado: 'reemplazada' }).eq('viaje_id', String(viaje.id)).eq('autor', 'pasajero').eq('estado', 'pendiente');
+          // Las contraofertas iguales o menores a la nueva oferta ya no tienen sentido
+          await db.from('ofertas_viaje').update({ estado: 'reemplazada' }).eq('viaje_id', String(viaje.id)).eq('autor', 'conductor').eq('estado', 'pendiente').lte('monto', monto);
+        } catch (e) {}
+        await registrarOfertaHistorial(viaje.id, monto, sugeridaDeViaje(actualizado), actualizado.pasajero_id);
+      }
+      mostrarToast('Oferta actualizada a ' + fmtMXN(monto) + ' · los conductores ya la ven');
+      negoFirma = '';
+      renderNegociacionPasajero(viajeActivoPasajero || actualizado);
+    }
+
+    async function aceptarContraoferta(oferta, viaje, btn) {
+      if (!db || !oferta || !viaje) return;
+      btn.disabled = true;
+      btn.textContent = '…';
+      const base = { estado: 'aceptado', conductor_id: oferta.conductor_id, tarifa: Number(oferta.monto) };
+      let r = await db.from('viajes').update(Object.assign({}, base, { negociacion_estado: 'acordada', oferta_actualizada_en: new Date().toISOString() }))
+        .eq('id', viaje.id).eq('estado', 'solicitado').select('id');
+      if (r.error && errorDeColumna(r.error)) r = await db.from('viajes').update(base).eq('id', viaje.id).eq('estado', 'solicitado').select('id');
+      if (r.error) { mostrarToast('No se pudo aceptar: ' + r.error.message, '!'); btn.disabled = false; btn.textContent = 'Aceptar'; return; }
+      if (!r.data || !r.data.length) { mostrarToast('Tu viaje ya fue tomado por otro conductor', '!'); await verificarViajeEnProgresoUsuario(); return; }
+      try {
+        await db.from('ofertas_viaje').update({ estado: 'aceptada' }).eq('id', oferta.id);
+        await db.from('ofertas_viaje').update({ estado: 'rechazada' }).eq('viaje_id', String(viaje.id)).eq('estado', 'pendiente').neq('id', oferta.id);
+      } catch (e) {}
+      mostrarToast('¡Contraoferta de ' + fmtMXN(oferta.monto) + ' aceptada! Tu conductor va en camino');
+      renderNegociacionPasajero(null);
+      await verificarViajeEnProgresoUsuario();
+    }
+
+    async function rechazarContraoferta(oferta, card, btn) {
+      if (!db || !oferta) return;
+      btn.disabled = true;
+      const { error } = await db.from('ofertas_viaje').update({ estado: 'rechazada' }).eq('id', oferta.id);
+      if (error) { mostrarToast('No se pudo rechazar: ' + error.message, '!'); btn.disabled = false; return; }
+      if (card) card.remove();
+      negoFirma = '';
+      mostrarToast('Contraoferta rechazada', '×');
+      if (viajeActivoPasajero) renderNegociacionPasajero(viajeActivoPasajero);
+    }
+
+    /* ---------- Tiempo real de ofertas (tabla ofertas_viaje) ---------- */
+    function suscribirRealtimeOfertas() {
+      if (!db || !db.channel) return;
+      try {
+        db.channel('public:ofertas_viaje')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'ofertas_viaje' }, () => {
+            if (modoActual === 'conductor') refrescarMisContraofertas();
+            else if (viajeActivoPasajero && grupoEstadoViaje(viajeActivoPasajero.estado) === 'solicitado') renderNegociacionPasajero(viajeActivoPasajero);
+          })
+          .subscribe();
+      } catch (e) {}
+    }
+    document.addEventListener('DOMContentLoaded', suscribirRealtimeOfertas);
 
     /* ============================ TIEMPO REAL ============================ */
     function suscribirRealtime() {
