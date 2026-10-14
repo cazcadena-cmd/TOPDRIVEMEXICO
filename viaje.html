@@ -1466,7 +1466,8 @@ function obtenerFotoVehiculo(info, v) {
       const hayContraparte = rolUsuario === 'conductor'
         ? (viajeActual && viajeActual.pasajero_id != null)
         : (viajeActual && viajeActual.conductor_id != null);
-      const appOK = activo && hayContraparte;
+      /* [OFERTAS] Un conductor cuya contraoferta no fue la elegida no puede contactar al pasajero */
+      const appOK = activo && hayContraparte && !TDOferta.esAjeno();
 
       $('btn-chat-app').style.display = appOK ? 'inline-flex' : 'none';
       $('btn-llamada-app').style.display = appOK ? 'inline-flex' : 'none';
@@ -1552,7 +1553,8 @@ function obtenerFotoVehiculo(info, v) {
     /* [AJUSTE 2] Mensajes de estado redactados según el rol activo */
     const DESC_POR_ROL = {
       pasajero: {
-        solicitado:  'Estamos mostrando tu solicitud a los conductores cercanos. Te avisaremos apenas uno la acepte.',
+        /* [OFERTAS] La solicitud ahora es una oferta que los conductores pueden aceptar o contraofertar */
+        solicitado:  'Tu oferta está visible para los conductores cercanos. Si alguno te envía una contraoferta, podrás aceptarla aquí mismo.',
         aceptado:    '¡Listo! Un conductor aceptó tu viaje y ya se alista para recogerte.',
         en_camino:   'Tu conductor se dirige al punto de recogida. Ten a la mano tu PIN de seguridad.',
         en_progreso: 'Vas a bordo rumbo a tu destino. Relájate y disfruta el trayecto con TOPDRIVE.',
@@ -1560,7 +1562,7 @@ function obtenerFotoVehiculo(info, v) {
         cancelado:   'Esta solicitud fue cancelada. Puedes pedir un nuevo servicio cuando lo necesites.'
       },
       conductor: {
-        solicitado:  'Este servicio está disponible. Acéptalo para quedar asignado al viaje.',
+        solicitado:  'Este servicio está disponible. Acepta la oferta del pasajero o envíale tu contraoferta.',
         aceptado:    'Tomaste este servicio. Dirígete al punto de recogida del pasajero.',
         en_camino:   'Vas rumbo al punto de recogida. Al llegar, solicita el PIN de 4 dígitos al pasajero.',
         en_progreso: 'Pasajero a bordo. Conduce con seguridad hasta el destino acordado.',
@@ -1628,6 +1630,7 @@ function obtenerFotoVehiculo(info, v) {
 
       configurarAcciones(estado);
       actualizarExtras(estado);
+      TDOferta.render(estado);   /* [OFERTAS] Negociación en vivo (oferta, contraofertas y precio acordado) */
     }
 
     /* ============================================================
@@ -1650,9 +1653,19 @@ function obtenerFotoVehiculo(info, v) {
         return;
       }
 
+      /* [OFERTAS] El pasajero acordó el viaje con otro conductor (otra contraoferta u otra aceptación) */
+      if (rolUsuario === 'conductor' && TDOferta.esAjeno()) {
+        boton(SVG.check + '<span>Viaje asignado a otro conductor</span>', true, null);
+        avisoRol.textContent = 'El pasajero acordó este viaje con otro conductor. Vuelve al mapa para ver más solicitudes.';
+        avisoRol.style.display = 'block';
+        btnInicio.style.display = 'flex';
+        return;
+      }
+
       if (rolUsuario === 'conductor') {
         const flujo = {
-          solicitado: ['Aceptar viaje', 'aceptado', false],
+          /* [OFERTAS] El conductor acepta el precio ofertado por el pasajero */
+          solicitado: ['Aceptar por ' + TDOferta.fmt(TDOferta.ofertaActual()), 'aceptado', false],
           aceptado:   ['Conducir hacia el origen', 'en_camino', false],
           en_camino:  ['Pasajero a bordo · iniciar viaje', 'en_progreso', false],
           en_progreso:['Finalizar y completar viaje', 'terminado', false]
@@ -1660,7 +1673,8 @@ function obtenerFotoVehiculo(info, v) {
         const paso = flujo[estado];
         if (!paso) { secAcciones.style.display = 'none'; return; }
         if (estado === 'solicitado') {
-          avisoRol.textContent = 'Este servicio aparece como disponible. Si lo tomas, quedarás asignado al viaje.';
+          avisoRol.textContent = 'El pasajero ofrece ' + TDOferta.fmt(TDOferta.ofertaActual()) +
+            '. Acéptalo para quedar asignado al viaje o envía tu contraoferta desde el recuadro de la oferta.';
           avisoRol.style.display = 'block';
         }
         boton(SVG.siguiente + '<span>' + paso[0] + '</span>', false, () => {
@@ -1687,11 +1701,25 @@ function obtenerFotoVehiculo(info, v) {
       propioEstado = nuevoEstado;   /* este cambio lo hace el propio usuario: no se anuncia con sonido */
       try {
         const cambios = { estado: nuevoEstado };
-        if (nuevoEstado === 'aceptado' && usuarioSesion && viajeActual.conductor_id == null) {
-          cambios.conductor_id = usuarioSesion.conductor_id || usuarioSesion.id;
+        /* [OFERTAS] Sesión de esta página o la de app.html: el viaje aceptado siempre queda con su conductor */
+        const sesionAceptar = sesionPush();
+        if (nuevoEstado === 'aceptado' && sesionAceptar && viajeActual.conductor_id == null) {
+          cambios.conductor_id = sesionAceptar.conductor_id || sesionAceptar.id;
         }
-        const { error } = await db.from('viajes').update(cambios).eq('id', viajeId);
+        /* [OFERTAS] Al aceptar, el precio ofertado queda como precio acordado */
+        if (nuevoEstado === 'aceptado' && viajeTiene('negociacion_estado')) cambios.negociacion_estado = 'acordada';
+        let consulta = db.from('viajes').update(cambios).eq('id', viajeId);
+        /* [OFERTAS] Solo se acepta si el viaje sigue pendiente (evita pisar un precio ya acordado con otro conductor) */
+        if (nuevoEstado === 'aceptado') consulta = consulta.eq('estado', 'solicitado').select('id');
+        const { data, error } = await consulta;
         if (error) throw error;
+        if (nuevoEstado === 'aceptado' && (!data || !data.length)) {
+          propioEstado = null;
+          mostrarToast('Este viaje ya no está disponible');
+          await obtenerDatosViaje(true);
+          return false;
+        }
+        if (nuevoEstado === 'aceptado') TDOferta.cerrarPendientes();
         mostrarToast('Estado actualizado: ' + nuevoEstado.replace(/_/g, ' '));
         viajeActual = Object.assign({}, viajeActual, cambios);
         renderizarUI();
@@ -1787,6 +1815,13 @@ function obtenerFotoVehiculo(info, v) {
 
       const bNav = $('btn-extra-nav'), bComp = $('btn-extra-compartir'), bCanc = $('btn-extra-cancelar');
       bNav.style.display = 'none'; bComp.style.display = 'none'; bCanc.style.display = 'none';
+
+      /* [OFERTAS] Si el viaje quedó con otro conductor, este conductor no ve navegación, cancelación ni PIN */
+      if (rolUsuario === 'conductor' && TDOferta.esAjeno()) {
+        ocultarCardPin();
+        cerrarModal('modal-chat');
+        return;
+      }
 
       if (rolUsuario === 'conductor') {
         if (estado === 'en_camino') { bNav.style.display = 'flex'; }
@@ -2293,6 +2328,666 @@ function obtenerFotoVehiculo(info, v) {
     }
 
     /* ============================================================
+       [OFERTAS] OFERTAS Y CONTRAOFERTAS EN VIVO (ESTILO INDRIVER)
+       Mismo sistema que app.html y misma base de datos (topdrive_ofertas.sql):
+       - viajes.tarifa = precio vigente (oferta actual o precio acordado)
+       - viajes.tarifa_sugerida / oferta_pasajero / negociacion_estado / ofertas_ronda / oferta_actualizada_en
+       - tabla ofertas_viaje = historial de ofertas del pasajero y contraofertas de los conductores
+       Pasajero (viaje solicitado): ve su oferta, las contraofertas en vivo (Aceptar / Rechazar) y puede subir o bajar su oferta.
+       Conductor (viaje solicitado): ve la oferta del pasajero, la acepta con el botón principal o envía su contraoferta.
+       Viaje acordado: ambos ven el precio acordado frente a la tarifa sugerida.
+       Los estilos y el recuadro se crean desde aquí: no requiere cambios en el HTML ni en el CSS.
+       ============================================================ */
+    const TDOferta = (() => {
+      const MIN_F = 0.7, MAX_F = 3;
+      let tablaOk = true, canal = null, timer = null, construido = '', ofertaPintada = null, firma = '', primeraCarga = true;
+      let ctrlRe = null, consultandoP = false, consultandoC = false, miContra = null, estadoPrevio = null, ctxAudio = null;
+      const vistas = new Set(), ajenoCache = new Map();
+
+      const fmt = (v) => '$' + Number(v || 0).toFixed(2) + ' MXN';
+      const red = (v) => Math.round(Number(v || 0) * 100) / 100;
+      const txtErr = (e) => String((e && e.message) || '') + ' ' + String((e && e.code) || '');
+      const errTabla = (e) => !!e && /does not exist|could not find the table|relation|PGRST205|42P01/i.test(txtErr(e));
+      const errColumna = (e) => !!e && /column|schema cache|PGRST204|42703/i.test(txtErr(e));
+      const pasoDe = (b) => { b = Number(b || 0); return b < 50 ? 5 : (b < 150 ? 10 : (b < 400 ? 20 : 50)); };
+      const limites = (s) => ({ min: Math.max(1, Math.ceil(Number(s || 0) * MIN_F)), max: Math.max(10, Math.round(Number(s || 0) * MAX_F)) });
+      const sugerida = (v) => { const s = Number(v && v.tarifa_sugerida); return s > 0 ? s : Number((v && v.tarifa) || 0); };
+      const oferta = (v) => { const t = Number(v && v.tarifa); return t > 0 ? t : Number((v && v.oferta_pasajero) || 0); };
+      const tieneSugerida = (v) => Number(v && v.tarifa_sugerida) > 0;
+      const pct = (a, s) => (s > 0 ? Math.round((a - s) / s * 100) : 0);
+      /* Sesión: la de esta página o la que guarda app.html (misma función que usan los avisos push) */
+      const sesion = () => sesionPush();
+      const miConductorId = () => { const u = sesion(); const x = u && (u.conductor_id || u.id); return x != null && x !== '' ? String(x) : null; };
+      const estadoActual = () => String((viajeActual && viajeActual.estado) || '').toLowerCase();
+
+      /* ---------- sonido y avisos ---------- */
+      function audio() {
+        if (ctxAudio) return ctxAudio;
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        try { ctxAudio = new AC(); } catch (e) { ctxAudio = null; }
+        return ctxAudio;
+      }
+      ['pointerdown', 'touchstart', 'keydown'].forEach((ev) => document.addEventListener(ev, () => {
+        const c = audio(); if (c && c.state !== 'running') c.resume().catch(() => {});
+      }, { passive: true }));
+      function campana() {
+        const c = audio();
+        if (!c || c.state !== 'running') return;
+        const t0 = c.currentTime + 0.03;
+        [[880, 0], [1108.73, 0.12], [1318.51, 0.24], [1760, 0.38]].forEach((n) => {
+          const o = c.createOscillator(), g = c.createGain();
+          o.type = 'sine'; o.frequency.value = n[0];
+          g.gain.setValueAtTime(0.0001, t0 + n[1]);
+          g.gain.exponentialRampToValueAtTime(0.25, t0 + n[1] + 0.015);
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + n[1] + 0.5);
+          o.connect(g); g.connect(c.destination);
+          o.start(t0 + n[1]); o.stop(t0 + n[1] + 0.55);
+        });
+        try { if (navigator.vibrate) navigator.vibrate([150, 60, 150]); } catch (e) {}
+      }
+      function notificar(titulo, cuerpo, tag) {
+        try {
+          if (!('Notification' in window) || Notification.permission !== 'granted') return;
+          if (!document.hidden && document.hasFocus()) return;
+          const op = { body: cuerpo, icon: new URL('icon-192.png', location.href).href, tag: tag, data: { url: location.href } };
+          if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+            navigator.serviceWorker.getRegistration().then((reg) => { if (reg) reg.showNotification(titulo, op); else new Notification(titulo, op); }).catch(() => {});
+          } else new Notification(titulo, op);
+        } catch (e) {}
+      }
+
+      /* ---------- estilos (se inyectan una sola vez) ---------- */
+      function estilos() {
+        if (document.getElementById('tdo-estilos')) return;
+        const st = document.createElement('style');
+        st.id = 'tdo-estilos';
+        st.textContent =
+          '@keyframes tdoIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}' +
+          '@keyframes tdoPunto{0%,100%{opacity:.3}50%{opacity:1}}' +
+          '@keyframes tdoPulso{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}' +
+          '.tdo-card{padding:18px 20px;border-radius:var(--radius,18px);text-align:left;background:var(--card-bg,#ffffff);color:var(--text-color,#1f2937);' +
+            'border:1.5px solid rgba(254,215,0,.6);box-shadow:var(--shadow,0 10px 30px -5px rgba(0,0,0,.08));animation:tdoIn .35s cubic-bezier(.2,.8,.2,1) both}' +
+          '.tdo-card *{box-sizing:border-box}' +
+          '.tdo-kicker{font-size:.6rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#a68800}' +
+          'body.dark-theme .tdo-kicker{color:#FED700}' +
+          '.tdo-cab{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin:4px 0 12px}' +
+          '.tdo-tit{font-size:1rem;font-weight:800}' +
+          '.tdo-sub{font-size:.72rem;opacity:.7;margin-top:2px}' +
+          '.tdo-actual{text-align:right;flex-shrink:0}' +
+          '.tdo-actual small{display:block;font-size:.56rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.7}' +
+          '.tdo-actual b{display:block;font-size:1.3rem;font-weight:900;letter-spacing:-.02em}' +
+          '.tdo-dif{display:inline-block;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:.62rem;font-weight:800;background:rgba(16,185,129,.16);color:#059669}' +
+          '.tdo-dif.tdo-baja{background:rgba(245,158,11,.18);color:#c27803}' +
+          '.tdo-subio{animation:tdoPulso .5s ease 3}' +
+          '.tdo-lista{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}' +
+          '.tdo-vacio{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;border:1px dashed rgba(127,127,127,.4);font-size:.75rem;line-height:1.4}' +
+          '.tdo-vacio span:last-child{opacity:.8}' +
+          '.tdo-puntos{display:inline-flex;gap:4px;flex-shrink:0}.tdo-puntos i{width:6px;height:6px;border-radius:50%;background:#FED700;animation:tdoPunto 1.2s infinite}' +
+          '.tdo-puntos i:nth-child(2){animation-delay:.2s}.tdo-puntos i:nth-child(3){animation-delay:.4s}' +
+          '.tdo-contra{display:flex;align-items:center;gap:10px;padding:10px;border-radius:16px;background:rgba(127,127,127,.1);border:1.5px solid rgba(16,185,129,.55);animation:tdoIn .4s ease both}' +
+          '.tdo-contra.tdo-sin{animation:none}' +
+          '.tdo-contra img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #FED700;flex-shrink:0}' +
+          '.tdo-cinfo{flex:1;min-width:0}.tdo-cnom{font-size:.84rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+          '.tdo-cveh{font-size:.66rem;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+          '.tdo-cmonto{font-size:1.1rem;font-weight:900;margin-top:2px}.tdo-cmonto small{font-size:.62rem;font-weight:800;color:#c27803;margin-left:5px}' +
+          '.tdo-cacc{display:flex;flex-direction:column;gap:6px;flex-shrink:0}' +
+          '.tdo-cacc button{padding:8px 12px;border-radius:10px;font-size:.74rem;font-weight:800;cursor:pointer;border:none;font-family:inherit}' +
+          '.tdo-cacc button:disabled{opacity:.6;cursor:not-allowed}' +
+          '.tdo-acep{background:linear-gradient(90deg,#059669,#10b981);color:#fff}' +
+          '.tdo-rech{background:transparent;color:#ef4444;border:1px solid rgba(239,68,68,.55)!important}' +
+          '.tdo-sec{font-size:.62rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;opacity:.65;margin:2px 0 8px}' +
+          '.tdo-control{display:flex;align-items:center;gap:10px}' +
+          '.tdo-paso{flex-shrink:0;width:46px;height:46px;border-radius:14px;border:1px solid rgba(127,127,127,.3);background:rgba(127,127,127,.1);color:inherit;font-size:1.4rem;font-weight:800;cursor:pointer;font-family:inherit}' +
+          '.tdo-paso:disabled{opacity:.35;cursor:not-allowed}' +
+          '.tdo-monto{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:4px;height:52px;border-radius:14px;border:1.5px solid #FED700;background:rgba(127,127,127,.08);cursor:text}' +
+          '.tdo-monto span{font-size:1.15rem;font-weight:800}.tdo-monto small{font-size:.6rem;font-weight:800;opacity:.65}' +
+          '.tdo-monto input{width:100%;max-width:120px;min-width:0;background:transparent;border:none;outline:none;color:inherit;font-size:1.45rem;font-weight:900;text-align:center;font-family:inherit;-moz-appearance:textfield;appearance:textfield}' +
+          '.tdo-monto input::-webkit-outer-spin-button,.tdo-monto input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}' +
+          '.tdo-chips{display:flex;gap:6px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.tdo-chips::-webkit-scrollbar{display:none}' +
+          '.tdo-chip{flex-shrink:0;padding:7px 11px;border-radius:999px;border:1px solid rgba(127,127,127,.3);background:rgba(127,127,127,.08);color:inherit;font-size:.72rem;font-weight:800;cursor:pointer;white-space:nowrap;font-family:inherit}' +
+          '.tdo-chip small{font-weight:700;opacity:.7;margin-left:4px;font-size:.6rem}' +
+          '.tdo-chip.tdo-act{background:#FED700;color:#121212;border-color:#121212}' +
+          '.tdo-nivel{margin-top:8px;font-size:.72rem;font-weight:700;line-height:1.35}.tdo-nivel.tdo-bajo{color:#c27803}.tdo-nivel.tdo-ok{color:#059669}' +
+          'body.dark-theme .tdo-nivel.tdo-bajo,body.dark-theme .tdo-dif.tdo-baja,body.dark-theme .tdo-cmonto small{color:#f59e0b}' +
+          'body.dark-theme .tdo-nivel.tdo-ok,body.dark-theme .tdo-dif{color:#10b981}' +
+          '.tdo-enviar,.tdo-btn-contra{width:100%;margin-top:12px;padding:13px;border-radius:12px;border:none;font-size:.86rem;font-weight:800;cursor:pointer;font-family:inherit;background:#121212;color:#fff}' +
+          'body.dark-theme .tdo-enviar,body.dark-theme .tdo-btn-contra{background:#FED700;color:#121212}' +
+          '.tdo-btn-contra{margin-top:4px;background:transparent!important;color:inherit!important;border:1.5px solid #FED700}' +
+          '.tdo-enviar:disabled{opacity:.5;cursor:not-allowed}' +
+          '.tdo-estado{margin:10px 0 2px;padding:10px 12px;border-radius:12px;font-size:.76rem;font-weight:700;line-height:1.4;display:flex;align-items:center;gap:8px;' +
+            'background:rgba(254,215,0,.12);border:1px dashed rgba(254,215,0,.6)}' +
+          '.tdo-estado.tdo-rechazada{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.5)}' +
+          '.tdo-panel-contra{margin-top:12px}' +
+          '.tdo-acordado{display:flex;align-items:center;justify-content:space-between;gap:12px}' +
+          '.tdo-acordado b{font-size:1.2rem;font-weight:900}';
+        document.head.appendChild(st);
+      }
+
+      /* ---------- recuadro (se ubica justo encima de los botones de acción) ---------- */
+      function tarjeta() {
+        let c = document.getElementById('tdo-card');
+        if (c) return c;
+        c = document.createElement('section');
+        c.id = 'tdo-card';
+        c.className = 'tdo-card';
+        c.style.display = 'none';
+        if (secAcciones && secAcciones.parentNode) secAcciones.parentNode.insertBefore(c, secAcciones);
+        else document.body.appendChild(c);
+        return c;
+      }
+
+      /* ---------- control: [−] [$ monto] [+] + valores rápidos ---------- */
+      function chipsPasajero(sug, lim) {
+        const vistos = {}, chips = [];
+        [0.8, 0.9, 1, 1.1, 1.2, 1.35].forEach((f) => {
+          let v = f === 1 ? red(sug) : Math.round(sug * f);
+          v = Math.min(lim.max, Math.max(lim.min, v));
+          if (vistos[v]) return; vistos[v] = 1;
+          const p = pct(v, sug);
+          chips.push({ valor: v, etiqueta: '$' + v, sub: f === 1 ? 'Sugerida' : ((p > 0 ? '+' : '') + p + '%') });
+        });
+        return chips;
+      }
+      function chipsConductor(of, sug, lim) {
+        const paso = pasoDe(of), vistos = {}, chips = [];
+        const cand = [1, 2, 3, 4].map((n) => ({ v: Math.round(of + paso * n), sub: null }));
+        if (sug > of) cand.push({ v: red(sug), sub: 'Sugerida' });
+        cand.sort((a, b) => a.v - b.v).forEach((c) => {
+          const v = Math.min(lim.max, Math.max(lim.min, c.v));
+          if (vistos[v]) return; vistos[v] = 1;
+          chips.push({ valor: v, etiqueta: '$' + v, sub: c.sub || ('+$' + Math.round(v - of)) });
+        });
+        return chips;
+      }
+      function crearControl(op) {
+        const w = document.createElement('div');
+        w.innerHTML =
+          '<div class="tdo-control"><button type="button" class="tdo-paso" data-d="-1" aria-label="Bajar valor">−</button>' +
+          '<label class="tdo-monto"><span>$</span><input type="number" inputmode="decimal" min="0" step="1" aria-label="Valor"><small>MXN</small></label>' +
+          '<button type="button" class="tdo-paso" data-d="1" aria-label="Subir valor">+</button></div>' +
+          '<div class="tdo-chips"></div>' + (op.sugerida ? '<div class="tdo-nivel"></div>' : '');
+        const input = w.querySelector('input'), chips = w.querySelector('.tdo-chips'), nivel = w.querySelector('.tdo-nivel');
+        const menos = w.querySelector('[data-d="-1"]'), mas = w.querySelector('[data-d="1"]');
+        let valor = red(op.valor);
+        const c = {
+          el: w,
+          valor: () => valor,
+          valido: () => valor >= op.min && valor <= op.max,
+          fijar(v, libre) {
+            v = red(v);
+            if (!libre) { v = Math.min(op.max, Math.max(op.min, v)); input.value = String(v); }
+            valor = v;
+            menos.disabled = v <= op.min; mas.disabled = v >= op.max;
+            w.querySelectorAll('.tdo-chip').forEach((ch) => ch.classList.toggle('tdo-act', Number(ch.dataset.v) === v));
+            if (nivel) {
+              const p = pct(v, op.sugerida);
+              nivel.className = 'tdo-nivel';
+              if (v < op.min) { nivel.classList.add('tdo-bajo'); nivel.textContent = 'El valor mínimo permitido es ' + fmt(op.min) + '.'; }
+              else if (v > op.max) { nivel.classList.add('tdo-bajo'); nivel.textContent = 'El valor máximo permitido es ' + fmt(op.max) + '.'; }
+              else if (p < 0) { nivel.classList.add('tdo-bajo'); nivel.textContent = Math.abs(p) + '% por debajo de la sugerida: los conductores podrían contraofertar o tardar más en aceptar.'; }
+              else if (p === 0) { nivel.classList.add('tdo-ok'); nivel.textContent = 'Tarifa sugerida: aceptación más rápida.'; }
+              else { nivel.classList.add('tdo-ok'); nivel.textContent = '+' + p + '% sobre la sugerida: los conductores la aceptarán más rápido.'; }
+            }
+            if (op.alCambiar) op.alCambiar(c.valido() ? v : null);
+          }
+        };
+        (op.chips || []).forEach((ch) => {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'tdo-chip'; b.dataset.v = String(ch.valor);
+          b.innerHTML = esc(ch.etiqueta) + (ch.sub ? '<small>' + esc(ch.sub) + '</small>' : '');
+          b.addEventListener('click', () => c.fijar(ch.valor));
+          chips.appendChild(b);
+        });
+        if (!chips.children.length) chips.remove();
+        menos.addEventListener('click', () => c.fijar(valor - pasoDe(valor)));
+        mas.addEventListener('click', () => c.fijar(valor + pasoDe(valor)));
+        input.addEventListener('input', () => c.fijar(parseFloat(String(input.value).replace(',', '.')) || 0, true));
+        input.addEventListener('blur', () => c.fijar(valor));
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
+        return c;
+      }
+
+      /* ---------- ¿El viaje quedó con OTRO conductor? (vista conductor) ---------- */
+      function esAjeno() {
+        const ses = sesion();
+        if (rolUsuario !== 'conductor' || !viajeActual || viajeActual.conductor_id == null || !ses) return false;
+        const cid = String(viajeActual.conductor_id);
+        const mios = [ses.conductor_id, ses.id].filter((x) => x != null && x !== '').map(String);
+        if (!mios.length || mios.indexOf(cid) >= 0) return false;
+        if (ajenoCache.has(cid)) return ajenoCache.get(cid);
+        ajenoCache.set(cid, false);   /* provisional mientras se confirma con la tabla conductores */
+        resolverConductor(viajeActual.conductor_id).then((info) => {
+          const ids = [info && info.usuarioId, info && info.conductorId].filter((x) => x != null).map(String);
+          const esMio = ids.some((x) => mios.indexOf(x) >= 0);
+          ajenoCache.set(cid, !esMio);
+          if (!esMio) renderizarUI();
+        }).catch(() => {});
+        return false;
+      }
+
+      /* ---------- render principal ---------- */
+      function render(estado) {
+        if (!viajeActual) return;
+        estilos();
+        const card = tarjeta();
+        const previo = estadoPrevio;
+        estadoPrevio = estado;
+
+        if (previo === 'solicitado' && estado === 'aceptado' && rolUsuario === 'conductor' && miContra &&
+            String(viajeActual.conductor_id) === String(miContra.conductor_id)) {
+          campana();
+          mostrarToast('¡El pasajero aceptó tu contraoferta de ' + fmt(oferta(viajeActual)) + '!');
+          notificar('✅ Contraoferta aceptada', 'El pasajero aceptó ' + fmt(oferta(viajeActual)) + '. Dirígete al punto de recojo.', 'topdrive-contra-' + viajeId);
+        }
+
+        if (estado === 'solicitado') {
+          card.style.display = 'block';
+          if (rolUsuario === 'conductor') renderConductor(card); else renderPasajero(card);
+          activarTiempoReal();
+          return;
+        }
+        detenerTiempoReal();
+        if (estado !== 'cancelado' && tieneSugerida(viajeActual) && !esAjeno()) { renderAcordado(card); return; }
+        card.style.display = 'none';
+        card.innerHTML = '';
+        construido = '';
+      }
+
+      function renderAcordado(card) {
+        const s = sugerida(viajeActual), o = oferta(viajeActual), p = pct(o, s);
+        const html = '<div class="tdo-acordado"><div><div class="tdo-kicker">TOPDRIVE · Tarifa negociada</div>' +
+          '<div class="tdo-tit" style="margin-top:4px">Precio acordado</div>' +
+          '<div class="tdo-sub">Tarifa sugerida: ' + fmt(s) + '</div></div>' +
+          '<div class="tdo-actual"><b>' + fmt(o) + '</b>' +
+          (p ? '<span class="tdo-dif' + (p < 0 ? ' tdo-baja' : '') + '">' + (p > 0 ? '+' : '') + p + '% vs sugerida</span>' : '<span class="tdo-dif">Tarifa sugerida</span>') +
+          '</div></div>';
+        if (construido !== 'acordado:' + o) { card.innerHTML = html; construido = 'acordado:' + o; }
+        card.style.display = 'block';
+      }
+
+      /* ---------- PASAJERO ---------- */
+      function renderPasajero(card) {
+        const clave = 'p:' + viajeActual.id;
+        if (construido !== clave) { construirPasajero(card); construido = clave; }
+        const actual = oferta(viajeActual);
+        const m = card.querySelector('.tdo-actual b');
+        if (m) m.textContent = fmt(actual);
+        if (ofertaPintada !== actual) {
+          ofertaPintada = actual;
+          firma = '';
+          const inp = card.querySelector('.tdo-ctrl-re input');
+          if (ctrlRe && document.activeElement !== inp) ctrlRe.fijar(actual);
+        }
+        cargarContraofertas();
+      }
+
+      function construirPasajero(card) {
+        const sug = sugerida(viajeActual), lim = limites(sug), actual = oferta(viajeActual);
+        card.innerHTML =
+          '<div class="tdo-kicker">TOPDRIVE · Ofertas en vivo</div>' +
+          '<div class="tdo-cab"><div><div class="tdo-tit">Negociación de tarifa</div><div class="tdo-sub">Sugerida: ' + fmt(sug) + '</div></div>' +
+            '<div class="tdo-actual"><small>Tu oferta</small><b>' + fmt(actual) + '</b></div></div>' +
+          '<div class="tdo-lista"></div>' +
+          '<div class="tdo-sec">¿Nadie acepta? Ajusta tu oferta</div>' +
+          '<div class="tdo-ctrl-re"></div>' +
+          '<button type="button" class="tdo-enviar" disabled>Esta es tu oferta actual</button>';
+        const btn = card.querySelector('.tdo-enviar');
+        ctrlRe = crearControl({
+          sugerida: sug, min: lim.min, max: lim.max, valor: actual, chips: chipsPasajero(sug, lim),
+          alCambiar: (v) => {
+            const vig = oferta(viajeActual);
+            btn.disabled = v === null || v === vig;
+            btn.textContent = v === null ? 'Ajusta tu oferta' : (v === vig ? 'Esta es tu oferta actual' : (v > vig ? 'Subir oferta a ' : 'Bajar oferta a ') + fmt(v));
+          }
+        });
+        card.querySelector('.tdo-ctrl-re').appendChild(ctrlRe.el);
+        ctrlRe.fijar(actual);
+        btn.addEventListener('click', () => reofertar(ctrlRe.valor(), btn));
+        ofertaPintada = actual;
+        firma = '';
+        primeraCarga = true;
+        pintarLista(card, null);
+      }
+
+      async function cargarContraofertas() {
+        if (!db || !tablaOk || consultandoP || rolUsuario === 'conductor' || estadoActual() !== 'solicitado') return;
+        consultandoP = true;
+        try {
+          const { data, error } = await db.from('ofertas_viaje').select('*')
+            .eq('viaje_id', String(viajeId)).eq('autor', 'conductor').eq('estado', 'pendiente')
+            .order('id', { ascending: false }).limit(30);
+          if (error) {
+            if (errTabla(error)) { tablaOk = false; console.warn('Ofertas: falta la tabla ofertas_viaje (ejecuta topdrive_ofertas.sql).'); pintarLista(tarjeta(), []); }
+            return;
+          }
+          if (estadoActual() === 'solicitado') pintarLista(tarjeta(), data || []);
+        } catch (e) {
+          console.warn('Ofertas:', e);
+        } finally {
+          consultandoP = false;
+        }
+      }
+
+      function pintarLista(card, filas) {
+        const cont = card.querySelector('.tdo-lista');
+        if (!cont) return;
+        if (!tablaOk) {
+          cont.innerHTML = '<div class="tdo-vacio"><span>Tu oferta está visible para los conductores. (Para ver contraofertas ejecuta topdrive_ofertas.sql en Supabase).</span></div>';
+          return;
+        }
+        if (filas === null || !filas.length) {
+          if (filas !== null) primeraCarga = false;
+          if (firma === 'vacio' && cont.firstChild) return;
+          firma = 'vacio';
+          cont.innerHTML = '<div class="tdo-vacio"><span class="tdo-puntos"><i></i><i></i><i></i></span>' +
+            '<span>Tu oferta está visible para los conductores. Aquí verás sus contraofertas en vivo.</span></div>';
+          return;
+        }
+        const porConductor = {}, lista = [];
+        filas.forEach((o) => { const k = String(o.conductor_id); if (!porConductor[k]) { porConductor[k] = 1; lista.push(o); } });
+        lista.sort((a, b) => Number(a.monto) - Number(b.monto));
+        const nuevas = lista.filter((o) => !vistas.has(String(o.id)));
+        lista.forEach((o) => vistas.add(String(o.id)));
+        const eraPrimera = primeraCarga;
+        primeraCarga = false;
+        const f = lista.map((o) => o.id + ':' + o.monto).join('|') + '#' + oferta(viajeActual);
+        if (f === firma && cont.firstChild) return;
+        firma = f;
+        cont.innerHTML = '';
+        const actual = oferta(viajeActual);
+        lista.forEach((o) => {
+          const monto = Number(o.monto || 0), dif = monto - actual;
+          const el = document.createElement('div');
+          el.className = 'tdo-contra' + (nuevas.indexOf(o) >= 0 ? '' : ' tdo-sin');
+          el.innerHTML =
+            '<img alt="Conductor" src="' + esc(o.conductor_foto || avatarDe(o.conductor_nombre || 'C')) + '">' +
+            '<div class="tdo-cinfo"><div class="tdo-cnom">' + esc(o.conductor_nombre || 'Conductor TOPDRIVE') + '</div>' +
+              '<div class="tdo-cveh">' + esc(o.vehiculo_desc || 'Conductor TOPDRIVE') + '</div>' +
+              '<div class="tdo-cmonto">' + fmt(monto) + (dif > 0 ? '<small>+$' + dif.toFixed(2) + '</small>' : '') + '</div></div>' +
+            '<div class="tdo-cacc"><button type="button" class="tdo-acep">Aceptar</button><button type="button" class="tdo-rech">Rechazar</button></div>';
+          el.querySelector('img').addEventListener('error', function () { this.src = avatarDe(o.conductor_nombre || 'C'); });
+          el.querySelector('.tdo-acep').addEventListener('click', (e) => aceptarContra(o, e.currentTarget));
+          el.querySelector('.tdo-rech').addEventListener('click', (e) => rechazarContra(o, el, e.currentTarget));
+          cont.appendChild(el);
+        });
+        if (nuevas.length && !eraPrimera) {
+          const o = nuevas[0];
+          campana();
+          mostrarToast('💬 Nueva contraoferta: ' + fmt(o.monto));
+          notificar('💬 Nueva contraoferta', (o.conductor_nombre || 'Un conductor') + ' propone ' + fmt(o.monto) + ' por tu viaje.', 'topdrive-contra-' + o.id);
+        }
+      }
+
+      async function reofertar(monto, btn) {
+        if (!db || !viajeActual) return;
+        monto = red(monto);
+        btn.disabled = true;
+        btn.textContent = 'Enviando oferta…';
+        const extras = { tarifa: monto };
+        if (viajeTiene('oferta_pasajero')) extras.oferta_pasajero = monto;
+        if (viajeTiene('negociacion_estado')) extras.negociacion_estado = 'oferta_pasajero';
+        if (viajeTiene('ofertas_ronda')) extras.ofertas_ronda = (Number(viajeActual.ofertas_ronda) || 1) + 1;
+        if (viajeTiene('oferta_actualizada_en')) extras.oferta_actualizada_en = new Date().toISOString();
+        let r = await db.from('viajes').update(extras).eq('id', viajeId).eq('estado', 'solicitado').select('*');
+        if (r.error && errColumna(r.error)) r = await db.from('viajes').update({ tarifa: monto }).eq('id', viajeId).eq('estado', 'solicitado').select('*');
+        if (r.error) { mostrarToast('No se pudo actualizar tu oferta: ' + r.error.message); btn.disabled = false; btn.textContent = 'Reintentar'; return; }
+        if (!r.data || !r.data.length) { mostrarToast('Tu viaje ya no está disponible para ofertar'); obtenerDatosViaje(true); return; }
+        viajeActual = r.data[0];
+        if (tablaOk) {
+          try {
+            await db.from('ofertas_viaje').update({ estado: 'reemplazada' }).eq('viaje_id', String(viajeId)).eq('autor', 'pasajero').eq('estado', 'pendiente');
+            /* Las contraofertas iguales o menores a la nueva oferta ya no tienen sentido */
+            await db.from('ofertas_viaje').update({ estado: 'reemplazada' }).eq('viaje_id', String(viajeId)).eq('autor', 'conductor').eq('estado', 'pendiente').lte('monto', monto);
+            await db.from('ofertas_viaje').insert([{
+              viaje_id: String(viajeId), autor: 'pasajero',
+              pasajero_id: viajeActual.pasajero_id != null ? String(viajeActual.pasajero_id) : null,
+              monto: monto, tarifa_sugerida: sugerida(viajeActual) || null, estado: 'pendiente'
+            }]);
+          } catch (e) {}
+        }
+        mostrarToast('Oferta actualizada a ' + fmt(monto) + ' · los conductores ya la ven');
+        firma = '';
+        renderizarUI();
+      }
+
+      async function aceptarContra(o, btn) {
+        if (!db || !o) return;
+        btn.disabled = true;
+        btn.textContent = '…';
+        propioEstado = 'aceptado';   /* lo acepta el propio pasajero: no se anuncia con sonido */
+        const base = { estado: 'aceptado', conductor_id: o.conductor_id, tarifa: Number(o.monto) };
+        const extra = {};
+        if (viajeTiene('negociacion_estado')) extra.negociacion_estado = 'acordada';
+        if (viajeTiene('oferta_actualizada_en')) extra.oferta_actualizada_en = new Date().toISOString();
+        let r = await db.from('viajes').update(Object.assign({}, base, extra)).eq('id', viajeId).eq('estado', 'solicitado').select('id');
+        if (r.error && errColumna(r.error)) r = await db.from('viajes').update(base).eq('id', viajeId).eq('estado', 'solicitado').select('id');
+        if (r.error) { propioEstado = null; mostrarToast('No se pudo aceptar: ' + r.error.message); btn.disabled = false; btn.textContent = 'Aceptar'; return; }
+        if (!r.data || !r.data.length) { propioEstado = null; mostrarToast('Tu viaje ya fue tomado por otro conductor'); obtenerDatosViaje(true); return; }
+        try {
+          await db.from('ofertas_viaje').update({ estado: 'aceptada' }).eq('id', o.id);
+          await db.from('ofertas_viaje').update({ estado: 'rechazada' }).eq('viaje_id', String(viajeId)).eq('estado', 'pendiente').neq('id', o.id);
+        } catch (e) {}
+        mostrarToast('¡Contraoferta de ' + fmt(o.monto) + ' aceptada! Tu conductor va en camino');
+        await obtenerDatosViaje(true);
+      }
+
+      async function rechazarContra(o, el, btn) {
+        if (!db || !o) return;
+        btn.disabled = true;
+        const { error } = await db.from('ofertas_viaje').update({ estado: 'rechazada' }).eq('id', o.id);
+        if (error) { mostrarToast('No se pudo rechazar: ' + error.message); btn.disabled = false; return; }
+        if (el) el.remove();
+        firma = '';
+        mostrarToast('Contraoferta rechazada');
+        cargarContraofertas();
+      }
+
+      /* ---------- CONDUCTOR ---------- */
+      function cabeceraConductor() {
+        const of = oferta(viajeActual), sug = sugerida(viajeActual), p = pct(of, sug);
+        return '<div><div class="tdo-tit">Oferta del pasajero</div>' +
+          '<div class="tdo-sub">' + (tieneSugerida(viajeActual) ? 'Tarifa sugerida: ' + fmt(sug) : 'Precio propuesto por el pasajero') + '</div></div>' +
+          '<div class="tdo-actual"><b>' + fmt(of) + '</b>' +
+          (tieneSugerida(viajeActual) ? '<span class="tdo-dif' + (p < 0 ? ' tdo-baja' : '') + '">' + (p > 0 ? '+' : '') + p + '% vs sugerida</span>' : '') + '</div>';
+      }
+
+      function renderConductor(card) {
+        const clave = 'c:' + viajeActual.id;
+        const actual = oferta(viajeActual);
+        if (construido !== clave) {
+          card.innerHTML =
+            '<div class="tdo-kicker">TOPDRIVE · Oferta en vivo</div>' +
+            '<div class="tdo-cab tdo-cab-c">' + cabeceraConductor() + '</div>' +
+            '<div class="tdo-estado" style="display:none"></div>' +
+            '<button type="button" class="tdo-btn-contra">Contraofertar</button>' +
+            '<div class="tdo-panel-contra" style="display:none"></div>';
+          card.querySelector('.tdo-btn-contra').addEventListener('click', () => abrirContra(card));
+          construido = clave;
+          ofertaPintada = actual;
+        } else if (ofertaPintada !== actual) {
+          const subio = actual > ofertaPintada;
+          ofertaPintada = actual;
+          const cab = card.querySelector('.tdo-cab-c');
+          cab.innerHTML = cabeceraConductor();
+          const panel = card.querySelector('.tdo-panel-contra');
+          panel.style.display = 'none'; panel.innerHTML = '';
+          if (subio) {
+            cab.classList.remove('tdo-subio'); void cab.offsetWidth; cab.classList.add('tdo-subio');
+            campana();
+            mostrarToast('↑ El pasajero subió su oferta a ' + fmt(actual));
+            notificar('💰 El pasajero subió su oferta', fmt(actual) + ' · ' + (viajeActual.tipo_servicio || 'Servicio'), 'topdrive-oferta-' + viajeId);
+          } else {
+            mostrarToast('El pasajero actualizó su oferta a ' + fmt(actual));
+          }
+        }
+        pintarMiEstado(card);
+        cargarMiContraoferta();
+      }
+
+      function abrirContra(card) {
+        const panel = card.querySelector('.tdo-panel-contra');
+        if (panel.style.display !== 'none') { panel.style.display = 'none'; panel.innerHTML = ''; return; }
+        if (!tablaOk) { mostrarToast('Falta ejecutar topdrive_ofertas.sql en Supabase para contraofertar'); return; }
+        const of = oferta(viajeActual), sug = sugerida(viajeActual);
+        const lim = { min: red(of + 1), max: Math.max(Math.round(sug * MAX_F), Math.round(of * MAX_F), Math.ceil(of + 10)) };
+        const chips = chipsConductor(of, sug, lim);
+        panel.innerHTML = '<div class="tdo-sec">Tu contraoferta</div>';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'tdo-enviar';
+        const ctrl = crearControl({
+          min: lim.min, max: lim.max, valor: chips.length ? chips[0].valor : lim.min, chips: chips,
+          alCambiar: (v) => {
+            btn.disabled = v === null;
+            btn.textContent = v === null ? 'Ajusta el valor' : 'Enviar contraoferta · ' + fmt(v);
+          }
+        });
+        panel.appendChild(ctrl.el);
+        panel.appendChild(btn);
+        btn.addEventListener('click', () => enviarContra(card, ctrl.valor(), btn));
+        panel.style.display = 'block';
+        ctrl.fijar(ctrl.valor());
+      }
+
+      async function enviarContra(card, monto, btn) {
+        const cid = miConductorId();
+        if (!db || !viajeActual) return;
+        if (!cid) { mostrarToast('Inicia sesión como conductor para contraofertar'); return; }
+        btn.disabled = true;
+        btn.textContent = 'Enviando…';
+        try {
+          await db.from('ofertas_viaje').update({ estado: 'reemplazada' })
+            .eq('viaje_id', String(viajeId)).eq('conductor_id', cid).eq('autor', 'conductor').eq('estado', 'pendiente');
+        } catch (e) {}
+        /* Datos del conductor y su vehículo para que el pasajero sepa quién contraoferta */
+        let vehiculo = '';
+        try {
+          const info = await resolverConductor(cid);
+          const d = (info && info.doc) || {}, v = (info && info.vehiculo) || {};
+          vehiculo = [d.marca || v.marca, d.modelo || v.modelo, d.anio || v.anio].filter(Boolean).join(' ');
+          const pl = d.placa || v.placa;
+          if (pl) vehiculo += (vehiculo ? ' · ' : '') + String(pl).toUpperCase();
+          if (!vehiculo && (d.tipo_servicio || v.tipo_servicio)) vehiculo = d.tipo_servicio || v.tipo_servicio;
+        } catch (e) {}
+        const u = sesion() || {};
+        const nombre = [u.nombre || u.nombres, u.apellido || u.apellidos].filter(Boolean).join(' ').trim() || u.usuario || 'Conductor TOPDRIVE';
+        const foto = u.foto || u.foto_url || '';
+        const { data, error } = await db.from('ofertas_viaje').insert([{
+          viaje_id: String(viajeId), autor: 'conductor',
+          pasajero_id: viajeActual.pasajero_id != null ? String(viajeActual.pasajero_id) : null,
+          conductor_id: cid, conductor_nombre: nombre,
+          conductor_foto: foto && !/^data:/i.test(foto) ? foto : null,
+          vehiculo_desc: vehiculo || null,
+          monto: Number(monto), tarifa_sugerida: sugerida(viajeActual), estado: 'pendiente'
+        }]).select();
+        if (error) {
+          if (errTabla(error)) { tablaOk = false; mostrarToast('Falta ejecutar topdrive_ofertas.sql en Supabase'); }
+          else mostrarToast('No se pudo enviar la contraoferta: ' + error.message);
+          btn.disabled = false;
+          btn.textContent = 'Reintentar · ' + fmt(monto);
+          return;
+        }
+        miContra = (data && data[0]) || { conductor_id: cid, monto: Number(monto), estado: 'pendiente' };
+        /* Marca el viaje con contraoferta: avisa en vivo al pasajero también por el canal de 'viajes' */
+        if (viajeTiene('negociacion_estado')) {
+          const marca = { negociacion_estado: 'contraoferta' };
+          if (viajeTiene('oferta_actualizada_en')) marca.oferta_actualizada_en = new Date().toISOString();
+          db.from('viajes').update(marca).eq('id', viajeId).eq('estado', 'solicitado').then(() => {}, () => {});
+        }
+        const panel = card.querySelector('.tdo-panel-contra');
+        panel.style.display = 'none'; panel.innerHTML = '';
+        pintarMiEstado(card);
+        mostrarToast('Contraoferta de ' + fmt(monto) + ' enviada al pasajero');
+      }
+
+      async function cargarMiContraoferta() {
+        const cid = miConductorId();
+        if (!db || !tablaOk || !cid || consultandoC || rolUsuario !== 'conductor' || estadoActual() !== 'solicitado') return;
+        consultandoC = true;
+        try {
+          const { data, error } = await db.from('ofertas_viaje').select('id,conductor_id,monto,estado')
+            .eq('viaje_id', String(viajeId)).eq('conductor_id', cid).eq('autor', 'conductor')
+            .order('id', { ascending: false }).limit(1);
+          if (error) { if (errTabla(error)) tablaOk = false; return; }
+          const nueva = (data && data[0]) || null;
+          const antes = miContra;
+          miContra = nueva;
+          if (antes && nueva && Number(antes.id) === Number(nueva.id) && antes.estado === 'pendiente' && nueva.estado === 'rechazada') {
+            campana();
+            mostrarToast('El pasajero rechazó tu contraoferta de ' + fmt(nueva.monto));
+          }
+          if (estadoActual() === 'solicitado') pintarMiEstado(tarjeta());
+        } catch (e) {
+          console.warn('Ofertas:', e);
+        } finally {
+          consultandoC = false;
+        }
+      }
+
+      function pintarMiEstado(card) {
+        const caja = card.querySelector('.tdo-estado');
+        if (!caja) return;
+        const c = miContra;
+        if (!c || c.estado === 'aceptada') { caja.style.display = 'none'; caja.innerHTML = ''; return; }
+        caja.className = 'tdo-estado' + (c.estado === 'rechazada' ? ' tdo-rechazada' : '');
+        if (c.estado === 'pendiente') {
+          caja.innerHTML = '<span class="tdo-puntos"><i></i><i></i><i></i></span><span>Contraoferta de <b>' + fmt(c.monto) + '</b> enviada · esperando la respuesta del pasajero</span>';
+        } else if (c.estado === 'rechazada') {
+          caja.innerHTML = '<span>✕ El pasajero rechazó tu contraoferta de <b>' + fmt(c.monto) + '</b>. Acepta su oferta o envía otra.</span>';
+        } else {
+          caja.innerHTML = '<span>El pasajero actualizó su oferta. Tu contraoferta de <b>' + fmt(c.monto) + '</b> ya no aplica.</span>';
+        }
+        caja.style.display = 'flex';
+      }
+
+      /* Al aceptar el conductor la oferta, las contraofertas pendientes de otros conductores vencen */
+      function cerrarPendientes() {
+        if (!db || !tablaOk) return;
+        try {
+          db.from('ofertas_viaje').update({ estado: 'expirada' }).eq('viaje_id', String(viajeId)).eq('estado', 'pendiente').then(() => {}, () => {});
+        } catch (e) {}
+      }
+
+      /* ¿El cambio recibido en 'viajes' fue solo de la negociación (y no del estado)? */
+      function cambioDeNegociacion(antes, despues) {
+        if (!antes || !despues) return false;
+        return ['tarifa', 'oferta_pasajero', 'negociacion_estado', 'ofertas_ronda', 'oferta_actualizada_en']
+          .some((k) => String(antes[k]) !== String(despues[k]));
+      }
+
+      /* ---------- tiempo real de ofertas + respaldo por consulta ---------- */
+      function refrescar() {
+        if (rolUsuario === 'conductor') cargarMiContraoferta(); else cargarContraofertas();
+      }
+      function activarTiempoReal() {
+        if (!canal && db && db.channel) {
+          try {
+            canal = db.channel('ofertas-viaje-' + viajeId)
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'ofertas_viaje', filter: 'viaje_id=eq.' + viajeId }, refrescar)
+              .subscribe();
+          } catch (e) { canal = null; }
+        }
+        if (!timer) timer = setInterval(() => { if (!document.hidden && estadoActual() === 'solicitado') refrescar(); }, 4000);
+      }
+      function detenerTiempoReal() {
+        if (timer) { clearInterval(timer); timer = null; }
+        if (canal && db && db.removeChannel) { try { db.removeChannel(canal); } catch (e) {} }
+        canal = null;
+      }
+
+      return {
+        render: render,
+        esAjeno: esAjeno,
+        fmt: fmt,
+        ofertaActual: () => oferta(viajeActual),
+        cerrarPendientes: cerrarPendientes,
+        cambioDeNegociacion: cambioDeNegociacion,
+        detener: detenerTiempoReal
+      };
+    })();
+
+    /* ============================================================
        TIEMPO REAL
        ============================================================ */
     function suscribirRealtime() {
@@ -2302,11 +2997,13 @@ function obtenerFotoVehiculo(info, v) {
           .on('postgres_changes',
             { event:'*', schema:'public', table:'viajes', filter:'id=eq.' + viajeId },
             (payload) => {
+              const viajePrevio = viajeActual;   /* [OFERTAS] para distinguir cambios de la negociación */
               viajeActual = payload.new || viajeActual;
               const estadoAntes = estadoVisto;
               renderizarUI();
               /* Si el estado cambió se muestra el aviso específico (con sonido); si no, el aviso genérico de siempre */
-              if (estadoVisto === estadoAntes) mostrarToast('El estado del viaje se actualizó');
+              /* [OFERTAS] Los cambios de oferta / contraoferta ya muestran su propio aviso */
+              if (estadoVisto === estadoAntes && !TDOferta.cambioDeNegociacion(viajePrevio, payload.new)) mostrarToast('El estado del viaje se actualizó');
             })
           .subscribe((status) => {
             realtimeOK = (status === 'SUBSCRIBED');
@@ -2369,6 +3066,7 @@ function obtenerFotoVehiculo(info, v) {
     });
     window.addEventListener('beforeunload', () => {
       detenerRefresco();
+      TDOferta.detener();   /* [OFERTAS] */
       if (llamada.pc) terminarLlamada(true);
       if (canalRealtime && db && db.removeChannel) db.removeChannel(canalRealtime);
       if (canalChat && db && db.removeChannel) db.removeChannel(canalChat);
